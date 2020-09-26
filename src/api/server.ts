@@ -10,9 +10,12 @@ import { router as usersRoutes } from './routes/users-routes';
 import { User } from '../data/models/user';
 import cors from 'cors';
 import { resolve } from 'path';
+import { Server } from 'http';
+import Deps from '../utils/deps';
+import { WebSocket } from './websocket';
 
 export class API {
-  constructor() {
+  constructor(ws = Deps.get<WebSocket>(WebSocket)) {
     const app = express();
 
     passport.use(new LocalStrategy.Strategy((User as any).authenticate()));
@@ -30,7 +33,7 @@ export class API {
     app.use('/api/guilds', guildsRoutes);
     app.use('/api/users', usersRoutes);
     
-    
-    app.listen(3000, () => Log.info(`API is running on port 3000`));
+    const server = app.listen(3000, () => Log.info(`API is running on port 3000`));
+    ws.init(server);
   }
 }

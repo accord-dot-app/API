@@ -32,6 +32,7 @@
     "@types/node": "^14.11.2",
     "@types/passport": "^1.0.4",
     "@types/passport-local": "^1.0.33",
-    "@types/passport-local-mongoose": "^4.0.13"
+    "@types/passport-local-mongoose": "^4.0.13",
+    "@types/socket.io": "^2.1.11"
   }
 }
