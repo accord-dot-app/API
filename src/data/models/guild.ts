@@ -1,28 +1,26 @@
 import { Document, model, Schema } from 'mongoose';
-
-export interface Channel {
-  id: string;
-  name: string;
-  summary: string;
-  type: ChannelType;
-}
-
-export enum ChannelType {
-  Text = 'TEXT'
-}
+import { ChannelDocument } from './channel';
+import { GuildMemberDocument } from './member';
+import { UserDocument } from './user';
 
 export interface GuildDocument extends Document {
   id: string;
   name: string;
   createdAt: Date;
+  nameAcronym: string;
   iconURL: string;
-  channels: Channel[];
+  owner: UserDocument;
+  channels: ChannelDocument[];
+  members: GuildMemberDocument[];
 }
 
 export const Guild = model<GuildDocument>('guild', new Schema({
   _id: String,
   name: String,
   createdAt: Date,
+  nameAcronym: String,
   iconURL: String,
-  channel: { type: Array, defualt: [] }
+  owner: { type: String, ref: 'user' },
+  channels: [{ type: String, ref: 'channel' }],
+  members: [{ type: String, ref: 'guildMember' }]
 }));

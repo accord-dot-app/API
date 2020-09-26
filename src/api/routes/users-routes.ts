@@ -1,21 +1,27 @@
 import { Router } from 'express';
 import { User } from '../../data/models/user';
 import { generateSnowflake } from '../../data/snowflake-entity';
-import Users from '../../data/user';
+import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import jwt from 'jsonwebtoken';
-import { validateUser } from '../modules/middleware';
+import { updateUser } from '../modules/middleware';
 
 export const router = Router();
 
 const users = Deps.get<Users>(Users);
 
-router.get('/', validateUser, (req, res) => res.json(req.user));
+router.get('/', updateUser, async (req, res) => res.json(res.locals.user));
+
+router.get('/:id', async (req, res) => {
+  const user = await users.get({ id: req.params.id });
+  res.json(user);
+});
 
 router.post('/', async (req, res) => {
   try {
     const user = await users.get({ id: generateSnowflake() });
     user.username = req.body.username;
+    user.avatarURL = `${process.env.API_URL}/avatars/default0.png`;
     
     (User as any).register(user, req.body.password);
 

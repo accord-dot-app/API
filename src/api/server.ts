@@ -23,11 +23,13 @@ export class API {
     app.use(passport.initialize());
     app.use(cors());
     
+    app.use('/api', express.static(resolve('./assets')));
+    
     app.use('/api', apiRoutes, authRoutes);
+
     app.use('/api/guilds', guildsRoutes);
     app.use('/api/users', usersRoutes);
-
-    app.use('/api', express.static(resolve('../uploads')));
+    
     
     app.listen(3000, () => Log.info(`API is running on port 3000`));
   }
