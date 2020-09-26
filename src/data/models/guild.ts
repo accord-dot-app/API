@@ -1,6 +1,6 @@
 import { Document, model, Schema } from 'mongoose';
 import { ChannelDocument } from './channel';
-import { GuildMemberDocument } from './member';
+import { GuildMemberDocument } from './guild-member';
 import { UserDocument } from './user';
 
 export interface GuildDocument extends Document {
@@ -17,7 +17,7 @@ export interface GuildDocument extends Document {
 export const Guild = model<GuildDocument>('guild', new Schema({
   _id: String,
   name: String,
-  createdAt: Date,
+  createdAt: { type: Date, default: new Date() },
   nameAcronym: String,
   iconURL: String,
   owner: { type: String, ref: 'user' },

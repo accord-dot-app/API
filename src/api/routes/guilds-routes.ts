@@ -4,10 +4,14 @@ import { generateSnowflake } from '../../data/snowflake-entity';
 import Deps from '../../utils/deps';
 import { updateUser, validateUser } from '../modules/middleware';
 import { getNameAcronym } from '../../utils/utils';
+import Channels from '../../data/channels';
+import { Guild } from '../../data/models/guild';
+import { Channel, ChannelType } from '../../data/models/channel';
 
 export const router = Router();
 
 const guilds = Deps.get<Guilds>(Guilds);
+const channels = Deps.get<Channels>(Channels);
 
 router.get('/', updateUser, validateUser, async (req, res) => {
   try {
@@ -21,12 +25,24 @@ router.get('/', updateUser, validateUser, async (req, res) => {
 
 router.post('/', updateUser, validateUser, async (req, res) => {
   try {
-    const guild = await guilds.get({ id: generateSnowflake() });
-    guild.name = req.body.name;
-    guild.nameAcronym = getNameAcronym(req.body.name);
-    guild.owner = res.locals.user;
-    guild.members.push(res.locals.user);
-    await guild.save();
+    const defaultChannel = await Channel.create({
+      _id: generateSnowflake(),
+      name: 'general',
+      summary: '',
+      createdAt: new Date(),
+      type: ChannelType.Text
+    });
+
+    const guild = await Guild.create({
+      _id: generateSnowflake(),
+      name: req.body.name,
+      nameAcronym: getNameAcronym(req.body.name),
+      createdAt: new Date(),
+      owner: res.locals.user,
+      members: [ res.locals.user ],
+      channels: [ defaultChannel ],
+      iconURL: null
+    });
 
     res.json(guild);
   } catch (err) {

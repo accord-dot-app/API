@@ -12,7 +12,7 @@ export function validateUser(req, res, next) {
 
 export async function updateUser(req, res, next) {
   const key = req.get('Authorization');
-  const id = (jwt.decode(key) as any)._id;
+  const id = (jwt.decode(key) as any)?._id;
   res.locals.user = await users.get({ id });
 
   return next();
