@@ -1,6 +1,7 @@
 import { Document, model, Schema } from 'mongoose';
 
 export enum ChannelType {
+  DM = 'DM',
   Text = 'TEXT'
 }
 

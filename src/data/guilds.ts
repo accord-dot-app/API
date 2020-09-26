@@ -8,6 +8,7 @@ export default class Guilds extends DBWrapper<SnowflakeEntity, GuildDocument> {
             ?.populate('owner')
             .populate('members')
             .populate('channels')
+            .populate('guildMember')
             .execPopulate();
     }
 
