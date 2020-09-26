@@ -3,6 +3,7 @@ import { Message } from '../data/models/message';
 import { generateSnowflake } from '../data/snowflake-entity';
 import socket from 'socket.io';
 import Log from '../utils/log';
+import { GuildMember } from '../data/models/guild-member';
 
 export class WebSocket {
   init(server: Server) {
@@ -23,15 +24,15 @@ export class WebSocket {
         });
         message = await message
           .populate('author')
-          .execPopulate();
-
-        console.log(partialMessage);        
+          .execPopulate();    
 
         io.sockets.emit('MESSAGE_CREATE', partialMessage);
       });
 
-      clientSocket.on('VIEW_GUILD', (guild) => {
-        guild.
+      clientSocket.on('VIEW_GUILD', async (guild, user) => {
+        const exists = await GuildMember.exists({ _id: user._id });
+        if (!exists)
+          await GuildMember.create({ _id: user._id, guild, user });
       });
     });
 
