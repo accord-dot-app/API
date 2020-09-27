@@ -1,9 +1,12 @@
+import { config } from 'dotenv';
+config();
+
 import { connect } from 'mongoose';
 import { API } from './api/server';
 import Deps from './utils/deps';
 import Log from './utils/log';
 
-connect('mongodb://localhost/DClone',
+connect(process.env.MONGO_URI,
   { 
     useUnifiedTopology: true, 
     useNewUrlParser: true, 
