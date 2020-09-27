@@ -9,9 +9,7 @@ export class WebSocket {
   init(server: Server) {
     const io = socket.listen(server);
 
-    io.on('connection', (clientSocket) => {
-      console.log('Made socket connection', clientSocket.id);
-    
+    io.on('connection', (clientSocket) => {    
       clientSocket.on('MESSAGE_CREATE', async (partialMessage) => {
          let message = await Message.create({
           _id: generateSnowflake(),

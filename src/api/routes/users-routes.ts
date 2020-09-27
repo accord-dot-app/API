@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { User } from '../../data/models/user';
+import { StatusType, User } from '../../data/models/user';
 import { generateSnowflake } from '../../data/snowflake-entity';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
@@ -18,12 +18,15 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  try {
-    const user = await users.get({ id: generateSnowflake() });
-    user.username = req.body.username;
-    user.avatarURL = `${process.env.API_URL}/avatars/default0.png`;
-    
-    (User as any).register(user, req.body.password);
+  try {    
+    const user = await (User as any).register({
+      _id: generateSnowflake(),
+      username: req.body.username,
+      avatarURL: `${process.env.API_URL}/avatars/default0.png`,
+      createdAt: new Date(),
+      friends: [],
+      status: StatusType.Online
+    }, req.body.password);
 
     const token = jwt.sign({ _id: user._id }, 'secret' , { expiresIn : '7d' });
     

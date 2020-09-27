@@ -44,15 +44,12 @@ router.get('/:guildId/:channelId', updateUser, validateUser, async (req, res) =>
     const channelMsgs = [];
     const msgs = await Message
       .find({ guild: req.params.guildId, channel: req.params.channelId } as any);
-    console.log(msgs);
     
     for (const msg of msgs)
       channelMsgs.push(await messages.populate(msg));
     
     res.json(channelMsgs);
-  } catch (err) {
-    console.log(err);
-    
+  } catch (err) {    
     res.json({ code: 400, message: err?.message });
   }
 });
