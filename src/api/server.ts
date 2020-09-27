@@ -25,13 +25,19 @@ export class API {
     app.use(bodyParser.json());
     app.use(passport.initialize());
     app.use(cors());
-    
+
     app.use('/api', express.static(resolve('./assets')));    
     app.use('/api', apiRoutes, authRoutes);
 
     app.use('/api/channels', channelsRoutes);
     app.use('/api/guilds', guildsRoutes);
     app.use('/api/users', usersRoutes);
+
+    app.all('/api/*', (req, res) => res.status(404).json({ code: 404 }));
+    
+    const distPath = resolve('./dist/browser');
+    app.use(express.static(distPath));
+    app.all('*', (req, res) => res.status(200).sendFile(`${distPath}/index.html`));
     
     const server = app.listen(3000, () => {
       Log.info(`API is running on port 3000`);
