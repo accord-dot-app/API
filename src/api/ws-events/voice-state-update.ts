@@ -6,7 +6,7 @@ import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 
 export default class implements WSEvent {
-  on = 'disconnect';
+  on = 'VOICE_CHANNEL_UPDATE';
 
   constructor(private users = Deps.get<Users>(Users)) {}
 

@@ -12,11 +12,7 @@ export default class implements WSEvent {
   constructor(private users = Deps.get<Users>(Users)) {}
 
   async invoke(ws: WebSocket, client: Socket, { guild, user }) {
-    ws.sessions.set(client.id, user.id);
-
-    const exists = await GuildMember.exists({ _id: user._id });
-    if (!exists)
-      await GuildMember.create({ _id: user._id, guild, user });
+    ws.sessions.set(client.id, user._id);
 
     user = await this.users.get(user._id);
     user.status = StatusType.Online;

@@ -1,7 +1,3 @@
-export default interface SnowflakeEntity {
-  id: string;
-}
-
 export function generateSnowflake() {
   return new Date()
     .getTime()

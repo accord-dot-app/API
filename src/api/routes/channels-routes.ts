@@ -35,9 +35,9 @@ router.get('/@me/:userId', updateUser, validateUser, async (req, res) => {
 
 router.get('/:guildId/:channelId', updateUser, validateUser, async (req, res) => {
   try {
-    const guild = await guilds.get({ id: req.params.guildId });    
+    const guild = await guilds.get(req.params.guildId);
     
-    const userInGuild = guild.members.some(m => m._id === res.locals.user._id);
+    const userInGuild = guild.members.some(m => m.user === res.locals.user._id);
     if (!userInGuild)
       throw new TypeError('You are not a member of this guild.');
 

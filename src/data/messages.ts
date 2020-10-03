@@ -1,13 +1,12 @@
 import DBWrapper from './db-wrapper';
-import SnowflakeEntity from './snowflake-entity';
 import { Message, MessageDocument } from './models/message';
 
-export default class Messages extends DBWrapper<SnowflakeEntity, MessageDocument> {
-  protected async getOrCreate({ id }: SnowflakeEntity) {
+export default class Messages extends DBWrapper<string, MessageDocument> {
+  protected async getOrCreate(id: string) {
     return this.populate(await Message.findById(id));
   }
 
-  protected create({ id }: SnowflakeEntity) {
+  protected create(id: string) {
     return new Message({ _id: id }).save();
   }
 

@@ -34,3 +34,7 @@ export class WebSocket {
     Log.info('Started WebSocket', 'ws');
   }
 }
+
+// 'VOICE_CHANNEL_UPDATE' -> when a user joins/leaves the channel
+// 'VOICE_STATE_UPDATE' -> when a user selfMutes
+// 'JOIN_GUILD' -> user => create member
