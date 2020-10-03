@@ -15,6 +15,8 @@ export default class implements WSEvent {
     user.voice = user.voice;
     await user.save();
 
-    ws.io.sockets.emit('VOICE_STATE_UPDATE', { user });
+    ws.io
+      .to(user.voice.channelId)
+      .emit('VOICE_STATE_UPDATE', { user });
   }
 }

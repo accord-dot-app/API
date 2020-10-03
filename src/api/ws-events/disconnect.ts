@@ -12,6 +12,11 @@ export default class implements WSEvent {
 
   async invoke(ws: WebSocket, client: Socket) {
     const userId = ws.sessions.get(client.id);
+    const userIsStillOnline = Array.from(ws.sessions.values())
+      .filter(id => id === userId).length > 1;
+    if (userIsStillOnline) return;
+
+    ws.sessions.delete(client.id);
     
     const user = await this.users.get(userId);
     if (!user) return;
@@ -19,8 +24,6 @@ export default class implements WSEvent {
     user.status = StatusType.Offline;
     await user.save();
 
-    ws.sessions.delete(client.id);
-
-    ws.io.sockets.emit('PRESENCE_UPDATE', user);
+    ws.io.sockets.emit('PRESENCE_UPDATE', { user });
   }
 }

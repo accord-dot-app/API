@@ -4,7 +4,7 @@ import { GuildMemberDocument } from './guild-member';
 import { UserDocument } from './user';
 
 export interface GuildDocument extends Document {
-  id: string;
+  _id: string;
   name: string;
   createdAt: Date;
   nameAcronym: string;

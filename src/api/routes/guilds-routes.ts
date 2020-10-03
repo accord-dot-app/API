@@ -45,7 +45,8 @@ router.post('/', updateUser, validateUser, async (req, res) => {
 
     const guildMember = await GuildMember.create({
       user: res.locals.user,
-      guild: null
+      guild: null,
+      roles: []
     });
 
     const guild = await Guild.create({
@@ -58,9 +59,6 @@ router.post('/', updateUser, validateUser, async (req, res) => {
       channels,
       iconURL: null
     });
-
-    // guildMember.guild = guild;
-    // await guildMember.save();
 
     res.json(guild);
   } catch (err) {    

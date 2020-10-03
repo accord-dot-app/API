@@ -6,7 +6,6 @@ export default class Channels extends DBWrapper<string, ChannelDocument> {
         return await Channel
             .findById(id)
             .populate('members')
-            .populate('members.user')
             .exec();
     }
 }

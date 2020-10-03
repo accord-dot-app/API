@@ -18,6 +18,6 @@ export default class implements WSEvent {
     user.status = StatusType.Online;
     await user.save();
 
-    ws.io.sockets.emit('PRESENCE_UPDATE', user);
+    ws.io.sockets.emit('PRESENCE_UPDATE', { user });
   }
 }
