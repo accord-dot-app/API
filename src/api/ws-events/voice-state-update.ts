@@ -6,21 +6,15 @@ import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 
 export default class implements WSEvent {
-  on = 'VOICE_CHANNEL_UPDATE';
+  on = 'VOICE_STATE_UPDATE';
 
   constructor(private users = Deps.get<Users>(Users)) {}
 
-  async invoke(ws: WebSocket, client: Socket) {
-    const userId = ws.sessions.get(client.id);
-    
-    const user = await this.users.get(userId);
-    if (!user) return;
-
-    user.status = StatusType.Offline;
+  async invoke(ws: WebSocket, client: Socket, { user }) {
+    user = await this.users.get(user._id);
+    user.voice = user.voice;
     await user.save();
 
-    ws.sessions.delete(client.id);
-
-    ws.io.sockets.emit('PRESENCE_UPDATE', user);
+    ws.io.sockets.emit('VOICE_STATE_UPDATE', { user });
   }
 }

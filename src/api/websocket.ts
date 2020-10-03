@@ -8,7 +8,8 @@ import { readdirSync } from 'fs';
 export class WebSocket {
   events: WSEvent[] = [];
   io: SocketServer;
-  sessions = new Map<string, string>()
+  
+  sessions = new Map<string, string>();
 
   init(server: Server) {
     this.io = listen(server);

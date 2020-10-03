@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { StatusType, User } from '../../data/models/user';
+import { StatusType, User, UserVoiceState } from '../../data/models/user';
 import { generateSnowflake } from '../../data/snowflake-entity';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
@@ -32,7 +32,8 @@ router.post('/', async (req, res) => {
       avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/default0.png`,
       createdAt: new Date(),
       friends: [],
-      status: StatusType.Online
+      status: StatusType.Online,
+      voice: new UserVoiceState()
     }, req.body.password);
 
     const token = jwt.sign({ _id: user._id }, 'secret' , { expiresIn : '7d' });
