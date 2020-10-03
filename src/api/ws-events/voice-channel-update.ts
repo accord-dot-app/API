@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { StatusType } from '../../data/models/user';
+import { UserVoiceState } from '../../data/models/user';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import { WebSocket } from '../websocket';
@@ -10,17 +10,15 @@ export default class implements WSEvent {
 
   constructor(private users = Deps.get<Users>(Users)) {}
 
-  async invoke(ws: WebSocket, client: Socket) {
+  async invoke(ws: WebSocket, client: Socket, { channel, guild, user }) {
     const userId = ws.sessions.get(client.id);
+    if (!userId) return;
     
-    const user = await this.users.get(userId);
-    if (!user) return;
-
-    user.status = StatusType.Offline;
+    user = await this.users.get(userId);
+    user.voice.channelId = channel.id;
+    user.voice.guildId = guild.id;
     await user.save();
 
-    ws.sessions.delete(client.id);
-
-    ws.io.sockets.emit('PRESENCE_UPDATE', user);
+    ws.io.sockets.emit('VOICE_CHANNEL_UPDATE', { channel, guild, user });
   }
 }

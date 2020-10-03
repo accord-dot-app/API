@@ -8,6 +8,7 @@ export interface UserDocument extends Document {
   avatarURL: string;
   status: StatusType;
   friends: string[];
+  voice: UserVoiceState;
 }
 
 export enum StatusType {
@@ -18,18 +19,17 @@ export enum StatusType {
 }
 
 export class UserVoiceState {
-  channel = null;
-  guild = null;
+  channelId: string;
+  guildId: string;
   selfMuted = false;
 }
 
 export const User = model<UserDocument>('user', new Schema({
   _id: String,
   avatarURL: String,
-  name: String,
   username: String,
   createdAt: Date,
-  iconURL: String,
+  status: String,
   friends: [{ type: String, ref: 'user' }],
   voice: { type: Object, default: new UserVoiceState() }
 }).plugin(passportLocalMongoose));
