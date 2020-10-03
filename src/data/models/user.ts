@@ -19,6 +19,7 @@ export enum StatusType {
 
 export const User = model<UserDocument>('user', new Schema({
   _id: String,
+  avatarURL: String,
   name: String,
   username: String,
   createdAt: Date,

@@ -25,13 +25,22 @@ router.get('/', updateUser, validateUser, async (req, res) => {
 
 router.post('/', updateUser, validateUser, async (req, res) => {
   try {
-    const defaultChannel = await Channel.create({
-      _id: generateSnowflake(),
-      name: 'general',
-      summary: '',
-      createdAt: new Date(),
-      type: ChannelType.Text
-    });
+    const channels = [
+      await Channel.create({
+        _id: generateSnowflake(),
+        name: 'general',
+        summary: '',
+        createdAt: new Date(),
+        type: ChannelType.Text
+      }),
+      await Channel.create({
+        _id: generateSnowflake(),
+        name: 'General',
+        summary: '',
+        createdAt: new Date(),
+        type: ChannelType.Voice
+      })
+    ];
 
     const guild = await Guild.create({
       _id: generateSnowflake(),
@@ -40,7 +49,7 @@ router.post('/', updateUser, validateUser, async (req, res) => {
       createdAt: new Date(),
       owner: res.locals.user,
       members: [ res.locals.user ],
-      channels: [ defaultChannel ],
+      channels,
       iconURL: null
     });
 

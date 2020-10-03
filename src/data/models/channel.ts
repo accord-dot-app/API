@@ -2,7 +2,8 @@ import { Document, model, Schema } from 'mongoose';
 
 export enum ChannelType {
   DM = 'DM',
-  Text = 'TEXT'
+  Text = 'TEXT',
+  Voice = 'VOICE'
 }
 
 export interface ChannelDocument extends Document {

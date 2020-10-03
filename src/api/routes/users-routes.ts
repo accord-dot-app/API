@@ -17,12 +17,21 @@ router.get('/:id', async (req, res) => {
   res.json(user);
 });
 
+router.get('/usernames', async (req, res) => {
+  const users = await User.find();
+  const usernames = users
+    .map(u => u?.username)
+    .filter(n => n);
+
+  res.json(usernames);
+});
+
 router.post('/', async (req, res) => {
-  try {    
+  try {
     const user = await (User as any).register({
       _id: generateSnowflake(),
       username: req.body.username,
-      avatarURL: `${process.env.API_URL}/avatars/default0.png`,
+      avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/default0.png`,
       createdAt: new Date(),
       friends: [],
       status: StatusType.Online
