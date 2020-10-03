@@ -4,14 +4,12 @@ import { generateSnowflake } from '../../data/snowflake-entity';
 import Deps from '../../utils/deps';
 import { updateUser, validateUser } from '../modules/middleware';
 import { getNameAcronym } from '../../utils/utils';
-import Channels from '../../data/channels';
 import { Guild } from '../../data/models/guild';
 import { Channel, ChannelType } from '../../data/models/channel';
 
 export const router = Router();
 
 const guilds = Deps.get<Guilds>(Guilds);
-const channels = Deps.get<Channels>(Channels);
 
 router.get('/', updateUser, validateUser, async (req, res) => {
   try {
@@ -31,14 +29,16 @@ router.post('/', updateUser, validateUser, async (req, res) => {
         name: 'general',
         summary: '',
         createdAt: new Date(),
-        type: ChannelType.Text
+        type: ChannelType.Text,
+        members: [] // TODO: members that have access to the channel
       }),
       await Channel.create({
         _id: generateSnowflake(),
         name: 'General',
         summary: '',
         createdAt: new Date(),
-        type: ChannelType.Voice
+        type: ChannelType.Voice,
+        members: []
       })
     ];
 

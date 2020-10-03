@@ -13,7 +13,7 @@ const users = Deps.get<Users>(Users);
 router.get('/', updateUser, async (req, res) => res.json(res.locals.user));
 
 router.get('/:id', async (req, res) => {
-  const user = await users.get({ id: req.params.id });
+  const user = await users.get(req.params.id);
   res.json(user);
 });
 

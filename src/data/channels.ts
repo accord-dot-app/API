@@ -4,6 +4,10 @@ import { Channel, ChannelDocument } from './models/channel';
 
 export default class Channels extends DBWrapper<SnowflakeEntity, ChannelDocument> {
     protected async getOrCreate({ id }: SnowflakeEntity) {
-        return (await Channel.findById(id));
+        return await Channel
+            .findById(id)
+            .populate('members')
+            .populate('member.user')
+            .exec();
     }
 }

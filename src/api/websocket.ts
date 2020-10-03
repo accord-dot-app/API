@@ -1,37 +1,34 @@
 import { Server } from 'http';
-import { Message } from '../data/models/message';
-import { generateSnowflake } from '../data/snowflake-entity';
-import socket from 'socket.io';
+import { listen, Server as SocketServer } from 'socket.io';
 import Log from '../utils/log';
-import { GuildMember } from '../data/models/guild-member';
+import WSEvent from './ws-events/ws-event';
+import { resolve } from 'path';
+import { readdirSync } from 'fs';
 
 export class WebSocket {
+  events: WSEvent[] = [];
+  io: SocketServer;
+  sessions = new Map<string, string>()
+
   init(server: Server) {
-    const io = socket.listen(server);
+    this.io = listen(server);
 
-    io.on('connection', (clientSocket) => {    
-      clientSocket.on('MESSAGE_CREATE', async (partialMessage) => {
-         let message = await Message.create({
-          _id: generateSnowflake(),
-          author: partialMessage.author,
-          channel: partialMessage.channel,
-          content: partialMessage.content,
-          guild: partialMessage.guild,
-          createdAt: new Date(),
-          updatedAt: null
-        });
-        message = await message
-          .populate('author')
-          .execPopulate();    
+    const dir = resolve(`${__dirname}/ws-events`);
+    const files = readdirSync(dir);
 
-        io.sockets.emit('MESSAGE_CREATE', partialMessage);
-      });
+    for (const file of files) {
+      const Event = require(`./ws-events/${file}`).default;
+      try {
+        const event = new Event();
+        this.events.push(event);
+      } catch {}
+    }
 
-      clientSocket.on('VIEW_GUILD', async (guild, user) => {
-        const exists = await GuildMember.exists({ _id: user._id });
-        if (!exists)
-          await GuildMember.create({ _id: user._id, guild, user });
-      });
+    Log.info(`Loaded ${this.events.length} handlers`, 'ws');
+
+    this.io.on('connection', (client) => {
+      for (const event of this.events)
+        client.on(event.on, (data) => event.invoke.bind(event)(this, client, data));
     });
 
     Log.info('Started WebSocket', 'ws');
