@@ -19,9 +19,7 @@ router.get('/:id', async (req, res) => {
 
 router.get('/usernames', async (req, res) => {
   const users = await User.find();
-  const usernames = users
-    .map(u => u?.username)
-    .filter(n => n);
+  const usernames = users.map(u => u.username);
 
   res.json(usernames);
 });

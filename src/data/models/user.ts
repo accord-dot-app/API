@@ -17,6 +17,12 @@ export enum StatusType {
   Offline = 'OFFLINE'
 }
 
+export class UserVoiceState {
+  channel = null;
+  guild = null;
+  selfMuted = false;
+}
+
 export const User = model<UserDocument>('user', new Schema({
   _id: String,
   avatarURL: String,
@@ -24,5 +30,6 @@ export const User = model<UserDocument>('user', new Schema({
   username: String,
   createdAt: Date,
   iconURL: String,
-  friends: [{ type: String, ref: 'user' }]
+  friends: [{ type: String, ref: 'user' }],
+  voice: { type: Object, default: new UserVoiceState() }
 }).plugin(passportLocalMongoose));
