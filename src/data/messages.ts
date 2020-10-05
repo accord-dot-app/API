@@ -14,6 +14,7 @@ export default class Messages extends DBWrapper<string, MessageDocument> {
     return doc
       ?.populate('author')
       .populate('channel')
+      .populate('guild')
       .execPopulate();
   }
 }

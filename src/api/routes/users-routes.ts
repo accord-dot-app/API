@@ -12,16 +12,16 @@ const users = Deps.get<Users>(Users);
 
 router.get('/', updateUser, async (req, res) => res.json(res.locals.user));
 
-router.get('/:id', async (req, res) => {
-  const user = await users.get(req.params.id);
-  res.json(user);
-});
-
 router.get('/usernames', async (req, res) => {
   const users = await User.find();
   const usernames = users.map(u => u.username);
 
   res.json(usernames);
+});
+
+router.get('/:id', async (req, res) => {
+  const user = await users.get(req.params.id);
+  res.json(user);
 });
 
 router.post('/', async (req, res) => {

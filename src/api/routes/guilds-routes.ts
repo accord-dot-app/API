@@ -43,24 +43,25 @@ router.post('/', updateUser, validateUser, async (req, res) => {
       })
     ];
 
-    const guildMember = await GuildMember.create({
-      user: res.locals.user,
-      guild: null,
-      roles: []
-    });
-
+    const guildId = generateSnowflake();
     const guild = await Guild.create({
-      _id: generateSnowflake(),
+      _id: guildId,
       name: req.body.name,
       nameAcronym: getNameAcronym(req.body.name),
       createdAt: new Date(),
       owner: res.locals.user,
-      members: [guildMember],
+      members: [
+        await GuildMember.create({
+          user: res.locals.user,
+          guildId,
+          roles: []
+        })
+      ],
       channels,
       iconURL: null
     });
 
-    res.json(guild);
+    res.status(201).json(guild);
   } catch (err) {    
     res.json({ code: 400, message: err.message });
   }

@@ -11,7 +11,7 @@ export default class implements WSEvent {
 
   constructor(private users = Deps.get<Users>(Users)) {}
 
-  async invoke(ws: WebSocket, client: Socket, { guild, user }) {
+  async invoke(ws: WebSocket, client: Socket, { user }) {
     ws.sessions.set(client.id, user._id);
 
     user = await this.users.get(user._id);

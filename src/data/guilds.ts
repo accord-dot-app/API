@@ -2,12 +2,12 @@ import { Guild, GuildDocument } from './models/guild';
 import DBWrapper from './db-wrapper';
 
 export default class Guilds extends DBWrapper<string, GuildDocument> {
-    protected async getOrCreate(id: string) {
-        return (await Guild.findById(id))
+    protected getOrCreate(id: string) {
+        return Guild.findById(id)
             ?.populate('owner')
             .populate('members')
             .populate('channels')
-            .execPopulate();
+            .exec();
     }
 
     async getUserGuilds(userId: string) {

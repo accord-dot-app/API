@@ -1,7 +1,6 @@
 import { Socket } from 'socket.io';
 import Guilds from '../../data/guilds';
 import Invites from '../../data/invites';
-import { Guild } from '../../data/models/guild';
 import { GuildMember } from '../../data/models/guild-member';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
@@ -26,14 +25,18 @@ export default class implements WSEvent {
       ? await invite.deleteOne()
       : await invite.save();
 
-      
     const guild = await this.guilds.get(invite.guild._id);
     const member = await GuildMember.create({
       user,
-      guild,
+      guildId: guild._id,
       roles: []
     });
-    await member.populate('user').execPopulate();
+    guild.members.push(member);
+    await guild.save();
+
+    await member
+      .populate('user')
+      .execPopulate();
 
     ws.io.sockets.emit('GUILD_MEMBER_ADD', { guild, member });
   }

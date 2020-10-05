@@ -23,6 +23,6 @@ export default class implements WSEvent {
 
     channel.members.push(member);
 
-    ws.io.sockets.emit('VOICE_CHANNEL_UPDATE', { channel, guild, user });
+    ws.io.sockets.emit('VOICE_CHANNEL_UPDATE', { channel, user });
   }
 }

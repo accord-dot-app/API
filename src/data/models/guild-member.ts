@@ -9,13 +9,13 @@ export interface Role {
 }
 
 export interface GuildMemberDocument extends Document {
-  guild: GuildDocument;
+  guildId: string;
   user: UserDocument;
   roles: Role[];
 }
 
 export const GuildMember = model<GuildMemberDocument>('guildMember', new Schema({
-  guild: { type: String, ref: 'guild' },
+  guildId: String,
   user: { type: String, ref: 'user' },
   roles: { type: Array, default: [] }
 }));

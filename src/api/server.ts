@@ -26,9 +26,9 @@ export class API {
     app.use(passport.initialize());
     app.use(cors());
 
-    app.use('/api', express.static(resolve('./assets')));    
+    app.use('/api', express.static(resolve('./assets')));
     app.use('/api', apiRoutes, authRoutes);
-
+    
     app.use('/api/channels', channelsRoutes);
     app.use('/api/guilds', guildsRoutes);
     app.use('/api/users', usersRoutes);

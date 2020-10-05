@@ -22,6 +22,7 @@ export class UserVoiceState {
   channelId: string;
   guildId: string;
   selfMuted = false;
+  connected = false;
 }
 
 export const User = model<UserDocument>('user', new Schema({
