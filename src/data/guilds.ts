@@ -23,12 +23,10 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
                 .populate('owner')
                 .populate('channels')
                 .execPopulate();
-            const members = [];
             for (const member of guild.members) {
-                const m = await member
+                await member
                     .populate('user')
                     .execPopulate();
-                members.push(m);
             }
             guilds.push(g);
         }

@@ -16,6 +16,7 @@ export default class implements WSEvent {
       .filter(id => id === userId).length > 1;
     if (userIsStillOnline) return;
 
+    client.leaveAll();
     ws.sessions.delete(client.id);
     
     const user = await this.users.get(userId);

@@ -1,8 +1,7 @@
 import { Document, model, Schema } from 'mongoose';
-import { GuildDocument } from './guild';
 import { UserDocument } from './user';
 
-// move to separate model
+// TODO: move to separate model
 export interface Role {
   name: string;
   color: string;

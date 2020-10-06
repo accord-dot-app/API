@@ -49,7 +49,7 @@ router.get('/:guildId/:channelId', updateUser, validateUser, async (req, res) =>
     for (const msg of msgs)
       channelMsgs.push(await messages.populate(msg));
     
-    res.json(channelMsgs);
+    res.json(channelMsgs.slice(+req.query.start || 0, +req.query.end || 100));
   } catch (err) {    
     res.json({ code: 400, message: err?.message });
   }

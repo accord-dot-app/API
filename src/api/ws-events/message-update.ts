@@ -13,24 +13,21 @@ const metascraper = require('metascraper')([
 ]);
 
 export default class implements WSEvent {
-  on = 'MESSAGE_CREATE';
+  on = 'MESSAGE_UPDATE';
 
-  async invoke(ws: WebSocket, client: Socket, partialMessage: any) {
-    let message = await Message.create({
-      _id: generateSnowflake(),
-      author: partialMessage.author,
-      channel: partialMessage.channel,
-      content: partialMessage.content,
-      embed: await getEmbed(partialMessage),
-      guild: partialMessage.guild,
+  async invoke(ws: WebSocket, client: Socket, { message, withEmbed }) {
+    message = await Message.findByIdAndUpdate(message._id, {
+      content: message.content,
+      embed: withEmbed ? await getEmbed(message) : null,
       createdAt: new Date(),
-      updatedAt: null
+      updatedAt: new Date()
     });
     message = await message
       .populate('author')
       .execPopulate();
 
-    ws.io.sockets.emit('MESSAGE_CREATE', message);
+    // TODO: to specific channels/rooms
+    ws.io.sockets.emit('MESSAGE_UPDATE', message);
   }
 }
 
