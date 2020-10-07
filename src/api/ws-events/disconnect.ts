@@ -11,17 +11,19 @@ export default class implements WSEvent {
   constructor(private users = Deps.get<Users>(Users)) {}
 
   async invoke(ws: WebSocket, client: Socket) {
-    const userId = ws.sessions.get(client.id);
-    const userIsStillOnline = Array.from(ws.sessions.values())
-      .filter(id => id === userId).length > 1;
-    if (userIsStillOnline) return;
-
     client.leaveAll();
     ws.sessions.delete(client.id);
     
+    const userId = ws.sessions.get(client.id);
+
+    const userIsStillOnline = Array
+      .from(ws.sessions.values())
+      .filter(id => id === userId).length > 1;
+    if (userIsStillOnline) return;
+
     const user = await this.users.get(userId);
     if (!user) return;
-
+    
     user.status = StatusType.Offline;
     await user.save();
 

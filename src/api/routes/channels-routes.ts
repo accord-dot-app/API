@@ -44,13 +44,13 @@ router.get('/:guildId/:channelId', updateUser, validateUser, async (req, res) =>
 
     const channelMsgs = [];
     const msgs = await Message
-      .find({ guild: req.params.guildId, channel: req.params.channelId } as any);
+      .find({ guild: req.params.guildId, channel: req.params.channelId } as any)
     
-    for (const msg of msgs)
+    for (const msg of msgs.slice(+req.query.start || 0, +req.query.end || 25))
       channelMsgs.push(await messages.populate(msg));
     
-    res.json(channelMsgs.slice(+req.query.start || 0, +req.query.end || 100));
-  } catch (err) {    
+    res.json(channelMsgs);
+  } catch (err) {
     res.json({ code: 400, message: err?.message });
   }
 });

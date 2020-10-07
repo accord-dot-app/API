@@ -40,7 +40,9 @@ async function getEmbed(message): Promise<MessageEmbed> {
     if (!containsURL)
       return null;
 
-    const targetURL = /([https://].*)/.exec(message.content)[0];  
+    const targetURL = /([https://].*)/
+      .exec(message.content)[0]
+      .split(' ')[0];  
 
     const { body: html, url } = await got(targetURL);
     return await metascraper({ html, url });
