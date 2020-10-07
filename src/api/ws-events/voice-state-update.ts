@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { StatusType } from '../../data/models/user';
+import { StatusType, User } from '../../data/models/user';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import { WebSocket } from '../websocket';
@@ -11,12 +11,12 @@ export default class implements WSEvent {
   constructor(private users = Deps.get<Users>(Users)) {}
 
   async invoke(ws: WebSocket, client: Socket, { user }) {
-    user = await this.users.get(user._id);
-    user.voice = user.voice;
-    await user.save();
+    await User.findOneAndUpdate(user._id, {
+      voice: user.voice
+    });
 
     ws.io
-      .to(user.voice.channelId)
+      .to(user.voice.guildId)
       .emit('VOICE_STATE_UPDATE', { user });
   }
 }

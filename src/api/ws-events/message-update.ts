@@ -16,18 +16,17 @@ export default class implements WSEvent {
   on = 'MESSAGE_UPDATE';
 
   async invoke(ws: WebSocket, client: Socket, { message, withEmbed }) {
-    message = await Message.findByIdAndUpdate(message._id, {
+    await Message.findByIdAndUpdate(message._id, {
       content: message.content,
       embed: withEmbed ? await getEmbed(message) : null,
-      createdAt: new Date(),
+      createdAt: message.createdAt,
       updatedAt: new Date()
     });
-    message = await message
-      .populate('author')
-      .execPopulate();
 
-    // TODO: to specific channels/rooms
-    ws.io.sockets.emit('MESSAGE_UPDATE', message);
+    const guildOrUserId = message.guild?._id ?? message.author._id;
+    ws.io
+      // .to(guildOrUserId)
+      .emit('MESSAGE_UPDATE', message);
   }
 }
 

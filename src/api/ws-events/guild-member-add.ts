@@ -38,6 +38,8 @@ export default class implements WSEvent {
       .populate('user')
       .execPopulate();
 
+    client.join(guild._id);
+
     ws.io.sockets.emit('GUILD_MEMBER_ADD', { guild, member });
   }
 }

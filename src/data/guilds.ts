@@ -23,11 +23,10 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
                 .populate('owner')
                 .populate('channels')
                 .execPopulate();
-            for (const member of guild.members) {
+            for (const member of guild.members)
                 await member
                     .populate('user')
                     .execPopulate();
-            }
             guilds.push(g);
         }
         return guilds;
@@ -36,3 +35,4 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
 
 import './models/channel';
 import './models/guild-member';
+import { GuildMember } from './models/guild-member';
