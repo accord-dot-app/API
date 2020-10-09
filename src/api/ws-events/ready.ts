@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { GuildMember } from '../../data/models/guild-member';
-import { StatusType } from '../../data/models/user';
+import { StatusType, User } from '../../data/models/user';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import { WebSocket } from '../websocket';
@@ -9,19 +9,16 @@ import WSEvent from './ws-event';
 export default class implements WSEvent {
   on = 'READY';
 
-  constructor(private users = Deps.get<Users>(Users)) {}
-
-  async invoke(ws: WebSocket, client: Socket, { user, guildIds }) {
+  async invoke(ws: WebSocket, client: Socket, { user, guildIds, channelIds }) {
     ws.sessions.set(client.id, user._id);
 
-    client.join(guildIds);
+    const ids = guildIds.concat(channelIds);
+    client.join(ids);
 
-    user = await this.users.get(user._id);
-    user.status = StatusType.Online;
-    await user.save();
+    await User.findOneAndUpdate(user._id, { status: StatusType.Online });
 
     ws.io
-      .to(guildIds)
+      .to(ids)
       .emit('PRESENCE_UPDATE', { user });
   }
 }

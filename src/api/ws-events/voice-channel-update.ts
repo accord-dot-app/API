@@ -19,11 +19,11 @@ export default class implements WSEvent {
     if (!member) return;
 
     (user.voice.connected)
-      ? channel.members.push(member)
-      : channel.members.splice(index, 1);
+      ? channel.memberIds.push(member)
+      : channel.memberIds.splice(index, 1);
 
     await Channel.findByIdAndUpdate(channel._id, {
-      members: channel.members
+      members: channel.memberIds
     });
     
     ws.io.sockets.emit('VOICE_CHANNEL_UPDATE', { channel, user });

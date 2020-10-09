@@ -28,7 +28,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
                     .populate('user')
                     .execPopulate();
             guilds.push(g);
-        }
+        }        
         return guilds;
     }
 }

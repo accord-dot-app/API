@@ -11,7 +11,7 @@ export interface ChannelDocument extends Document {
   id: string;
   createdAt: Date;
   name: string;
-  members?: GuildMemberDocument[];
+  memberIds?: string[];
   type: ChannelType;
   summary?: string;
 }
@@ -20,7 +20,7 @@ export const Channel = model<ChannelDocument>('channel', new Schema({
   _id: String,
   createdAt: { type: Date, default: new Date() },
   name: String,
-  members: [{ type: String, ref: 'guildMember' }],
+  memberIds: { type: Array, default: [] },
   type: String,
   summary: String
 }));

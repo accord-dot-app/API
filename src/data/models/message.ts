@@ -11,7 +11,7 @@ export interface MessageEmbed {
 }
 
 export interface MessageDocument extends Document {
-  id: string;
+  _id: string;
   author: UserDocument;
   channel: ChannelDocument;
   content: string;

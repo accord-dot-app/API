@@ -30,7 +30,9 @@ export default class implements WSEvent {
       .populate('author')
       .execPopulate();
 
-    ws.io.sockets.emit('MESSAGE_CREATE', message);
+    ws.io.sockets
+      .to(partialMessage.channel._id)
+      .emit('MESSAGE_CREATE', message);
   }
 }
 

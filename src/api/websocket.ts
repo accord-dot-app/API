@@ -11,6 +11,10 @@ export class WebSocket {
   
   sessions = new Map<string, string>();
 
+  get connectedUserIds() {
+    return Array.from(this.sessions.values());
+  }
+
   init(server: Server) {
     this.io = listen(server);
 
