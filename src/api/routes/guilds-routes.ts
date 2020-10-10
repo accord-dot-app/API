@@ -70,7 +70,8 @@ router.post('/', updateUser, validateUser, async (req, res) => {
           color: '#A2B6AD',
           createdAt: new Date(),
           guildId,
-          mentionable: true,
+          mentionable: false,
+          hoisted: false,
           name: '@everyone',
           position: 0,
           permissions: defaultPermissions

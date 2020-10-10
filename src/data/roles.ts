@@ -12,12 +12,10 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
         permission: GeneralPermission | TextChannelPermission | VoiceChannelPermission) {
         const query = member.roleIds.map(_id => ({ _id }));
 
-        let totalPerms = 0b0;
+        let totalPerms = 0;
         totalPerms = (await Role.find(query))
             .map(c => c.permissions)
-            .reduce(p => totalPerms | p);
-
-        
+            .reduce(p => totalPerms | p);        
 
         /* inherit permissions from lower roles
 

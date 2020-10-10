@@ -9,7 +9,7 @@ export enum GeneralPermission {
   BAN_MEMBERS = 32,
   MANAGE_CHANNELS = 16,
   MANAGE_ROLES = 8,
-  MANAGE_SERVER = 4,
+  MANAGE_GUILD = 4,
   VIEW_AUDIT_LOG = 2,
   ADMINISTRATOR = 1
 }
@@ -42,6 +42,7 @@ export interface RoleDocument extends Document {
   createdAt: Date;
   guildId: string;
   name: string;
+  hoisted: boolean;
   position: number;
   mentionable: boolean;
   permissions: number;
@@ -53,6 +54,7 @@ export const Role = model<RoleDocument>('role', new Schema({
   createdAt: Date,
   guildId: String,
   name: String,
+  hoisted: Boolean,
   position: Number,
   mentionable: Boolean,
   permissions: Number

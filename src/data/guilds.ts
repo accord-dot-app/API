@@ -15,6 +15,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
         const userGuilds = (await Guild
             .find()
             .populate('members')
+            .populate('roles')
             .exec())
             .filter(g => g.members.some(m => m.user === userId as any));
         
@@ -29,11 +30,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
                     .populate('user')
                     .execPopulate();
             guilds.push(g);
-        }        
+        }
         return guilds;
     }
 }
-
-import './models/channel';
-import './models/guild-member';
-import { GuildMember } from './models/guild-member';
