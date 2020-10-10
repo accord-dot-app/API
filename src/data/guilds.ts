@@ -6,6 +6,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
         return Guild.findById(id)
             ?.populate('owner')
             .populate('members')
+            .populate('roles')
             .populate('channels')
             .exec();
     }

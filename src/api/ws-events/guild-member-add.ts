@@ -32,7 +32,7 @@ export default class implements WSEvent {
     const member = await GuildMember.create({
       user,
       guildId: guild._id,
-      roles: []
+      roleIds: [guild.roles[0]._id]
     });
     guild.members.push(member);
     await guild.save();

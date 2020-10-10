@@ -11,7 +11,7 @@ export default class implements WSEvent {
 
   async invoke(ws: WebSocket, client: Socket, { channel, user }) {
     client.broadcast
-      .to(channel.guild ?? user._id)
+      .to(channel._id)
       .emit('TYPING_START', { user });
   }
 }

@@ -1,8 +1,5 @@
 import { Socket } from 'socket.io';
-import { GuildMember } from '../../data/models/guild-member';
 import { StatusType, User } from '../../data/models/user';
-import Users from '../../data/users';
-import Deps from '../../utils/deps';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 
@@ -18,7 +15,7 @@ export default class implements WSEvent {
     await User.findOneAndUpdate(user._id, { status: StatusType.Online });
 
     ws.io
-      .to(ids)
+      // .to(ids)
       .emit('PRESENCE_UPDATE', { user });
   }
 }

@@ -1,8 +1,10 @@
 import jwt from 'jsonwebtoken';
+import Guilds from '../../data/guilds';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 
-const users = Deps.get<Users>(Users);
+const guilds = Deps.get<Guilds>(Guilds),
+      users = Deps.get<Users>(Users);
 
 export function validateUser(req, res, next) {  
   return (res.locals.user)
@@ -16,4 +18,18 @@ export async function updateUser(req, res, next) {
   res.locals.user = await users.get(id);
 
   return next();
+}
+
+export async function updateGuild(req, res, next) {
+  res.locals.guild = await guilds.get(req.params.id);
+
+  return next();
+}
+ 
+export async function validateGuildOwner(req, res, next) {
+  const userOwnsGuild = res.locals.guild.owner._id === res.locals.user._id;
+
+  return (userOwnsGuild)
+    ? next()
+    : res.code(401).json({ code: 401, message: 'You do not own this guild!' });
 }

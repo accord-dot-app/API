@@ -1,20 +1,14 @@
 import { Document, model, Schema } from 'mongoose';
 import { UserDocument } from './user';
 
-// TODO: move to separate model
-export interface Role {
-  name: string;
-  color: string;
-}
-
 export interface GuildMemberDocument extends Document {
   guildId: string;
+  roleIds: string[];
   user: UserDocument;
-  roles: Role[];
 }
 
 export const GuildMember = model<GuildMemberDocument>('guildMember', new Schema({
   guildId: String,
   user: { type: String, ref: 'user' },
-  roles: { type: Array, default: [] }
+  roleIds: { type: Array, default: [] }
 }));

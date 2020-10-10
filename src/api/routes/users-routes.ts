@@ -26,6 +26,10 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
+    const usernameExists = await User.exists({ username: req.body.username });
+    if (usernameExists)
+      throw new TypeError('Username is taken.');
+
     const user = await (User as any).register({
       _id: generateSnowflake(),
       username: req.body.username,
