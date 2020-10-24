@@ -8,10 +8,12 @@ export enum ChannelType {
 
 export interface ChannelDocument extends Document {
   createdAt: Date;
-  name: string;
+  name?: string;
   type: ChannelType;
   guildId?: string;
   summary?: string;
+  recipientIds?: string[];
+  sender?: string;
   memberIds?: string[];
 }
 
@@ -21,6 +23,7 @@ export const Channel = model<ChannelDocument>('channel', new Schema({
   name: String,
   guildId: String,
   memberIds: { type: Array, default: [] },
+  recipientIds: { type: Array, default: [] },
   type: String,
   summary: String
 }));

@@ -32,7 +32,7 @@ export interface UserDocument extends Document {
   avatarURL: string;
   status: StatusType;
   friends: string[];
-  friendsRequests: FriendRequest[];
+  friendRequests: FriendRequest[];
   voice: UserVoiceState;
 }
 

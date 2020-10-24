@@ -10,12 +10,17 @@ export default class implements WSEvent {
     ws.sessions.set(client.id, user._id);
 
     const ids = guildIds.concat(channelIds);
+    ids.push(user._id);
+    ids.push(...user.friendRequests.map(r => r.userId));
+    ids.push(...user.friends.map(u => u._id));
+
     client.join(ids);
 
     await User.findOneAndUpdate(user._id, { status: StatusType.Online });
 
-    ws.io
-      // .to(ids)
-      .emit('PRESENCE_UPDATE', { user });
+    for (const id of ids)
+      ws.io
+        .to(id)
+        .emit('PRESENCE_UPDATE', { user });
   }
 }

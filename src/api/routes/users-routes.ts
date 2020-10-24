@@ -5,9 +5,12 @@ import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import jwt from 'jsonwebtoken';
 import { updateUser } from '../modules/middleware';
+import { Channel } from '../../data/models/channel';
+import Channels from '../../data/channels';
 
 export const router = Router();
 
+const channels = Deps.get<Channels>(Channels);
 const users = Deps.get<Users>(Users);
 
 router.get('/', updateUser, async (req, res) => res.json(res.locals.user));
@@ -17,11 +20,6 @@ router.get('/usernames', async (req, res) => {
   const usernames = users.map(u => u.username);
 
   res.json(usernames);
-});
-
-router.get('/:id', async (req, res) => {
-  const user = await users.get(req.params.id);
-  res.json(user);
 });
 
 router.post('/', async (req, res) => {
@@ -43,6 +41,29 @@ router.post('/', async (req, res) => {
     const token = jwt.sign({ _id: user._id }, 'secret' , { expiresIn : '7d' });
     
     res.status(201).json(token);
+  } catch (err) {
+    res.json({ code: 400, message: err?.message });
+  }
+});
+
+router.get('/known', updateUser, async (req, res) => {
+  try {
+    const knownUsers = await users.getKnown(res.locals.user._id);
+    res.json(knownUsers);
+  } catch (err) {
+    res.json({ code: 400, message: err?.message });
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  const user = await users.get(req.params.id);
+  res.json(user);
+});
+
+router.get('/dm-channels', updateUser, async (req, res) => {
+  try {
+    const dmChannels = await channels.getDMChannels(res.locals.user._id);
+    res.json(dmChannels ?? []);
   } catch (err) {
     res.json({ code: 400, message: err?.message });
   }
