@@ -20,7 +20,7 @@ export default class implements WSEvent {
     if (user.voice.connected)
       await disconnectFromVC(user, userId);
 
-    ws.sessions.delete(client.id);
+    ws.sessions.delete(userId);
     client.leaveAll();
 
     setTimeout(async() => {

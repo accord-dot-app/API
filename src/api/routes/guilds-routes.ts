@@ -99,8 +99,7 @@ router.patch('/:id', updateUser, validateUser, updateGuild, validateGuildOwner, 
 
     await Guild.updateOne({ _id: req.params.id }, query);
 
-    const guild = await guilds.get(req.params.id);
-    res.status(201).json(guild);    
+    res.status(201).json({ ...req.body, ...res.locals.guild });    
   } catch (err) {    
     res.json({ code: 400, message: err.message });
   }

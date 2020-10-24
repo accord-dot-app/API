@@ -1,16 +1,6 @@
 import { Document, model, Schema } from 'mongoose';
 import passportLocalMongoose from 'passport-local-mongoose';
 
-export interface UserDocument extends Document {
-  id: string;
-  username: string;
-  createdAt: Date;
-  avatarURL: string;
-  status: StatusType;
-  friends: string[];
-  voice: UserVoiceState;
-}
-
 export enum StatusType {
   Online = 'ONLINE',
   DND = 'DND',
@@ -25,6 +15,27 @@ export class UserVoiceState {
   connected = false;
 }
 
+export interface FriendRequest {
+  userId: string,
+  type: FriendRequestType
+}
+
+export enum FriendRequestType {
+  Outgoing = 'OUTGOING',
+  Incoming = 'INCOMING' 
+}
+
+export interface UserDocument extends Document {
+  _id: string;
+  username: string;
+  createdAt: Date;
+  avatarURL: string;
+  status: StatusType;
+  friends: string[];
+  friendsRequests: FriendRequest[];
+  voice: UserVoiceState;
+}
+
 export const User = model<UserDocument>('user', new Schema({
   _id: String,
   avatarURL: String,
@@ -32,5 +43,6 @@ export const User = model<UserDocument>('user', new Schema({
   createdAt: Date,
   status: String,
   friends: [{ type: String, ref: 'user' }],
+  friendRequests: { type: Array, default: [] },
   voice: { type: Object, default: new UserVoiceState() }
 }).plugin(passportLocalMongoose));
