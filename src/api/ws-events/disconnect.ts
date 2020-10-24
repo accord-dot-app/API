@@ -18,27 +18,32 @@ export default class implements WSEvent {
     if (!user) return;
 
     if (user.voice.connected)
-      await disconnectFromVC(user, userId);
+      await this.disconnectFromVC(user, userId);
 
     ws.sessions.delete(userId);
     client.leaveAll();
 
-    setTimeout(async() => {
-      if (ws.connectedUserIds.includes(user._id)) return;
+    await this.setOfflineStatus(ws, user);
 
-      user.status = StatusType.Offline;
-      await user.save();
+    ws.io.emit('PRESENCE_UPDATE', { user });
+  }
 
-      ws.io.sockets.emit('PRESENCE_UPDATE', { user });      
-    }, 5 * 1000);
+  async disconnectFromVC(user: UserDocument, userId: string) {
+    const channel = await Channel.findById(user.voice.channelId);
+  
+    const index = channel.memberIds.indexOf(userId);
+    await channel.updateOne({
+      members: channel.memberIds.splice(index, 1)
+    });
+  }
+
+  async setOfflineStatus(ws: WebSocket, user: UserDocument) {
+    const userIsConnectedElsewhere = ws.connectedUserIds.includes(user._id);
+    if (userIsConnectedElsewhere) return;
+
+    user.status = StatusType.Offline;
+    await user.save();
   }
 }
 
-async function disconnectFromVC(user: UserDocument, userId: string) {
-  const channel = await Channel.findById(user.voice.channelId);
 
-  const index = channel.memberIds.indexOf(userId);
-  await channel.updateOne({
-    members: channel.memberIds.splice(index, 1)
-  });
-}

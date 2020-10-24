@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import Channels from '../../data/channels';
-import { StatusType, User } from '../../data/models/user';
+import { StatusType, User, UserDocument } from '../../data/models/user';
 import Deps from '../../utils/deps';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
@@ -11,8 +11,20 @@ export default class implements WSEvent {
   constructor(private channels = Deps.get<Channels>(Channels)) {}
 
   async invoke(ws: WebSocket, client: Socket, { user, guildIds, channelIds }) {
+    if (ws.sessions.has(client.id)) return;
+
     ws.sessions.set(client.id, user._id);
 
+    await this.joinRooms(client, { user, guildIds, channelIds });
+    
+    if (user.status === 'ONLINE') return;
+
+    await User.findOneAndUpdate(user._id, { status: StatusType.Online });        
+
+    ws.io.emit('PRESENCE_UPDATE', { user });
+  }
+
+  async joinRooms(client: Socket, { user, guildIds, channelIds }) {
     const userDMChannels = await this.channels.getDMChannels(user._id);
 
     const ids = []
@@ -29,12 +41,5 @@ export default class implements WSEvent {
       );
 
     client.join(ids);
-
-    await User.findOneAndUpdate(user._id, { status: StatusType.Online });
-
-    for (const id of ids)
-      ws.io
-        .to(id)
-        .emit('PRESENCE_UPDATE', { user });
   }
 }

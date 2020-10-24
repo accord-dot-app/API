@@ -22,7 +22,7 @@ export default class implements WSEvent {
       uses: 0
     });
 
-    ws.io.sockets
+    ws.io
       .to(guild._id)
       .emit('INVITE_CREATE', { invite });
   }
