@@ -8,7 +8,7 @@ export default class implements WSEvent {
 
   async invoke(ws: WebSocket, client: Socket, { senderId, friendUsername }) {
     const friend = await User.findOne({ username: friendUsername });
-    if (!friend) return;
+    if (!friend || friend._id === senderId) return;
 
     ws.io.sockets
       .to(senderId)

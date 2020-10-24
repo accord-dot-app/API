@@ -5,7 +5,6 @@ import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import jwt from 'jsonwebtoken';
 import { updateUser } from '../modules/middleware';
-import { Channel } from '../../data/models/channel';
 import Channels from '../../data/channels';
 
 export const router = Router();
@@ -55,11 +54,6 @@ router.get('/known', updateUser, async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
-  const user = await users.get(req.params.id);
-  res.json(user);
-});
-
 router.get('/dm-channels', updateUser, async (req, res) => {
   try {
     const dmChannels = await channels.getDMChannels(res.locals.user._id);
@@ -67,4 +61,9 @@ router.get('/dm-channels', updateUser, async (req, res) => {
   } catch (err) {
     res.json({ code: 400, message: err?.message });
   }
+});
+
+router.get('/:id', async (req, res) => {
+  const user = await users.get(req.params.id);
+  res.json(user);
 });

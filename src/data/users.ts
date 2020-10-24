@@ -9,12 +9,12 @@ export default class Users extends DBWrapper<string, UserDocument> {
     }
 
     async getKnown(userId: string) {
-        const incomingFriends = await User.find({ friendRequests: { userId, type: FriendRequestType.Incoming }});
-        const outgoingFriends = await User.find({ friendRequests: { userId, type: FriendRequestType.Outgoing }});
-
-        return [].concat(
-            incomingFriends,
-            outgoingFriends
-        );
+        return await User.find({
+            $or: [
+                { friends: userId },
+                { friendRequests: { userId, type: FriendRequestType.Incoming } },
+                { friendRequests: { userId, type: FriendRequestType.Outgoing } }
+            ]
+        });
     }
 }

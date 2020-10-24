@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import Guilds from '../../data/guilds';
 import Messages from '../../data/messages';
+import { Channel } from '../../data/models/channel';
 import { Message } from '../../data/models/message';
 import Deps from '../../utils/deps';
 import { updateUser, validateUser } from '../modules/middleware';
@@ -10,25 +11,23 @@ export const router = Router();
 const guilds = Deps.get<Guilds>(Guilds);
 const messages = Deps.get<Messages>(Messages);
 
-router.get('/', (req, res) => res.json({ hello: 'earth' }));
-
-router.get('/@me/:userId', updateUser, validateUser, async (req, res) => {
+router.get('/@me/:channelId', updateUser, validateUser, async (req, res) => {
   try {
     const channelId = req.params.channelId;
-    const messages = await Message
-      .find(m => m.channel === channelId)
-      .populate('user')
+    let messages = await Message
+      .find({ channel: channelId as any })
+      .populate('author')
       .populate('channel')
-      .populate('guild')
       .exec();
+    messages.slice(+req.query.start || 0, +req.query.end || 25);
 
-    const canMessageUser = res.locals.user.friends
-      .some(u => u._id === channelId);
+    const channel = await Channel.findById(channelId);
+    const canMessageUser = channel.recipientIds.includes(res.locals.user._id);
     if (!canMessageUser)
       throw new TypeError('You are not friends with this user.');
 
     res.json(messages);
-  } catch (err) {
+  } catch (err) {    
     res.json({ code: 400, message: err?.message });
   }
 });
