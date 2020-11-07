@@ -13,6 +13,6 @@ export default class implements WSEvent {
 
     ws.io.sockets
       .to(role.guildId)
-      .emit('GUILD_ROLE_UPDATE');
+      .emit('GUILD_ROLE_UPDATE', { role });
   }
 }

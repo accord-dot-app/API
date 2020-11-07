@@ -3,5 +3,8 @@
   "mochaExplorer.require": "ts-node/register",
   "mochaExplorer.logpanel": true,
   "editor.tabSize": 2,
-  "debug.javascript.warnOnLongPrediction": false
+  "debug.javascript.warnOnLongPrediction": false,
+  "cSpell.words": [
+    "metascraper"
+  ]
 }

@@ -17,17 +17,16 @@ export default class implements WSEvent {
   async invoke(ws: WebSocket, client: Socket, { inviteCode, user }) {
     const invite = await this.invites.get(inviteCode);
     if (!invite) return;
+
+    const guild = await this.guilds.get(invite.guild._id);
+    const memberExists = guild.members.some(m => m.user === user._id);
+    if (memberExists) return;
     
     invite.uses++;
 
     (invite.maxUses && invite.uses >= invite.maxUses)
       ? await invite.deleteOne()
       : await invite.save();
-
-    const guild = await this.guilds.get(invite.guild._id);
-    const memberExists = guild.members
-      .some(m => m.user._id === user._id);
-    if (memberExists) return;
 
     const member = await GuildMember.create({
       user,
