@@ -21,11 +21,14 @@ export default class implements WSEvent {
 
     await User.findOneAndUpdate(user._id, { status: StatusType.Online });        
 
-    ws.io.emit('PRESENCE_UPDATE', { user });
+    ws.io.sockets.emit('PRESENCE_UPDATE', { user });
   }
 
   async joinRooms(client: Socket, { user, guildIds, channelIds }) {
     const userDMChannels = await this.channels.getDMChannels(user._id);
+
+    const alreadyJoinedRooms = Object.keys(client.rooms).length > 1;
+    if (alreadyJoinedRooms) return;
 
     const ids = []
       .concat(

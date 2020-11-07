@@ -23,9 +23,8 @@ export default class implements WSEvent {
       updatedAt: new Date()
     });
 
-    const guildOrUserId = message.guild?._id ?? message.author._id;
     ws.io
-      // .to(guildOrUserId)
+      .to(message.channel._id)
       .emit('MESSAGE_UPDATE', message);
   }
 }

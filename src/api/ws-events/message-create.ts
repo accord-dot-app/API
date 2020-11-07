@@ -36,7 +36,7 @@ export default class implements WSEvent {
   }
 }
 
-async function getEmbed(message): Promise<MessageEmbed> {
+async function getEmbed(message: any): Promise<MessageEmbed> {
   try {
     const containsURL = /([https://].*)/.test(message.content);
     if (!containsURL)
