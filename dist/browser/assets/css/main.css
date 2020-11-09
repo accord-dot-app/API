@@ -1,0 +1,10 @@
+:root {
+    --background-primary: #36393F;
+    --background-secondary: #2F3136;
+}
+
+body {
+    color: transparent;
+    background: var(--background-primary) !important;
+    height: 100vh;
+}
