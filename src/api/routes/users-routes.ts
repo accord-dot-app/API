@@ -33,6 +33,7 @@ router.post('/', async (req, res) => {
       _id: generateSnowflake(),
       username: req.body.username,
       avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/default0.png`,
+      badges: [],
       bot: false,
       createdAt: new Date(),
       friends: [],

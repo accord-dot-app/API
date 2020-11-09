@@ -52,6 +52,7 @@ export class Bot {
       ?? await User.create({
         _id: generateSnowflake(),
         avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/bot.png`,
+        badges: [],
         bot: true,
         createdAt: new Date(),
         status: StatusType.Online,
