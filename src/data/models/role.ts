@@ -27,6 +27,12 @@ export enum VoiceChannelPermission {
   CONNECT = 32768
 }
 
+export function hasPermission(current: Permission, required: Permission) {
+  return Boolean(current & required);
+}
+
+export type Permission = GeneralPermission | TextChannelPermission | VoiceChannelPermission;
+
 export const defaultPermissions =
   GeneralPermission.VIEW_CHANNELS
   | GeneralPermission.CREATE_INVITE

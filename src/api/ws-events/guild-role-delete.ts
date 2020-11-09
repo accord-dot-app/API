@@ -5,15 +5,17 @@ import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 
 export default class implements WSEvent {
-  on = 'GUILD_ROLE_UPDATE';
+  on = 'GUILD_ROLE_DELETE';
 
-  async invoke(ws: WebSocket, client: Socket, { role }) {
+  async invoke(ws: WebSocket, client: Socket, { roleId, guildId }) {
     const userId = ws.sessions.get(client.id);
-    const canManage = await can(userId, role.guildId, GeneralPermission.MANAGE_ROLES);
+    const canManage = can(userId, guildId, GeneralPermission.MANAGE_ROLES);
     if (!canManage) return;
 
+    await Role.findByIdAndDelete(roleId);
+
     ws.io.sockets
-      .to(role.guildId)
-      .emit('GUILD_ROLE_UPDATE', { role: await Role.findByIdAndUpdate(role._id, role) });
+      .to(guildId)
+      .emit('GUILD_ROLE_DELETE', { roleId });
   }
 }

@@ -4,6 +4,9 @@ import Log from '../utils/log';
 import WSEvent from './ws-events/ws-event';
 import { resolve } from 'path';
 import { readdirSync } from 'fs';
+import { Bot } from '../bot/bot';
+import { User } from '../data/models/user';
+import Deps from '../utils/deps';
 
 export class WebSocket {
   events: WSEvent[] = [];
@@ -39,7 +42,3 @@ export class WebSocket {
     Log.info('Started WebSocket', 'ws');
   }
 }
-
-// 'VOICE_CHANNEL_UPDATE' -> when a user joins/leaves the channel
-// 'VOICE_STATE_UPDATE' -> when a user selfMutes
-// 'JOIN_GUILD' -> user => create member

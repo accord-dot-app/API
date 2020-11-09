@@ -2,14 +2,14 @@ import { Router } from 'express';
 import Guilds from '../../data/guilds';
 import { generateSnowflake } from '../../data/snowflake-entity';
 import Deps from '../../utils/deps';
-import { updateGuild, updateUser, validateGuildOwner, validateUser } from '../modules/middleware';
+import { updateGuild, updateUser, validateGuildOwner, validateHasPermission, validateUser } from '../modules/middleware';
 import { getNameAcronym } from '../../utils/utils';
 import { Guild } from '../../data/models/guild';
 import { Channel, ChannelType } from '../../data/models/channel';
 import { GuildMember } from '../../data/models/guild-member';
 import { Invite } from '../../data/models/invite';
 import { Message } from '../../data/models/message';
-import { defaultPermissions, Role } from '../../data/models/role';
+import { defaultPermissions, GeneralPermission, Role } from '../../data/models/role';
 
 export const router = Router();
 
@@ -84,6 +84,25 @@ router.post('/', updateUser, validateUser, async (req, res) => {
     res.status(201).json(guild);
   } catch (err) {    
     res.json({ code: 400, message: err?.message });
+  }
+});
+
+router.post('/:id', updateUser, validateUser, updateGuild, validateHasPermission(GeneralPermission.MANAGE_CHANNELS),
+  async (req, res) => {
+  try {
+    const channel = await Channel.create({
+      _id: generateSnowflake(),
+      name: req.body.name,
+      summary: '',
+      createdAt: new Date(),
+      guildId: req.params.id,
+      type: req.body.type,
+      memberIds: []
+    });
+
+    res.status(201).json(channel);    
+  } catch (err) {    
+    res.json({ code: 400, message: err.message });
   }
 });
 

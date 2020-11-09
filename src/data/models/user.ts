@@ -25,8 +25,12 @@ export enum FriendRequestType {
   Incoming = 'INCOMING' 
 }
 
+export type BadgeType = 'VIEWER' | 'DEVELOPER';
+
 export interface UserDocument extends Document {
   _id: string;
+  badges: BadgeType[];
+  bot: boolean;
   username: string;
   createdAt: Date;
   avatarURL: string;
@@ -38,6 +42,8 @@ export interface UserDocument extends Document {
 
 export const User = model<UserDocument>('user', new Schema({
   _id: String,
+  badges: { type: Array, default: [] },
+  bot: Boolean,
   avatarURL: String,
   username: String,
   createdAt: Date,

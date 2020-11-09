@@ -6,9 +6,11 @@ import Deps from '../../utils/deps';
 import jwt from 'jsonwebtoken';
 import { updateUser } from '../modules/middleware';
 import Channels from '../../data/channels';
+import { Bot } from '../../bot/bot';
 
 export const router = Router();
 
+const bot = Deps.get<Bot>(Bot);
 const channels = Deps.get<Channels>(Channels);
 const users = Deps.get<Users>(Users);
 
@@ -31,6 +33,7 @@ router.post('/', async (req, res) => {
       _id: generateSnowflake(),
       username: req.body.username,
       avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/default0.png`,
+      bot: false,
       createdAt: new Date(),
       friends: [],
       status: StatusType.Online,
@@ -38,6 +41,8 @@ router.post('/', async (req, res) => {
     }, req.body.password);
 
     const token = jwt.sign({ _id: user._id }, 'secret' , { expiresIn : '7d' });
+
+    await bot.dm(user, 'Hello there new user :thinking:!');
     
     res.status(201).json(token);
   } catch (err) {
@@ -56,8 +61,8 @@ router.get('/known', updateUser, async (req, res) => {
 
 router.get('/dm-channels', updateUser, async (req, res) => {
   try {
-    const dmChannels = await channels.getDMChannels(res.locals.user._id);
-    res.json(dmChannels ?? []);
+    const dmChannels = await channels.getDMChannels(res.locals.user._id);        
+    res.json(dmChannels);
   } catch (err) {
     res.json({ code: 400, message: err?.message });
   }

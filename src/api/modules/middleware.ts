@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import Guilds from '../../data/guilds';
+import { Permission } from '../../data/models/role';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 
@@ -32,4 +33,12 @@ export async function validateGuildOwner(req, res, next) {
   return (userOwnsGuild)
     ? next()
     : res.code(401).json({ code: 401, message: 'You do not own this guild!' });
+}
+
+export function validateHasPermission(permission: Permission) {
+  return async (req, res, next) => {
+    const member = await res.locals.guild.members.find(m => m.user === res.locals.user._id);
+    return res.locals.guild.owner._id === res.locals.user._id
+      || Boolean(member.permissions & permission);
+  };
 }
