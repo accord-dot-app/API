@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken';
 import Guilds from '../../data/guilds';
+import { Guild } from '../../data/models/guild';
 import { Permission } from '../../data/models/role';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 
-const guilds = Deps.get<Guilds>(Guilds),
-      users = Deps.get<Users>(Users);
+const guilds = Deps.get<Guilds>(Guilds);
+const users = Deps.get<Users>(Users);
 
 export function validateUser(req, res, next) {  
   return (res.locals.user)
@@ -25,6 +26,13 @@ export async function updateGuild(req, res, next) {
   res.locals.guild = await guilds.get(req.params.id);
 
   return next();
+}
+
+export async function validateGuildExists(req, res, next) {
+  const exists = await Guild.exists({ _id: req.params.id });
+  return (exists)
+    ? next()
+    : res.status(404).json({ message: 'Guild does not exist' });
 }
  
 export async function validateGuildOwner(req, res, next) {

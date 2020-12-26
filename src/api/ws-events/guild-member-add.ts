@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 import Guilds from '../../data/guilds';
 import Invites from '../../data/invites';
-import { Guild } from '../../data/models/guild';
+import { GuildDocument } from '../../data/models/guild';
 import { GuildMember } from '../../data/models/guild-member';
 import Deps from '../../utils/deps';
 import { WebSocket } from '../websocket';
@@ -40,10 +40,16 @@ export default class implements WSEvent {
       .populate('user')
       .execPopulate();
 
-    client.join(guild._id);
+    this.joinGuildRooms(client, guild);
 
     ws.io.sockets
       .to(guild._id)
       .emit('GUILD_MEMBER_ADD', { guild, member });
+  }
+
+  joinGuildRooms(client: Socket, guild: GuildDocument) {
+    client.join(guild._id);
+    for (const channel of guild.channels)
+      client.join(channel.id);
   }
 }

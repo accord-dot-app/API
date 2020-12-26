@@ -9,21 +9,19 @@ import WSEvent from './ws-event';
 export default class implements WSEvent {
   on = 'INVITE_CREATE';
 
-  constructor(private users = Deps.get<Users>(Users)) {}
-
-  async invoke(ws: WebSocket, client: Socket, { guild, user }) {
-    const invite = await Invite.create({
-      _id: generateInviteCode(),
-      createdAt: new Date(),
-      expiresAt: null,
-      guild,
-      inviter: user,
-      maxUses: null,
-      uses: 0
-    });
-
+  async invoke(ws: WebSocket, client: Socket, { guild, user, options }) {
     ws.io
       .to(guild._id)
-      .emit('INVITE_CREATE', { invite });
+      .emit('INVITE_CREATE', {
+        invite: await Invite.create({
+          _id: generateInviteCode(),
+          createdAt: new Date(),
+          expiresAt: null,
+          guild,
+          inviter: user,
+          maxUses: options.maxUses,
+          uses: 0
+        })
+      });
   }
 }

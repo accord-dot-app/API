@@ -15,7 +15,7 @@ const metascraper = require('metascraper')([
 export default class implements WSEvent {
   on = 'MESSAGE_CREATE';
 
-  async invoke(ws: WebSocket, client: Socket, partialMessage: any) {
+  async invoke(ws: WebSocket, _: Socket, partialMessage: any) {
     let message = await Message.create({
       _id: generateSnowflake(),
       author: partialMessage.author,

@@ -17,7 +17,7 @@ export default class implements WSEvent {
     const user = await this.users.get(userId);
     if (!user) return;
 
-    if (user.voice.connected)
+    if (user.voice?.connected)
       await this.disconnectFromVC(user, userId);
 
     ws.sessions.delete(userId);

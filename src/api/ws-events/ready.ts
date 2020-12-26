@@ -1,7 +1,5 @@
 import { Socket } from 'socket.io';
-import Channels from '../../data/channels';
 import { StatusType, User } from '../../data/models/user';
-import Deps from '../../utils/deps';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 

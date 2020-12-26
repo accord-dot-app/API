@@ -69,6 +69,11 @@ router.get('/dm-channels', updateUser, async (req, res) => {
   }
 });
 
+router.get('/bots', async (req, res) => {
+  const bots = await User.find({ bot: true });
+  res.json(bots); 
+});
+
 router.get('/:id', async (req, res) => {
   const user = await users.get(req.params.id);
   res.json(user);

@@ -3,7 +3,12 @@ import { Message, MessageDocument } from './models/message';
 
 export default class Messages extends DBWrapper<string, MessageDocument> {
   protected async getOrCreate(id: string) {
-    return this.populate(await Message.findById(id));
+    return await Message
+      .findById(id)
+      ?.populate('author')
+      .populate('channel')
+      .populate('guild')
+      .exec();
   }
 
   protected create(id: string) {
@@ -12,9 +17,6 @@ export default class Messages extends DBWrapper<string, MessageDocument> {
 
   populate(doc: MessageDocument) {
     return doc
-      ?.populate('author')
-      .populate('channel')
-      .populate('guild')
       .execPopulate();
   }
 }
