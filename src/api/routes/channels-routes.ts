@@ -46,7 +46,12 @@ router.get('/:guildId/:channelId', updateUser, validateUser, async (req, res) =>
       .find({ guild: req.params.guildId, channel: req.params.channelId } as any)
     
     for (const msg of msgs.slice(+req.query.start || 0, +req.query.end || 25))
-      channelMsgs.push(await messages.populate(msg));
+      channelMsgs.push(
+        await msg
+          .populate('author')
+          .populate('channel')
+          .execPopulate()
+      );
     
     res.json(channelMsgs);
   } catch (err) {

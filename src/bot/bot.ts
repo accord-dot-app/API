@@ -1,19 +1,20 @@
-import { Channel, ChannelType } from '../data/models/channel';
+import { Channel, ChannelDocument, ChannelType } from '../data/models/channel';
 import { StatusType, User, UserDocument } from '../data/models/user';
 import { generateSnowflake } from '../data/snowflake-entity';
 import io from 'socket.io-client';
 import Log from '../utils/log';
-import { Guild } from '../data/models/guild';
+import { Guild, GuildDocument } from '../data/models/guild';
 import { Invite } from '../data/models/invite';
 import { generateInviteCode } from '../utils/utils';
 import { MessageDocument } from '../data/models/message';
-import fetch from 'node-fetch';
 import { GuildMember } from '../data/models/guild-member';
 import Deps from '../utils/deps';
 import Messages from '../data/messages';
+import { CommandHandler } from './handlers/command-handler';
 
 export class Bot {
-  private socket = io(`http://localhost:${process.env.PORT}`);
+  public readonly socket = io(`http://localhost:${process.env.PORT}`);
+  public readonly commandHandler = new CommandHandler(this);
 
   private _self: UserDocument;
   get self() { return this._self; }
@@ -23,11 +24,21 @@ export class Bot {
     this.socket.connect();
   }
 
-  async init() {
+  public async init() {
     this._self = await this.get();
 
-    const channels = await Channel.find({ type: ChannelType.DM, recipientIds: this.self._id });
-    const channelIds: string[] = channels.map(d => d._id);
+    await this.commandHandler.init();
+    await this.readyUp();
+
+    this.hookWSEvents();
+  }
+
+  private async readyUp() {
+    const channels = await Channel.find({
+      type: ChannelType.DM,
+      recipientIds: this.self._id
+    });
+    const channelIds: string[] = channels.map(d => d.id);
     const guildIds: string[] = [];
 
     const botMembers = await GuildMember.find({ user: this.self.id });
@@ -39,49 +50,26 @@ export class Bot {
         channelIds.push(channel as any);
     }
 
-    this.socket.emit('READY', {
-      user: this.self,
-      guildIds,
-      channelIds
-    });
+    this.socket.emit('READY', { user: this.self, guildIds, channelIds });
 
     Log.info('Initialized bot', 'bot');
+  }
 
-    this.hookWSEvents();
+  public sendMessage(channel: ChannelDocument, guild: GuildDocument, content: string) {
+    this.socket.emit('MESSAGE_CREATE', {
+      author: this.self, channel, content, guild,
+    });
   }
 
   private hookWSEvents() {
     this.socket.on('MESSAGE_CREATE', async (message: MessageDocument) => {
-      Log.info('GET MESSAGE_CREATE', 'bot');
-
       message = await this.messages.get(message._id);
       if (!message.guild && message.author.bot) return;
 
       const prefix = '.';
       if (message.content.startsWith(prefix))
-        await this.handleCommand(prefix, message);
+        await this.commandHandler.handle(prefix, message);
     });
-  }
-
-  private async handleCommand(prefix: string, message: MessageDocument) {
-    const commandName = message.content
-      .slice(prefix.length)
-      .split(' ')[0];
-
-    if (commandName === 'ping') {
-      const from = new Date();
-      await fetch(process.env.API_URL);
-      const until = new Date();
-
-      const latencyMs = until.getTime() - from.getTime();
-
-      this.socket.emit('MESSAGE_CREATE', {
-        author: this.self,
-        channel: message.channel,
-        content: `🏓 Pong! \`${latencyMs}ms\``,
-        guild: message.guild,
-      });
-    }    
   }
 
   async dm(recipient: UserDocument, content: string) {

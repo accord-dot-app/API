@@ -7,8 +7,13 @@ import jwt from 'jsonwebtoken';
 import { updateUser } from '../modules/middleware';
 import Channels from '../../data/channels';
 import { Bot } from '../../bot/bot';
+import { readdirSync } from 'fs';
+import { resolve } from 'path';
 
 export const router = Router();
+
+const avatarNames = readdirSync(resolve('assets/avatars'))
+  .filter(n => n.startsWith('avatar'));
 
 const bot = Deps.get<Bot>(Bot);
 const channels = Deps.get<Channels>(Channels);
@@ -29,10 +34,11 @@ router.post('/', async (req, res) => {
     if (usernameExists)
       throw new TypeError('Username is taken.');
 
+    const randomAvatar = getRandomAvatar();
     const user = await (User as any).register({
       _id: generateSnowflake(),
       username: req.body.username,
-      avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/default0.png`,
+      avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/${randomAvatar}`,
       badges: [],
       bot: false,
       createdAt: new Date(),
@@ -78,3 +84,9 @@ router.get('/:id', async (req, res) => {
   const user = await users.get(req.params.id);
   res.json(user);
 });
+function getRandomAvatar() {
+  const randomIndex = Math.floor(Math.random() * avatarNames.length);
+  const randomAvatar = avatarNames[randomIndex];
+  return randomAvatar;
+}
+

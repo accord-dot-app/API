@@ -5,6 +5,7 @@
   "editor.tabSize": 2,
   "debug.javascript.warnOnLongPrediction": false,
   "cSpell.words": [
+    "cooldown",
     "metascraper"
   ]
 }
