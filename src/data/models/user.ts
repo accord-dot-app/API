@@ -1,12 +1,7 @@
 import { Document, model, Schema } from 'mongoose';
 import passportLocalMongoose from 'passport-local-mongoose';
 
-export enum StatusType {
-  Online = 'ONLINE',
-  DND = 'DND',
-  Idle = 'IDLE',
-  Offline = 'OFFLINE'
-}
+export type StatusType = 'ONLINE' | 'DND' | 'IDLE' | 'OFFLINE';
 
 export class UserVoiceState {
   channelId: string;
@@ -20,11 +15,7 @@ export interface FriendRequest {
   type: FriendRequestType
 }
 
-export enum FriendRequestType {
-  Outgoing = 'OUTGOING',
-  Incoming = 'INCOMING' 
-}
-
+export type FriendRequestType = 'OUTGOING' | 'INCOMING';
 export type BadgeType = 'VIEWER' | 'DEVELOPER';
 
 export interface UserDocument extends Document {

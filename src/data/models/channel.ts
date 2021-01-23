@@ -1,10 +1,6 @@
 import { Document, model, Schema } from 'mongoose';
 
-export enum ChannelType {
-  DM = 'DM',
-  Text = 'TEXT',
-  Voice = 'VOICE'
-}
+export type ChannelType = 'DM' | 'TEXT' | 'VOICE';
 
 export interface ChannelDocument extends Document {
   createdAt: Date;
@@ -13,7 +9,6 @@ export interface ChannelDocument extends Document {
   guildId?: string;
   summary?: string;
   recipientIds?: string[];
-  sender?: string;
   memberIds?: string[];
 }
 

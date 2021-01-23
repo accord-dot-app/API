@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { StatusType, User } from '../../data/models/user';
+import { User } from '../../data/models/user';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 
@@ -14,7 +14,7 @@ export default class implements WSEvent {
     
     if (user.status === 'ONLINE') return;
 
-    await User.findOneAndUpdate(user._id, { status: StatusType.Online });
+    await User.findOneAndUpdate(user._id, { status: 'ONLINE' });
     ws.io.sockets.emit('PRESENCE_UPDATE', { user });
   }
 

@@ -20,7 +20,7 @@ const guilds = Deps.get<Guilds>(Guilds);
 router.get('/', updateUser, validateUser, async (req, res) => {
   try {
     const userGuilds = await guilds.getUserGuilds(res.locals.user._id);
-    
+
     res.json(userGuilds);
   } catch (err) {
     res.json({ code: 400, message: err?.message });
@@ -39,7 +39,7 @@ router.post('/', updateUser, validateUser, async (req, res) => {
         summary: '',
         createdAt: new Date(),
         guildId,
-        type: ChannelType.Text,
+        type: 'TEXT',
         memberIds: []
       }),
       await Channel.create({
@@ -48,7 +48,7 @@ router.post('/', updateUser, validateUser, async (req, res) => {
         summary: '',
         createdAt: new Date(),
         guildId,
-        type: ChannelType.Voice,
+        type: 'VOICE',
         memberIds: []
       })
     ];

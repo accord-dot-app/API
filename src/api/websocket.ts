@@ -4,9 +4,6 @@ import Log from '../utils/log';
 import WSEvent from './ws-events/ws-event';
 import { resolve } from 'path';
 import { readdirSync } from 'fs';
-import { Bot } from '../bot/bot';
-import { User } from '../data/models/user';
-import Deps from '../utils/deps';
 
 export class WebSocket {
   events: WSEvent[] = [];

@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { Channel } from '../../data/models/channel';
-import { StatusType, UserDocument } from '../../data/models/user';
+import { UserDocument } from '../../data/models/user';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import { WebSocket } from '../websocket';
@@ -41,7 +41,7 @@ export default class implements WSEvent {
     const userIsConnectedElsewhere = ws.connectedUserIds.includes(user._id);
     if (userIsConnectedElsewhere) return;
 
-    user.status = StatusType.Offline;
+    user.status = 'OFFLINE';
     await user.save();
   }
 }

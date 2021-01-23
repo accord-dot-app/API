@@ -17,8 +17,8 @@ export default class Users extends DBWrapper<string, UserDocument> {
       $or: [
         this.bot.self,
         { friends: userId },
-        { friendRequests: { userId, type: FriendRequestType.Incoming } },
-        { friendRequests: { userId, type: FriendRequestType.Outgoing } }
+        { friendRequests: { userId, type: 'INCOMING' } },
+        { friendRequests: { userId, type: 'OUTGOING' } }
       ]
     });
   }

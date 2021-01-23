@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { StatusType, User, UserVoiceState } from '../../data/models/user';
+import { User, UserVoiceState } from '../../data/models/user';
 import { generateSnowflake } from '../../data/snowflake-entity';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
@@ -43,11 +43,11 @@ router.post('/', async (req, res) => {
       bot: false,
       createdAt: new Date(),
       friends: [],
-      status: StatusType.Online,
+      status: 'ONLINE',
       voice: new UserVoiceState()
     }, req.body.password);
 
-    const token = jwt.sign({ _id: user._id }, 'secret' , { expiresIn : '7d' });
+  const token = jwt.sign({ _id: user._id }, 'secret' , { expiresIn : '7d' });
 
     await bot.dm(user, 'Hello there new user :thinking:!');
     

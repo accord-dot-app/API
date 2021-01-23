@@ -1,5 +1,5 @@
 import { Channel, ChannelDocument, ChannelType } from '../data/models/channel';
-import { StatusType, User, UserDocument } from '../data/models/user';
+import { User, UserDocument } from '../data/models/user';
 import { generateSnowflake } from '../data/snowflake-entity';
 import io from 'socket.io-client';
 import Log from '../utils/log';
@@ -35,7 +35,7 @@ export class Bot {
 
   private async readyUp() {
     const channels = await Channel.find({
-      type: ChannelType.DM,
+      type: 'DM',
       recipientIds: this.self._id
     });
     const channelIds: string[] = channels.map(d => d.id);
@@ -85,7 +85,7 @@ export class Bot {
       ?? await Channel.create({
         _id: generateSnowflake(),
         createdAt: new Date(),
-        type: ChannelType.DM,
+        type: 'DM',
         recipientIds: [user._id, this.self._id]
       });
   }
@@ -98,7 +98,7 @@ export class Bot {
         badges: [],
         bot: true,
         createdAt: new Date(),
-        status: StatusType.Online,
+        status: 'ONLINE',
         username: '2PG',
         friends: [],
         friendRequests: [],
@@ -122,7 +122,7 @@ export class Bot {
       user: this.self
     });
 
-    const systemChannel = await Channel.findOne({ guildId, type: ChannelType.Text });
+    const systemChannel = await Channel.findOne({ guildId, type: 'TEXT' });
     this.socket.emit('MESSAGE_CREATE', {
       author: this.self,
       channel: systemChannel,

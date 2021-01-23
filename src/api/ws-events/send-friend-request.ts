@@ -14,8 +14,8 @@ export default class implements WSEvent {
       .to(senderId)
       .to(friend._id)
       .emit('SEND_FRIEND_REQUEST', {
-        sender: await this.addFriendRequest(senderId, friend._id, FriendRequestType.Outgoing),
-        friend: await this.addFriendRequest(friend._id, senderId, FriendRequestType.Incoming)
+        sender: await this.addFriendRequest(senderId, friend._id, 'OUTGOING'),
+        friend: await this.addFriendRequest(friend._id, senderId, 'INCOMING')
       });
   }
 

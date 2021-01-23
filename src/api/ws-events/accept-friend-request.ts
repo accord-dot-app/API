@@ -23,7 +23,7 @@ export default class implements WSEvent {
           _id: generateSnowflake(),
           createdAt: new Date(),
           recipientIds: [senderId, friendId],
-          type: ChannelType.DM
+          type: 'DM'
         })
       });
   }
