@@ -6,7 +6,7 @@ import WSEvent from './ws-event';
 export default class implements WSEvent {
   on = 'READY';
 
-  async invoke(ws: WebSocket, client: Socket, { user, guildIds, channelIds }) {
+  async invoke(ws: WebSocket, client: Socket, { user, guildIds, channelIds }) {    
     if (ws.sessions.has(client.id)) return;
 
     ws.sessions.set(client.id, user._id);

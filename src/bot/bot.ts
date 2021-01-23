@@ -1,4 +1,4 @@
-import { Channel, ChannelDocument, ChannelType } from '../data/models/channel';
+import { Channel, ChannelDocument } from '../data/models/channel';
 import { User, UserDocument } from '../data/models/user';
 import { generateSnowflake } from '../data/snowflake-entity';
 import io from 'socket.io-client';
