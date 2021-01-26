@@ -4,22 +4,29 @@ import { GuildMember } from '../src/data/models/guild-member';
 import { User, UserDocument, UserVoiceState } from '../src/data/models/user';
 import { generateSnowflake } from '../src/data/snowflake-entity';
 import { Types } from 'mongoose';
+import { defaultPermissions, Role, RoleDocument } from '../src/data/models/role';
 
 export class Mock {
   public async guild() {
+    const guildId = generateSnowflake();
+    const owner = await this.user();
+    const roles = [ await this.role(guildId) ];
+
     return await Guild.create({
-      _id: generateSnowflake(),
+      _id: guildId,
       name: 'Mock Guild',
       createdAt: new Date(),
       nameAcronym: 'MG',
       iconURL: null,
-      owner: await this.user(),
+      owner,
       channels: [
-        await this.channel('TEXT'),
-        await this.channel('VOICE'),
+        await this.channel('TEXT', guildId),
+        await this.channel('VOICE', guildId),
       ],
-      members: [],
-      roles: []
+      members: [
+        await this.guildMember(owner, guildId, roles),
+      ],
+      roles
     });
   }
 
@@ -38,11 +45,11 @@ export class Mock {
     });
   }
 
-  public async guildMember(user: UserDocument, guildId: string) {
+  public async guildMember(user: UserDocument, guildId: string, roles?: RoleDocument[]) {
     return await GuildMember.create({
       _id: new Types.ObjectId(),
       guildId,
-      roleIds: [],
+      roleIds: roles?.map(r => r.id) ?? [],
       user
     });
   }
@@ -57,6 +64,20 @@ export class Mock {
       recipientIds: [],
       summary: '',
       type
+    });
+  }
+
+  public async role(guildId: string, permissions = defaultPermissions) {
+    return await Role.create({
+      _id: generateSnowflake(),
+      color: '#FFFFFF',
+      createdAt: new Date(),
+      guildId,
+      hoisted: false,
+      mentionable: true,
+      name: 'Mock Role',
+      permissions,
+      position: 0
     });
   }
 }

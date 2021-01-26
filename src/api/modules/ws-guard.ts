@@ -1,6 +1,6 @@
 import { Guild, GuildDocument } from '../../data/models/guild';
 import { GuildMember, GuildMemberDocument } from '../../data/models/guild-member';
-import { Permission, TextChannelPermission } from '../../data/models/role';
+import { Permission, Role, TextChannelPermission } from '../../data/models/role';
 import jwt from 'jsonwebtoken';
 import Deps from '../../utils/deps';
 import { WebSocket } from '../websocket/websocket';
@@ -24,31 +24,34 @@ export class WSGuard {
 
   public async canAccessChannel(client: Socket, channelId: string) {
     const userId = this.userId(client);
-    const channel = await this.channels.get(channelId);
+    const channel = await this.channels.get(channelId);    
 
-    return channel.recipientIds?.includes(userId)
-      ?? await this.can(userId, channel.guildId, TextChannelPermission.SEND_MESSAGES);
+    const canAccess = (channel.type === 'DM')
+      ? channel.recipientIds?.includes(userId)
+      : await this.can(userId, channel.guildId, TextChannelPermission.SEND_MESSAGES);    
+    if (!canAccess)
+      throw new TypeError('Missing Permissions');    
   }
   
   public async can(userId: string, guildId: string, permission: Permission) {
     const member = await GuildMember.findOne({ guildId, user: userId as any });
-    if (!member) return;
+    if (!member) return false;
   
     const guild = await Guild.findById(guildId);
-    const highestRole = this.getHighestRole(member, guild);
+    const highestRole = await this.getHighestRole(member, guild);
   
-    return highestRole?.permissions & permission
-      || guild.owner as any === userId;
+    return Boolean(highestRole?.permissions & permission)
+      || (guild.owner.id ?? guild.owner) === userId;
   }
 
-  private getHighestRole(member: GuildMemberDocument, guild: GuildDocument) {
+  private async getHighestRole(member: GuildMemberDocument, guild: GuildDocument) {
     const roleId = member.roleIds[member.roleIds.length - 1];
-    return guild.roles.find(id => id as any === roleId);
+    return await Role.findById(roleId);
   }
   
 
   public decodeKey(key: string) {
     const token: any = jwt.decode(key);
-    return { id: token._id as string };
+    return { id: token?._id as string };
   }
 }

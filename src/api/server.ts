@@ -39,7 +39,7 @@ export class API {
     app.use(express.static(distPath));
     app.all('*', (req, res) => res.status(200).sendFile(`${distPath}/index.html`));
     
-    const server = app.listen(3000, () => {
+    const server = app.listen(process.env.PORT || 3000, () => {
       Log.info(`API is running on port 3000`);
       ws.init(server);
     });

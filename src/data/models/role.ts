@@ -47,11 +47,11 @@ export interface RoleDocument extends Document {
   color: string;
   createdAt: Date;
   guildId: string;
-  name: string;
   hoisted: boolean;
-  position: number;
   mentionable: boolean;
+  name: string;
   permissions: number;
+  position: number;
 }
 
 export const Role = model<RoleDocument>('role', new Schema({
@@ -59,9 +59,9 @@ export const Role = model<RoleDocument>('role', new Schema({
   color: String,
   createdAt: Date,
   guildId: String,
-  name: String,
   hoisted: Boolean,
-  position: Number,
   mentionable: Boolean,
-  permissions: Number
+  name: String,
+  position: Number,
+  permissions: Number,
 }));

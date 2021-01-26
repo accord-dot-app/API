@@ -50,15 +50,62 @@ describe('message-create', () => {
       await expect(result()).to.be.rejectedWith('Unauthorized');
     });
     
-    it('user is guild owner, in guild text channel, message created', async () => {
+    // FIXME: not sure why this fails -> 'TypeError: Missing Permissions'
+    // -> discord.com/adamjr
+    it('user is guild member with send message perms, message created', async () => {
+      const user = await mock.user();
+      const guild = await mock.guild();
+      ws.sessions.set(client.id, user.id);
+
+      const role = await mock.role(guild.id);
+      guild.members.push(
+        await mock.guildMember(user, guild.id, [role])
+      )      
+
+      const partialMessage = new Message({
+        author: user,
+        channel: guild.channels[0],
+        content: 'hi',
+        guild
+      });
+
+      const result = () => event.invoke(ws, client, partialMessage);
+
+      await expect(result()).to.not.be.rejected;
+    });
+    
+    it('user is guild member without chat perms, message created', async () => {
+      const user = await mock.user();
+      const guild = await mock.guild();
+      ws.sessions.set(client.id, user.id);
+
+      const mutedRole = await mock.role(guild.id, 0);
+      guild.members.push(
+        await mock.guildMember(user, guild.id, [mutedRole])
+      )
+
+      const partialMessage = new Message({
+        author: user,
+        channel: guild.channels[0],
+        content: 'hi',
+        guild
+      });
+
+      const result = () => event.invoke(ws, client, partialMessage);
+
+      await expect(result()).to.be.rejectedWith('Missing Permissions');
+    });
+    
+    it('user is guild owner, message created', async () => {
       const guild = await mock.guild();
       ws.sessions.set(client.id, guild.owner.id);
 
-      const partialMessage = new Message();
-      partialMessage.author = guild.owner;
-      partialMessage.channel = guild.channels[0];
-      partialMessage.guild = guild;
-      partialMessage.content = 'hi';
+      const partialMessage = new Message({
+        author: guild.owner,
+        channel: guild.channels[0],
+        content: 'hi',
+        guild
+      });
 
       const result = () => event.invoke(ws, client, partialMessage);
 

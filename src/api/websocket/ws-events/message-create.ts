@@ -23,7 +23,7 @@ export default class implements WSEvent {
 
   async invoke(ws: WebSocket, client: Socket, partialMessage: any) {
     this.guard.validateIsUser(client, partialMessage.author._id);
-    this.guard.canAccessChannel(client, partialMessage.channel._id);
+    await this.guard.canAccessChannel(client, partialMessage.channel._id);
 
     let message = await Message.create({
       _id: generateSnowflake(),
