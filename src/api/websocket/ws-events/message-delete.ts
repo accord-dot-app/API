@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { Message, MessageDocument } from '../../data/models/message';
+import { Message, MessageDocument } from '../../../data/models/message';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 

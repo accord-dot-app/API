@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { User } from '../../data/models/user';
+import { User } from '../../../data/models/user';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 

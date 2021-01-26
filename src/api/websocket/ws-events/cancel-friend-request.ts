@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
-import { FriendRequestType, User } from '../../data/models/user';
-import Users from '../../data/users';
-import Deps from '../../utils/deps';
+import { FriendRequestType, User } from '../../../data/models/user';
+import Users from '../../../data/users';
+import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 

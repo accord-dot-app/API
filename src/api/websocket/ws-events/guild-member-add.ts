@@ -1,9 +1,9 @@
 import { Socket } from 'socket.io';
-import Guilds from '../../data/guilds';
-import Invites from '../../data/invites';
-import { GuildDocument } from '../../data/models/guild';
-import { GuildMember } from '../../data/models/guild-member';
-import Deps from '../../utils/deps';
+import Guilds from '../../../data/guilds';
+import Invites from '../../../data/invites';
+import { GuildDocument } from '../../../data/models/guild';
+import { GuildMember } from '../../../data/models/guild-member';
+import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 

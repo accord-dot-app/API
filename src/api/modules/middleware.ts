@@ -14,6 +14,7 @@ export function validateUser(req, res, next) {
     : res.json({ code: 401, message: 'Unauthorized' });
 }
 
+// FIXME: not sure how easy this is to spoof -> discord.io/adamjr
 export async function updateUser(req, res, next) {
   const key = req.get('Authorization');
   const id = (jwt.decode(key) as any)?._id;

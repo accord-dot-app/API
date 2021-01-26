@@ -12,7 +12,7 @@ import { User } from '../data/models/user';
 import cors from 'cors';
 import { resolve } from 'path';
 import Deps from '../utils/deps';
-import { WebSocket } from './websocket';
+import { WebSocket } from './websocket/websocket';
 
 export class API {
   constructor(ws = Deps.get<WebSocket>(WebSocket)) {

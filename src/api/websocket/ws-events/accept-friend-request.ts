@@ -1,9 +1,9 @@
 import { Socket } from 'socket.io';
-import { Channel, ChannelType } from '../../data/models/channel';
-import { User, UserDocument } from '../../data/models/user';
-import { generateSnowflake } from '../../data/snowflake-entity';
-import Users from '../../data/users';
-import Deps from '../../utils/deps';
+import { Channel, ChannelType } from '../../../data/models/channel';
+import { User, UserDocument } from '../../../data/models/user';
+import { generateSnowflake } from '../../../data/snowflake-entity';
+import Users from '../../../data/users';
+import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 

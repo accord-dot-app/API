@@ -1,7 +1,7 @@
 import { Bot } from '../bot/bot';
 import Deps from '../utils/deps';
 import DBWrapper from './db-wrapper';
-import { FriendRequestType, User, UserDocument } from './models/user';
+import { User, UserDocument } from './models/user';
 
 export default class Users extends DBWrapper<string, UserDocument> {
   constructor(private bot = Deps.get<Bot>(Bot)) { super(); }

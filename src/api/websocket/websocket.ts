@@ -1,6 +1,6 @@
 import { Server } from 'http';
 import { listen, Server as SocketServer } from 'socket.io';
-import Log from '../utils/log';
+import Log from '../../utils/log';
 import WSEvent from './ws-events/ws-event';
 import { resolve } from 'path';
 import { readdirSync } from 'fs';
@@ -33,7 +33,13 @@ export class WebSocket {
 
     this.io.on('connection', (client) => {
       for (const event of this.events)
-        client.on(event.on, (data) => event.invoke.bind(event)(this, client, data));
+        client.on(event.on, (data) => {
+          try {
+            event.invoke.bind(event)(this, client, data)
+          } catch (error) {
+            client.send(`Error on executing: ${event.on}\n${error.message}`);
+          }
+        });
     });
 
     Log.info('Started WebSocket', 'ws');

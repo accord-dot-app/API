@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
-import { Message, MessageEmbed } from '../../data/models/message';
-import { generateSnowflake } from '../../data/snowflake-entity';
+import { Message, MessageEmbed } from '../../../data/models/message';
+import { generateSnowflake } from '../../../data/snowflake-entity';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 import got from 'got';

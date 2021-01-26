@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io';
-import Channels from '../../data/channels';
-import { Channel } from '../../data/models/channel';
-import Users from '../../data/users';
-import Deps from '../../utils/deps';
+import Channels from '../../../data/channels';
+import { Channel } from '../../../data/models/channel';
+import Users from '../../../data/users';
+import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 

@@ -20,26 +20,26 @@ export type BadgeType = 'VIEWER' | 'DEVELOPER';
 
 export interface UserDocument extends Document {
   _id: string;
+  avatarURL: string;
   badges: BadgeType[];
   bot: boolean;
-  username: string;
   createdAt: Date;
-  avatarURL: string;
-  status: StatusType;
   friends: string[];
   friendRequests: FriendRequest[];
+  status: StatusType;
+  username: string;
   voice: UserVoiceState;
 }
 
 export const User = model<UserDocument>('user', new Schema({
   _id: String,
+  avatarURL: String,
   badges: { type: Array, default: [] },
   bot: Boolean,
-  avatarURL: String,
-  username: String,
   createdAt: Date,
-  status: String,
   friends: [{ type: String, ref: 'user' }],
   friendRequests: { type: Array, default: [] },
+  status: String,
+  username: String,
   voice: { type: Object, default: new UserVoiceState() }
 }).plugin(passportLocalMongoose));

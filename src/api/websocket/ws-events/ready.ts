@@ -1,20 +1,30 @@
 import { Socket } from 'socket.io';
-import { User } from '../../data/models/user';
+import { User } from '../../../data/models/user';
+import Users from '../../../data/users';
+import Deps from '../../../utils/deps';
+import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
 
 export default class implements WSEvent {
   on = 'READY';
 
-  async invoke(ws: WebSocket, client: Socket, { user, guildIds, channelIds }) {    
-    if (ws.sessions.has(client.id)) return;
+  constructor(
+    private guard = Deps.get<WSGuard>(WSGuard),
+    private users = Deps.get<Users>(Users)
+  ) {}
 
-    ws.sessions.set(client.id, user._id);
+  async invoke(ws: WebSocket, client: Socket, { key, guildIds, channelIds }) {   
+    const alreadyLoggedIn = ws.sessions.has(client.id);
+    if (alreadyLoggedIn) return;
+
+    const { id: userId } = this.guard.decodeKey(key);
+    ws.sessions.set(client.id, userId);
+
+    const user = await this.users.get(userId);
     await this.joinRooms(client, { user, guildIds, channelIds });
-    
-    if (user.status === 'ONLINE') return;
+    await User.findByIdAndUpdate(userId, { status: 'ONLINE' });
 
-    await User.findOneAndUpdate(user._id, { status: 'ONLINE' });
     ws.io.sockets.emit('PRESENCE_UPDATE', { user });
   }
 
