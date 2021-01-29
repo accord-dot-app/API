@@ -15,4 +15,5 @@ connect(process.env.MONGO_URI, {
 
 (async() => {
   await import('./integration/message-create.tests');
+  await import('./integration/voice-state-update.tests');
 })();

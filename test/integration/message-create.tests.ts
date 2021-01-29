@@ -15,25 +15,23 @@ import { API } from '../../src/api/server';
 const mock = new Mock();
 
 describe('message-create', () => {
-  let client: Socket;
+  const client = io(`http://localhost:${process.env.PORT}`) as any;;
   let event: MessageCreate;
   let ws: WebSocket;
 
   beforeEach(() => {
     Deps.get<API>(API);
 
-    client = io(`http://localhost:${process.env.PORT}`) as any;
     event = new MessageCreate();
     ws = Deps.get<WebSocket>(WebSocket);
     
     ws.sessions.set(client.id, 'user_1');
   });
 
-  afterEach(async () => {
-    await Message.deleteMany({});
-  });
-
   after(async () => {
+    client.disconnect();
+
+    await Message.deleteMany({});
     await Channel.deleteMany({});
     await Guild.deleteMany({});
     await GuildMember.deleteMany({});
@@ -49,9 +47,7 @@ describe('message-create', () => {
 
       await expect(result()).to.be.rejectedWith('Unauthorized');
     });
-    
-    // FIXME: not sure why this fails -> 'TypeError: Missing Permissions'
-    // -> discord.com/adamjr
+
     it('user is guild member with send message perms, message created', async () => {
       const user = await mock.user();
       const guild = await mock.guild();
@@ -60,7 +56,7 @@ describe('message-create', () => {
       const role = await mock.role(guild.id);
       guild.members.push(
         await mock.guildMember(user, guild.id, [role])
-      )      
+      );
 
       const partialMessage = new Message({
         author: user,
@@ -82,7 +78,7 @@ describe('message-create', () => {
       const mutedRole = await mock.role(guild.id, 0);
       guild.members.push(
         await mock.guildMember(user, guild.id, [mutedRole])
-      )
+      );
 
       const partialMessage = new Message({
         author: user,

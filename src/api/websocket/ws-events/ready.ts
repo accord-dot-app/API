@@ -22,6 +22,9 @@ export default class implements WSEvent {
     ws.sessions.set(client.id, userId);
 
     const user = await this.users.get(userId);
+    if (!user)
+      throw new TypeError('User not found');
+
     await this.joinRooms(client, { user, guildIds, channelIds });
     await User.findByIdAndUpdate(userId, { status: 'ONLINE' });
 

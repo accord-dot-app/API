@@ -7,7 +7,6 @@ export class UserVoiceState {
   channelId: string;
   guildId: string;
   selfMuted = false;
-  connected = false;
 }
 
 export interface FriendRequest {
