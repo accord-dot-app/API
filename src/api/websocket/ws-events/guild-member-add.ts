@@ -48,7 +48,7 @@ export default class implements WSEvent {
   }
 
   joinGuildRooms(client: Socket, guild: GuildDocument) {
-    client.join(guild._id);
+    client.join(guild.id);
     for (const channel of guild.channels)
       client.join(channel.id);
   }

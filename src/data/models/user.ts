@@ -4,7 +4,7 @@ import passportLocalMongoose from 'passport-local-mongoose';
 export type StatusType = 'ONLINE' | 'DND' | 'IDLE' | 'OFFLINE';
 
 export class UserVoiceState {
-  channelId: string;
+  channelId?: string;
   guildId: string;
   selfMuted = false;
 }

@@ -10,11 +10,9 @@ import { MessageDocument } from '../data/models/message';
 import { GuildMember } from '../data/models/guild-member';
 import Deps from '../utils/deps';
 import Messages from '../data/messages';
-import { CommandHandler } from './handlers/command-handler';
 
-export class Bot {
+export class SystemBot {
   public readonly socket = io(`http://localhost:${process.env.PORT}`);
-  public readonly commandHandler = new CommandHandler(this);
 
   private _self: UserDocument;
   get self() { return this._self; }
@@ -27,7 +25,6 @@ export class Bot {
   public async init() {
     this._self = await this.get();
 
-    await this.commandHandler.init();
     await this.readyUp();
 
     this.hookWSEvents();
@@ -66,9 +63,13 @@ export class Bot {
       message = await this.messages.get(message._id);
       if (!message.guild && message.author.bot) return;
 
-      const prefix = '.';
-      if (message.content.startsWith(prefix))
-        await this.commandHandler.handle(prefix, message);
+      if (message.content.toLowerCase() === 'hi') {
+        this.socket.emit('MESSAGE_CREATE', {
+          author: this.self,
+          channel: message.channel,
+          content: `Hi, @${message.author.username}!`
+        });
+      }      
     });
   }
 
@@ -91,15 +92,15 @@ export class Bot {
   }
 
   async get() {
-    return await User.findOne({ username: '2PG' })
+    return await User.findOne({ username: 'DClone' })
       ?? await User.create({
         _id: generateSnowflake(),
-        avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/bot.png`,
+        avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/avatar-gre.png`,
         badges: [],
         bot: true,
         createdAt: new Date(),
         status: 'ONLINE',
-        username: '2PG',
+        username: 'DClone',
         friends: [],
         friendRequests: [],
         voice: null,

@@ -25,6 +25,10 @@ export default class implements WSEvent {
     this.guard.validateIsUser(client, partialMessage.author._id);
     await this.guard.canAccessChannel(client, partialMessage.channel._id);
 
+    const maxLength = 3000;
+    if (partialMessage.content.length > maxLength)
+      throw new TypeError('Content Too Long');
+
     let message = await Message.create({
       _id: generateSnowflake(),
       author: partialMessage.author,

@@ -6,6 +6,7 @@ import passport from 'passport';
 import { router as apiRoutes } from './routes/api-routes';
 import { router as authRoutes } from './routes/auth-routes';
 import { router as channelsRoutes } from './routes/channels-routes';
+import { router as developersRoutes } from './routes/developers-routes';
 import { router as guildsRoutes } from './routes/guilds-routes';
 import { router as usersRoutes } from './routes/users-routes';
 import { User } from '../data/models/user';
@@ -29,6 +30,7 @@ export class API {
     app.use('/api', express.static(resolve('./assets')));
     app.use('/api', apiRoutes, authRoutes);
     
+    app.use('/api/developers', developersRoutes);
     app.use('/api/channels', channelsRoutes);
     app.use('/api/guilds', guildsRoutes);
     app.use('/api/users', usersRoutes);

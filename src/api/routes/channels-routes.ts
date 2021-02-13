@@ -9,7 +9,6 @@ import { updateUser, validateUser } from '../modules/middleware';
 export const router = Router();
 
 const guilds = Deps.get<Guilds>(Guilds);
-const messages = Deps.get<Messages>(Messages);
 
 router.get('/@me/:channelId', updateUser, validateUser, async (req, res) => {
   try {

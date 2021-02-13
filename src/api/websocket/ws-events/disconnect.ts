@@ -17,7 +17,7 @@ export default class implements WSEvent {
     const user = await this.users.get(userId);
     if (!user) return;
 
-    if (user.voice?.connected)
+    if (user.voice.channelId)
       await this.disconnectFromVC(user, userId);
 
     ws.sessions.delete(userId);
@@ -38,8 +38,8 @@ export default class implements WSEvent {
   }
 
   async setOfflineStatus(ws: WebSocket, user: UserDocument) {
-    const userIsConnectedElsewhere = ws.connectedUserIds.includes(user._id);
-    if (userIsConnectedElsewhere) return;
+    const isConnectedElsewhere = ws.connectedUserIds.includes(user._id);
+    if (isConnectedElsewhere) return;
 
     user.status = 'OFFLINE';
     await user.save();

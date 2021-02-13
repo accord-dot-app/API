@@ -33,9 +33,10 @@ export class WebSocket {
 
     this.io.on('connection', (client) => {
       for (const event of this.events)
-        client.on(event.on, (data) => {
+        client.on(event.on, async (data) => {
           try {
-            event.invoke.bind(event)(this, client, data)
+            await event.invoke.bind(event)(this, client, data);
+            client.send(`SENT - ${event.on}`);
           } catch (error) {
             client.send(`Error on executing: ${event.on}\n${error.message}`);
           }

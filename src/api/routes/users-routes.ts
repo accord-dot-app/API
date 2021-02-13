@@ -6,7 +6,7 @@ import Deps from '../../utils/deps';
 import jwt from 'jsonwebtoken';
 import { updateUser } from '../modules/middleware';
 import Channels from '../../data/channels';
-import { Bot } from '../../bot/bot';
+import { SystemBot } from '../../system/bot';
 import { readdirSync } from 'fs';
 import { resolve } from 'path';
 
@@ -15,7 +15,7 @@ export const router = Router();
 const avatarNames = readdirSync(resolve('assets/avatars'))
   .filter(n => n.startsWith('avatar'));
 
-const bot = Deps.get<Bot>(Bot);
+const bot = Deps.get<SystemBot>(SystemBot);
 const channels = Deps.get<Channels>(Channels);
 const users = Deps.get<Users>(Users);
 

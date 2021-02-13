@@ -11,6 +11,7 @@ import { Guild } from '../../src/data/models/guild';
 import { User } from '../../src/data/models/user';
 import { Channel } from '../../src/data/models/channel';
 import { API } from '../../src/api/server';
+import { Role } from '../../src/data/models/role';
 
 const mock = new Mock();
 
@@ -30,11 +31,12 @@ describe('message-create', () => {
 
   after(async () => {
     client.disconnect();
-
-    await Message.deleteMany({});
+    
     await Channel.deleteMany({});
     await Guild.deleteMany({});
     await GuildMember.deleteMany({});
+    await Message.deleteMany({});
+    await Role.deleteMany({});
     await User.deleteMany({});
   });
 
@@ -67,7 +69,7 @@ describe('message-create', () => {
 
       const result = () => event.invoke(ws, client, partialMessage);
 
-      await expect(result()).to.not.be.rejected;
+      await expect(result()).to.be.fulfilled;
     });
     
     it('user is guild member without chat perms, message created', async () => {
@@ -105,7 +107,23 @@ describe('message-create', () => {
 
       const result = () => event.invoke(ws, client, partialMessage);
 
-      await expect(result()).to.not.be.rejected;
+      await expect(result()).to.be.fulfilled;
+    });
+
+    it('message is too long, rejected', async () => {
+      const guild = await mock.guild();
+      ws.sessions.set(client.id, guild.owner.id);
+
+      const partialMessage = new Message({
+        author: guild.owner,
+        channel: guild.channels[0],
+        content: new Array(3001).fill('a').join(''),
+        guild
+      });
+
+      const result = () => event.invoke(ws, client, partialMessage);
+
+      await expect(result()).to.be.rejectedWith('Content Too Long');
     });
   });
 });

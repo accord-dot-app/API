@@ -1,5 +1,6 @@
 import { Guild, GuildDocument } from './models/guild';
 import DBWrapper from './db-wrapper';
+import { GuildMember } from './models/guild-member';
 
 export default class Guilds extends DBWrapper<string, GuildDocument> {
   protected getOrCreate(id: string) {
@@ -13,7 +14,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
 
   async getUserGuilds(userId: string) {
     const userGuilds = (await Guild
-      .find({ members: [{ user: userId } as any] })
+      .find()
       .populate('members')
       .populate('roles')
       .exec())

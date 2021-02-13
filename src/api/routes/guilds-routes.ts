@@ -10,11 +10,11 @@ import { GuildMember } from '../../data/models/guild-member';
 import { Invite } from '../../data/models/invite';
 import { Message } from '../../data/models/message';
 import { defaultPermissions, GeneralPermission, Role } from '../../data/models/role';
-import { Bot } from '../../bot/bot';
+import { SystemBot } from '../../system/bot';
 
 export const router = Router();
 
-const bot = Deps.get<Bot>(Bot);
+const bot = Deps.get<SystemBot>(SystemBot);
 const guilds = Deps.get<Guilds>(Guilds);
 
 router.get('/', updateUser, validateUser, async (req, res) => {

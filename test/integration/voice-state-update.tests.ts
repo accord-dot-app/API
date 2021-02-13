@@ -11,7 +11,7 @@ import { Channel } from '../../src/data/models/channel';
 import { API } from '../../src/api/server';
 import VoiceStateUpdate from '../../src/api/websocket/ws-events/voice-state-update';
 import { expect } from 'chai';
-import { VoiceChannelPermission } from '../../src/data/models/role';
+import { Role, VoiceChannelPermission } from '../../src/data/models/role';
 
 const mock = new Mock();
 
@@ -30,8 +30,15 @@ describe('voice-state-update', () => {
     ws.sessions.set(client.id, userId);
   });
 
-  afterEach(async () => {
+  after(async () => {
+    client.disconnect();
+    
+    await Channel.deleteMany({});
+    await Guild.deleteMany({});
+    await GuildMember.deleteMany({});
     await Message.deleteMany({});
+    await Role.deleteMany({});
+    await User.deleteMany({});
   });
 
   describe('invoke', () => {
@@ -146,14 +153,5 @@ describe('voice-state-update', () => {
 
       await expect(result()).to.be.rejectedWith('Missing Permissions');
     });
-  });
-
-  after(async () => {
-    client.disconnect();
-    
-    await Channel.deleteMany({});
-    await Guild.deleteMany({});
-    await GuildMember.deleteMany({});
-    await User.deleteMany({});
   });
 });
