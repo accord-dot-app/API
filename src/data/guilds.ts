@@ -21,16 +21,16 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
       .filter(g => g.members.some(m => m.user === userId as any));
     
     const guilds = [];
-    for (const guild of userGuilds) {
-      const g = await guild
+    for (const userGuild of userGuilds) {
+      const guild = await userGuild
         .populate('owner')
         .populate('channels')
         .execPopulate();
-      for (const member of guild.members)
+      for (const member of userGuild.members)
         await member
           .populate('user')
           .execPopulate();
-      guilds.push(g);
+      guilds.push(guild);
     }
     return guilds;
   }

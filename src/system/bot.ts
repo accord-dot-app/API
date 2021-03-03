@@ -91,11 +91,11 @@ export class SystemBot {
       });
   }
 
-  async get() {
+  public async get() {
     return await User.findOne({ username: 'DClone' })
       ?? await User.create({
         _id: generateSnowflake(),
-        avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/avatar-gre.png`,
+        avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/avatar_grey.png`,
         badges: [],
         bot: true,
         createdAt: new Date(),
@@ -107,7 +107,7 @@ export class SystemBot {
       });
   }
 
-  async addToGuild(guildId: string) {
+  public async addToGuild(guildId: string) {
     const invite = await Invite.create({
       _id: generateInviteCode(),
       createdAt: new Date(),

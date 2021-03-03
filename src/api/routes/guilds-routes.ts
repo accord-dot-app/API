@@ -89,25 +89,6 @@ router.post('/', updateUser, validateUser, async (req, res) => {
   }
 });
 
-router.post('/:id', updateUser, validateUser, updateGuild, validateHasPermission(GeneralPermission.MANAGE_CHANNELS),
-  async (req, res) => {
-  try {
-    const channel = await Channel.create({
-      _id: generateSnowflake(),
-      name: req.body.name,
-      summary: '',
-      createdAt: new Date(),
-      guildId: req.params.id,
-      type: req.body.type,
-      memberIds: []
-    });
-
-    res.status(201).json(channel);    
-  } catch (err) {    
-    res.json({ code: 400, message: err.message });
-  }
-});
-
 router.patch('/:id', updateUser, validateUser, updateGuild, validateGuildOwner, async (req, res) => {
   try {
     let query = { $set: {} };

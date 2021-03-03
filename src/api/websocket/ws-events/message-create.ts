@@ -45,7 +45,7 @@ export default class implements WSEvent {
 
     ws.io.sockets
       .to(partialMessage.channel._id)
-      .emit('MESSAGE_CREATE', message);
+      .emit('MESSAGE_CREATE', { message });
   }
 
   async getEmbed(message: any): Promise<MessageEmbed> {

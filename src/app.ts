@@ -11,8 +11,8 @@ connect(process.env.MONGO_URI, {
   useUnifiedTopology: true, 
   useNewUrlParser: true, 
   useFindAndModify: false 
-}, (err) => err
-  ? Log.error(err, 'db')
+}, (error) => error
+  ? Log.error(error.message, 'db')
   : Log.info('Connected to database.'));
 
 Deps.get<API>(API);

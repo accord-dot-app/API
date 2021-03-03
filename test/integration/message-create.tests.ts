@@ -2,7 +2,6 @@ import MessageCreate from '../../src/api/websocket/ws-events/message-create';
 import { WebSocket } from '../../src/api/websocket/websocket';
 import Deps from '../../src/utils/deps';
 import { expect } from 'chai';
-import { Socket } from 'socket.io';
 import io from 'socket.io-client';
 import { Message } from '../../src/data/models/message';
 import { GuildMember } from '../../src/data/models/guild-member';

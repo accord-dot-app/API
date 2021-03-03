@@ -19,7 +19,7 @@ export default class implements WSEvent {
           expiresAt: null,
           guild,
           inviter: user,
-          maxUses: options.maxUses,
+          maxUses: options?.maxUses,
           uses: 0
         })
       });

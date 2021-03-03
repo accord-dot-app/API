@@ -28,7 +28,14 @@ export default class implements WSEvent {
     await this.joinRooms(client, { user, guildIds, channelIds });
     await User.findByIdAndUpdate(userId, { status: 'ONLINE' });
 
-    ws.io.sockets.emit('PRESENCE_UPDATE', { user });
+    for (const id in client.adapter.rooms) {
+      ws.io
+        .to(id)
+        .emit('PRESENCE_UPDATE', {
+          userId,
+          status: user.status
+        });      
+    }
   }
 
   async joinRooms(client: Socket, { user, guildIds, channelIds }) {

@@ -20,12 +20,19 @@ export default class implements WSEvent {
     if (user.voice.channelId)
       await this.disconnectFromVC(user, userId);
 
-    ws.sessions.delete(userId);
+    ws.sessions.delete(client.id);
     client.leaveAll();
 
     await this.setOfflineStatus(ws, user);
 
-    ws.io.emit('PRESENCE_UPDATE', { user });
+    for (const id in client.adapter.rooms) {
+      ws.io
+        .to(id)
+        .emit('PRESENCE_UPDATE', {
+          userId,
+          status: user.status
+        });      
+    }
   }
 
   async disconnectFromVC(user: UserDocument, userId: string) {
