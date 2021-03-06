@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import Channels from '../../data/channels';
 import Guilds from '../../data/guilds';
 import Messages from '../../data/messages';
 import { Channel } from '../../data/models/channel';
@@ -9,23 +10,21 @@ import { updateUser, validateUser } from '../modules/middleware';
 export const router = Router();
 
 const guilds = Deps.get<Guilds>(Guilds);
+const messages = Deps.get<Messages>(Messages);
 
 router.get('/@me/:channelId', updateUser, validateUser, async (req, res) => {
   try {
     const channelId = req.params.channelId;
-    let messages = await Message
-      .find({ channel: channelId as any })
-      .populate('author')
-      .populate('channel')
-      .exec();
-    messages.slice(+req.query.start || 0, +req.query.end || 25);
+    let channelMessages = (await messages
+      .getChannelMessages(channelId))
+      .slice(+req.query.start || 0, +req.query.end || 25);
 
     const channel = await Channel.findById(channelId);
     const canMessageUser = channel.recipientIds.includes(res.locals.user._id);
     if (!canMessageUser)
       throw new TypeError('You are not friends with this user.');
 
-    res.json(messages);
+    res.json(channelMessages);
   } catch (err) {    
     res.json({ code: 400, message: err?.message });
   }

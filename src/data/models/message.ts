@@ -12,7 +12,7 @@ export interface MessageEmbed {
 
 export interface MessageDocument extends Document {
   _id: string;
-  author: UserDocument;
+  authorId: string;
   channel: ChannelDocument;
   content: string;
   createdAt: Date;
@@ -23,11 +23,11 @@ export interface MessageDocument extends Document {
 
 export const Message = model<MessageDocument>('message', new Schema({
   _id: String,
-  author: { type: String, ref: 'user' },
-  channel: { type: String, ref: 'channel' },
+  authorId: String, // author -> authorId
+  channelId: String, // channel -> channelId
   content: String,
   createdAt: { type: Date, default: new Date() },
   embed: Object,
   guild: { type: String, ref: 'guild' },
   updatedAt: Date
-}));
+}).index({ channel: 1, createdAt: 1 }));

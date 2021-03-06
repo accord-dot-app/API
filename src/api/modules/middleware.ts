@@ -1,11 +1,13 @@
 import jwt from 'jsonwebtoken';
 import Guilds from '../../data/guilds';
-import { Guild } from '../../data/models/guild';
+import { Guild, GuildDocument } from '../../data/models/guild';
 import { Permission } from '../../data/models/role';
+import Roles from '../../data/roles';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 
 const guilds = Deps.get<Guilds>(Guilds);
+const roles = Deps.get<Roles>(Roles);
 const users = Deps.get<Users>(Users);
 
 export function validateUser(req, res, next) {  
@@ -37,7 +39,7 @@ export async function validateGuildExists(req, res, next) {
 }
  
 export async function validateGuildOwner(req, res, next) {
-  const userOwnsGuild = res.locals.guild.owner._id === res.locals.user._id;
+  const userOwnsGuild = res.locals.guild.ownerId === res.locals.user._id;
 
   return (userOwnsGuild)
     ? next()
@@ -46,8 +48,11 @@ export async function validateGuildOwner(req, res, next) {
 
 export function validateHasPermission(permission: Permission) {
   return async (req, res, next) => {
-    const member = await res.locals.guild.members.find(m => m.user === res.locals.user._id);
-    return res.locals.guild.owner._id === res.locals.user._id
-      || Boolean(member.permissions & permission);
+    const guild: GuildDocument = res.locals.guild;
+    const member = guild.members.find(m => m.user === res.locals.user._id);
+
+    return (roles.hasPermission(member, permission))
+      ? next()
+      : res.status(401);
   };
 }

@@ -22,8 +22,8 @@ export default class implements WSEvent {
   ) {}
 
   async invoke(ws: WebSocket, client: Socket, partialMessage: any) {
-    this.guard.validateIsUser(client, partialMessage.author._id);
-    await this.guard.canAccessChannel(client, partialMessage.channel._id);
+    this.guard.validateIsUser(client, partialMessage.authorId);
+    await this.guard.canAccessChannel(client, partialMessage.channelId);
 
     const maxLength = 3000;
     if (partialMessage.content.length > maxLength)
@@ -31,7 +31,7 @@ export default class implements WSEvent {
 
     let message = await Message.create({
       _id: generateSnowflake(),
-      author: partialMessage.author,
+      authorId: partialMessage.authorId,
       channel: partialMessage.channel,
       content: partialMessage.content,
       embed: await this.getEmbed(partialMessage),

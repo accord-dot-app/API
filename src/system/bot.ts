@@ -10,6 +10,7 @@ import { MessageDocument } from '../data/models/message';
 import { GuildMember } from '../data/models/guild-member';
 import Deps from '../utils/deps';
 import Messages from '../data/messages';
+import Users from '../data/users';
 
 export class SystemBot {
   public readonly socket = io(`http://localhost:${process.env.PORT}`);
@@ -17,13 +18,16 @@ export class SystemBot {
   private _self: UserDocument;
   get self() { return this._self; }
 
-  constructor(private messages = Deps.get<Messages>(Messages)) {
+  constructor(
+    private messages = Deps.get<Messages>(Messages),
+    private users = Deps.get<Users>(Users),
+  ) {
     this.socket.on('connect', () => Log.info('Connected to ws client', 'bot'));
     this.socket.connect();
   }
 
   public async init() {
-    this._self = await this.get();
+    this._self = await this.users.getSystemUser();
 
     await this.readyUp();
 
@@ -60,14 +64,16 @@ export class SystemBot {
 
   private hookWSEvents() {
     this.socket.on('MESSAGE_CREATE', async (message: MessageDocument) => {
+      const author = await this.users.get(message.authorId);
+
       message = await this.messages.get(message._id);
-      if (!message.guild && message.author.bot) return;
+      if (!message.guild && author.bot) return;
 
       if (message.content.toLowerCase() === 'hi') {
         this.socket.emit('MESSAGE_CREATE', {
           author: this.self,
           channel: message.channel,
-          content: `Hi, @${message.author.username}!`
+          content: `Hi, @${author.username}!`
         });
       }      
     });
@@ -91,29 +97,13 @@ export class SystemBot {
       });
   }
 
-  public async get() {
-    return await User.findOne({ username: 'DClone' })
-      ?? await User.create({
-        _id: generateSnowflake(),
-        avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/avatar_grey.png`,
-        badges: [],
-        bot: true,
-        createdAt: new Date(),
-        status: 'ONLINE',
-        username: 'DClone',
-        friends: [],
-        friendRequests: [],
-        voice: null,
-      });
-  }
-
   public async addToGuild(guildId: string) {
     const invite = await Invite.create({
       _id: generateInviteCode(),
       createdAt: new Date(),
       expiresAt: null,
-      guild: await Guild.findById(guildId),
-      inviter: this.self,
+      guildId,
+      inviterId: this.self._id,
       maxUses: 1,
       uses: 0
     });

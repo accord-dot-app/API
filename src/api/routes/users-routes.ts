@@ -12,9 +12,6 @@ import { resolve } from 'path';
 
 export const router = Router();
 
-const avatarNames = readdirSync(resolve('assets/avatars'))
-  .filter(n => n.startsWith('avatar'));
-
 const bot = Deps.get<SystemBot>(SystemBot);
 const channels = Deps.get<Channels>(Channels);
 const users = Deps.get<Users>(Users);
@@ -34,24 +31,12 @@ router.post('/', async (req, res) => {
     if (usernameExists)
       throw new TypeError('Username is taken.');
 
-    const randomAvatar = getRandomAvatar();
-    const user = await (User as any).register({
-      _id: generateSnowflake(),
-      username: req.body.username,
-      avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/${randomAvatar}`,
-      badges: [],
-      bot: false,
-      createdAt: new Date(),
-      friends: [],
-      status: 'ONLINE',
-      voice: new UserVoiceState()
-    }, req.body.password);
-
-  const token = jwt.sign({ _id: user._id }, 'secret' , { expiresIn : '7d' });
-
+    const user = await users.createUser(req.body.username, req.body.password); 
     await bot.dm(user, 'Hello there new user :thinking:!');
     
-    res.status(201).json(token);
+    res.status(201).json(
+      users.createToken(user.id)
+    );
   } catch (err) {
     res.json({ code: 400, message: err?.message });
   }
@@ -84,9 +69,3 @@ router.get('/:id', async (req, res) => {
   const user = await users.get(req.params.id);
   res.json(user);
 });
-function getRandomAvatar() {
-  const randomIndex = Math.floor(Math.random() * avatarNames.length);
-  const randomAvatar = avatarNames[randomIndex];
-  return randomAvatar;
-}
-

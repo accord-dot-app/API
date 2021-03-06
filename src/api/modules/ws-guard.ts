@@ -48,7 +48,7 @@ export class WSGuard {
     const highestRole = await this.getHighestRole(member, guild);
   
     return Boolean(highestRole?.permissions & permission)
-      || (guild.owner.id ?? guild.owner) === userId;
+      || (guild.ownerId ?? guild.ownerId) === userId;
   }
 
   private async getHighestRole(member: GuildMemberDocument, guild: GuildDocument) {

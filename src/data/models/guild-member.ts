@@ -9,6 +9,6 @@ export interface GuildMemberDocument extends Document {
 
 export const GuildMember = model<GuildMemberDocument>('guildMember', new Schema({
   guildId: String,
-  user: { type: String, ref: 'user' },
+  userId: String, // ref user -> userId
   roleIds: { type: Array, default: [] }
 }));

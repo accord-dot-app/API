@@ -17,8 +17,8 @@ export default class implements WSEvent {
           _id: generateInviteCode(),
           createdAt: new Date(),
           expiresAt: null,
-          guild,
-          inviter: user,
+          guildId: guild.id,
+          inviterId: user.id,
           maxUses: options?.maxUses,
           uses: 0
         })
