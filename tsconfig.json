@@ -8,6 +8,7 @@
     "module": "CommonJS",
     "noImplicitAny": false,
     "outDir": "lib",
+    "removeComments": true,
     "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": false,

@@ -42,9 +42,14 @@ export default class implements WSEvent {
 
     this.joinGuildRooms(client, guild);
 
-    ws.io.sockets
+    ws.io
       .to(guild._id)
+      // FIXME: guild -> guildId
       .emit('GUILD_MEMBER_ADD', { guild, member });
+
+    ws.io
+      .to(client.id)
+      .emit('GUILD_JOIN', { guild });
   }
 
   joinGuildRooms(client: Socket, guild: GuildDocument) {

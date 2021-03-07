@@ -15,9 +15,11 @@ export interface InviteDocument extends Document {
 export const Invite = model<InviteDocument>('invite', new Schema({
   _id: String,
   createdAt: Date,
-  inviter: { type: String, ref: 'user' },
+  inviterId: String, // inviter - ref: user -> inviteId
   expiresAt: Date,
-  guild: { type: String, ref: 'guild' },
+  guildId: String, // guild -> ref: guild, -> guildId
   maxUses: Number,
   uses: Number
 }));
+
+// TODO: guild should be sent to new member, in guild-member-add
