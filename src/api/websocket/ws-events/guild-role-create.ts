@@ -5,7 +5,7 @@ import { generateSnowflake } from '../../../data/snowflake-entity';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Args, Params } from './ws-event';
 
 export default class implements WSEvent {
   on = 'GUILD_ROLE_CREATE';
@@ -14,7 +14,8 @@ export default class implements WSEvent {
     private guard = Deps.get<WSGuard>(WSGuard)
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { partialRole }) {
+  // TODO: throw errors when cannot manage
+  async invoke(ws: WebSocket, client: Socket, { partialRole }: Params.GuildRoleCreate) {
     const userId = ws.sessions.get(client.id);
     const canManage = await this.guard.can(userId, partialRole.guildId, GeneralPermission.MANAGE_ROLES);
     if (!canManage) return;
@@ -29,6 +30,6 @@ export default class implements WSEvent {
 
     ws.io.sockets
       .to(guild._id)
-      .emit('GUILD_ROLE_CREATE', { role });
+      .emit('GUILD_ROLE_CREATE', { role } as Args.GuildRoleCreate);
   }
 }

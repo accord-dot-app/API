@@ -1,8 +1,7 @@
 import { Socket } from 'socket.io';
-import { Message, MessageEmbed } from '../../../data/models/message';
-import { generateSnowflake } from '../../../data/snowflake-entity';
+import { Message, MessageDocument, MessageEmbed } from '../../../data/models/message';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Args, Params } from './ws-event';
 import got from 'got';
 
 const metascraper = require('metascraper')([
@@ -15,8 +14,9 @@ const metascraper = require('metascraper')([
 export default class implements WSEvent {
   on = 'MESSAGE_UPDATE';
 
-  async invoke(ws: WebSocket, client: Socket, { message, withEmbed }) {
-    await Message.findByIdAndUpdate(message._id, {
+  async invoke(ws: WebSocket, client: Socket, { messageId, withEmbed }: Params.MessageUpdate) {
+    const message = await Message.findById(messageId);
+    await message.update({
       content: message.content,
       embed: withEmbed ? await getEmbed(message) : null,
       createdAt: message.createdAt,
@@ -24,12 +24,12 @@ export default class implements WSEvent {
     });
 
     ws.io
-      .to(message.channel._id)
-      .emit('MESSAGE_UPDATE', message);
+      .to(message.channelId)
+      .emit('MESSAGE_UPDATE', { message } as Args.MessageUpdate);
   }
 }
 
-async function getEmbed(message): Promise<MessageEmbed> {
+async function getEmbed(message: MessageDocument): Promise<MessageEmbed> {
   try {
     const containsURL = /([https://].*)/.test(message.content);
     if (!containsURL)

@@ -1,20 +1,22 @@
 import { Socket } from 'socket.io';
 import { User } from '../../../data/models/user';
 import Users from '../../../data/users';
+import { SystemBot } from '../../../system/bot';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Args, Params } from './ws-event';
  
 export default class implements WSEvent {
   on = 'READY';
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),
-    private users = Deps.get<Users>(Users)
+    private systemBot = Deps.get<SystemBot>(SystemBot),
+    private users = Deps.get<Users>(Users),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { key, guildIds, channelIds }) {   
+  async invoke(ws: WebSocket, client: Socket, { key, guildIds, channelIds }: Params.Ready) {   
     const alreadyLoggedIn = ws.sessions.has(client.id);
     if (alreadyLoggedIn)
       throw new TypeError('Already logged in elsewhere');
@@ -35,7 +37,7 @@ export default class implements WSEvent {
         .emit('PRESENCE_UPDATE', {
           userId,
           status: user.status
-        });      
+        } as Args.PresenceUpdate);
     }
   }
 
@@ -45,6 +47,7 @@ export default class implements WSEvent {
 
     const ids = []
       .concat(
+        this.systemBot.self._id,
         guildIds,
         channelIds,
         user._id,

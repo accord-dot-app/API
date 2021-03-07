@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 import { Message, MessageEmbed } from '../../../data/models/message';
 import { generateSnowflake } from '../../../data/snowflake-entity';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Args, Params } from './ws-event';
 import got from 'got';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
@@ -21,7 +21,7 @@ export default class implements WSEvent {
     private guard = Deps.get<WSGuard>(WSGuard)
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, partialMessage: any) {
+  async invoke(ws: WebSocket, client: Socket, { partialMessage }: Params.MessageCreate) {
     this.guard.validateIsUser(client, partialMessage.authorId);
     await this.guard.canAccessChannel(client, partialMessage.channelId);
 
@@ -29,26 +29,23 @@ export default class implements WSEvent {
     if (partialMessage.content.length > maxLength)
       throw new TypeError('Content Too Long');
 
-    let message = await Message.create({
+    const message = await Message.create({
       _id: generateSnowflake(),
       authorId: partialMessage.authorId,
-      channel: partialMessage.channel,
+      channelId: partialMessage.channelId,
       content: partialMessage.content,
       embed: await this.getEmbed(partialMessage),
       guild: partialMessage.guild,
       createdAt: new Date(),
       updatedAt: null
     });
-    message = await message
-      .populate('author')
-      .execPopulate();
 
-    ws.io.sockets
+    ws.io
       .to(partialMessage.channel._id)
-      .emit('MESSAGE_CREATE', { message });
+      .emit('MESSAGE_CREATE', { message } as Args.MessageCreate);
   }
 
-  async getEmbed(message: any): Promise<MessageEmbed> {
+  public async getEmbed(message: any): Promise<MessageEmbed> {
     try {
       const containsURL = /([https://].*)/.test(message.content);
       if (!containsURL)

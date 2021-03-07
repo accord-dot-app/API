@@ -1,16 +1,16 @@
 import { Socket } from 'socket.io';
 import { Message, MessageDocument } from '../../../data/models/message';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Params } from './ws-event';
 
 export default class implements WSEvent {
   on = 'MESSAGE_DELETE';
 
-  async invoke(ws: WebSocket, client: Socket, message: MessageDocument) {
-    await Message.deleteOne(message);
+  async invoke(ws: WebSocket, client: Socket, { messageId, channelId }: Params.MessageDelete) {
+    await Message.deleteOne({ _id: messageId });
 
     ws.io
-      .to(message.channel._id)
-      .emit('MESSAGE_DELETE', ({ messageId: message._id }));
+      .to(channelId)
+      .emit('MESSAGE_DELETE', ({ messageId: messageId }));
   }
 }

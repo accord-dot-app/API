@@ -3,7 +3,7 @@ import { GeneralPermission, Role } from '../../../data/models/role';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Args, Params } from './ws-event';
 
 export default class implements WSEvent {
   on = 'GUILD_ROLE_DELETE';
@@ -12,15 +12,15 @@ export default class implements WSEvent {
     private guard = Deps.get<WSGuard>(WSGuard)
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { roleId, guildId }) {
+  async invoke(ws: WebSocket, client: Socket, { roleId, guildId }: Params.GuildRoleDelete) {
     const userId = ws.sessions.get(client.id);
     const canManage = this.guard.can(userId, guildId, GeneralPermission.MANAGE_ROLES);
     if (!canManage) return;
 
-    await Role.findByIdAndDelete(roleId);
+    await Role.deleteOne({ _id: roleId });
 
     ws.io.sockets
       .to(guildId)
-      .emit('GUILD_ROLE_DELETE', { roleId });
+      .emit('GUILD_ROLE_DELETE', { roleId } as Args.GuildRoleDelete);
   }
 }

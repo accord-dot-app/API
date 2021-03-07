@@ -5,14 +5,14 @@ import { generateSnowflake } from '../../../data/snowflake-entity';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Args, Params } from './ws-event';
 
 export default class implements WSEvent {
   on = 'ACCEPT_FRIEND_REQUEST';
 
   constructor(private users = Deps.get<Users>(Users)) {}
 
-  async invoke(ws: WebSocket, client: Socket, { senderId, friendId }) {
+  async invoke(ws: WebSocket, client: Socket, { senderId, friendId }: Params.AcceptFriendRequest) {
     ws.io.sockets
       .to(senderId)
       .to(friendId)
@@ -25,7 +25,7 @@ export default class implements WSEvent {
           recipientIds: [senderId, friendId],
           type: 'DM'
         })
-      });
+      } as Args.AcceptFriendRequest);
   }
 
   async acceptFriendRequest(userId: string, friendId: string) {

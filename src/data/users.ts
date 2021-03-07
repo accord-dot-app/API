@@ -8,7 +8,8 @@ import { readdirSync } from 'fs';
 import { resolve } from 'path';
 
 export default class Users extends DBWrapper<string, UserDocument> {
-  avatarNames = [];
+  private avatarNames = [];
+  private systemUser: UserDocument;
 
   constructor() {
     super();
@@ -26,7 +27,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
   public async getKnown(userId: string) {
     return await User.find({
       $or: [
-        ,
+        { _id: this.systemUser._id },
         { friends: userId },
         { friendRequests: { userId, type: 'INCOMING' } },
         { friendRequests: { userId, type: 'OUTGOING' } }
@@ -35,7 +36,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
   }
 
   public async getSystemUser() {
-    return await User.findOne({ username: 'DClone' })
+    return this.systemUser = await User.findOne({ username: 'DClone' })
       ?? await User.create({
         _id: generateSnowflake(),
         avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/avatar_grey.png`,

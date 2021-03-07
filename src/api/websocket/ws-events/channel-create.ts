@@ -6,7 +6,7 @@ import { generateSnowflake } from '../../../data/snowflake-entity';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Args, Params } from './ws-event';
 
 export default class implements WSEvent {
   on = 'CHANNEL_CREATE';
@@ -15,7 +15,7 @@ export default class implements WSEvent {
     private guard = Deps.get<WSGuard>(WSGuard)
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { partialChannel, guildId }) {
+  async invoke(ws: WebSocket, client: Socket, { partialChannel, guildId }: Params.ChannelCreate) {
     const userId = ws.sessions.get(client.id);
     const canManage = await this.guard.can(userId, guildId, GeneralPermission.MANAGE_CHANNELS);
     if (!canManage) return;
@@ -40,6 +40,6 @@ export default class implements WSEvent {
       .to(guildId)
       .emit('CHANNEL_CREATE', {
         channel
-      });
+      } as Args.ChannelCreate);
   }
 }

@@ -12,7 +12,7 @@
     "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": false,
-    "target": "ES5",
+    "target": "ES2020",
     "watch": true
   },
   "include": ["src", "env"]

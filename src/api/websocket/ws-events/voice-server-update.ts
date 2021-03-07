@@ -6,7 +6,7 @@ import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Params } from './ws-event';
 
 export default class implements WSEvent {
   on = 'VOICE_SERVER_UPDATE';
@@ -16,7 +16,7 @@ export default class implements WSEvent {
     private guilds = Deps.get<Guilds>(Guilds)
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { userId, guildId }) {
+  async invoke(ws: WebSocket, client: Socket, { userId, guildId }: Params.VoiceServerUpdate) {
     this.guard.validateIsUser(client, userId);
 
     // const guild = await this.guilds.getUserGuild(userId, guildId);

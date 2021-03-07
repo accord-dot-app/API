@@ -5,7 +5,7 @@ import { GuildDocument } from '../../../data/models/guild';
 import { GuildMember } from '../../../data/models/guild-member';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Args, Params } from './ws-event';
 
 export default class implements WSEvent {
   on = 'GUILD_MEMBER_ADD';
@@ -14,12 +14,12 @@ export default class implements WSEvent {
     private guilds = Deps.get<Guilds>(Guilds),
     private invites = Deps.get<Invites>(Invites)) {}
 
-  async invoke(ws: WebSocket, client: Socket, { inviteCode, user }) {
+  async invoke(ws: WebSocket, client: Socket, { inviteCode, userId }: Params.GuildMemberAdd) {
     const invite = await this.invites.get(inviteCode);
     if (!invite) return;
 
-    const guild = await this.guilds.get(invite.guild._id);
-    const memberExists = guild.members.some(m => m.user === user._id);
+    const guild = await this.guilds.get(invite.guildId);
+    const memberExists = guild.members.some(m => m.userId === userId);
     if (memberExists) return;
     
     invite.uses++;
@@ -29,7 +29,7 @@ export default class implements WSEvent {
       : await invite.save();
 
     const member = await GuildMember.create({
-      user,
+      userId,
       guildId: guild._id,
       roleIds: [guild.roles[0]._id]
     });
@@ -44,12 +44,11 @@ export default class implements WSEvent {
 
     ws.io
       .to(guild._id)
-      // FIXME: guild -> guildId
-      .emit('GUILD_MEMBER_ADD', { guild, member });
+      .emit('GUILD_MEMBER_ADD', { member } as Args.GuildMemberAdd);
 
     ws.io
       .to(client.id)
-      .emit('GUILD_JOIN', { guild });
+      .emit('GUILD_JOIN', { guild } as Args.GuildJoin);
   }
 
   joinGuildRooms(client: Socket, guild: GuildDocument) {

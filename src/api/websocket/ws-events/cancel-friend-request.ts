@@ -3,21 +3,21 @@ import { FriendRequestType, User } from '../../../data/models/user';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Args, Params } from './ws-event';
 
 export default class implements WSEvent {
   on = 'CANCEL_FRIEND_REQUEST';
 
   constructor(private users = Deps.get<Users>(Users)) {}
 
-  async invoke(ws: WebSocket, client: Socket, { senderId, friendId }) {
+  async invoke(ws: WebSocket, client: Socket, { senderId, friendId }: Params.CancelFriendRequest) {
     ws.io.sockets
       .to(senderId)
       .to(friendId)
       .emit('CANCEL_FRIEND_REQUEST', {
         sender: await this.removeFriendRequest(senderId, friendId),
         friend: await this.removeFriendRequest(friendId, senderId)
-      });
+      } as Args.CancelFriendRequest);
   }
 
   async removeFriendRequest(userId: string, friendId: string) {

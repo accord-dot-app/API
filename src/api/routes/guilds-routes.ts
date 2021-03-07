@@ -9,7 +9,6 @@ import { Channel, ChannelType } from '../../data/models/channel';
 import { GuildMember } from '../../data/models/guild-member';
 import { Invite } from '../../data/models/invite';
 import { Message } from '../../data/models/message';
-import { defaultPermissions, GeneralPermission, Role } from '../../data/models/role';
 import { SystemBot } from '../../system/bot';
 import Channels from '../../data/channels';
 import Roles from '../../data/roles';
@@ -44,7 +43,7 @@ router.post('/', updateUser, validateUser, async (req, res) => {
       ownerId: res.locals.user._id,
       members: [
         await GuildMember.create({
-          user: res.locals.user,
+          userId: res.locals.user._id,
           guildId,
           roleIds: [everyoneRoleId]
         })

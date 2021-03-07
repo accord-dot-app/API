@@ -3,14 +3,14 @@ import { User, UserDocument } from '../../../data/models/user';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Args, Params } from './ws-event';
 
 export default class implements WSEvent {
   on = 'REMOVE_FRIEND';
 
   constructor(private users = Deps.get<Users>(Users)) {}
 
-  async invoke(ws: WebSocket, client: Socket, { senderId, friendId }) {
+  async invoke(ws: WebSocket, client: Socket, { senderId, friendId }: Params.RemoveFriend) {
     if (!friendId) return;
 
     ws.io.sockets
@@ -19,7 +19,7 @@ export default class implements WSEvent {
       .emit('REMOVE_FRIEND', {
         sender: await this.removeFriendAndUpdate(senderId, friendId),
         friend: await this.removeFriendAndUpdate(friendId, senderId)
-      });
+      } as Args.RemoveFriend);
   }
 
   async removeFriendAndUpdate(userId: string, friendId: string) {

@@ -4,7 +4,7 @@ import { User, UserVoiceState } from '../../../data/models/user';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import WSEvent, { Args, Params } from './ws-event';
 
 export default class implements WSEvent {
   on = 'VOICE_STATE_UPDATE';
@@ -13,7 +13,7 @@ export default class implements WSEvent {
     private guard = Deps.get<WSGuard>(WSGuard)
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { userId, voice }) {    
+  async invoke(ws: WebSocket, client: Socket, { userId, voice }: Params.VoiceStateUpdate) {    
     this.guard.validateIsUser(client, userId);
     await this.guard.canAccessChannel(client, voice.channelId);
 
@@ -35,7 +35,7 @@ export default class implements WSEvent {
       .to(voice.guildId)
       .to(vc.guildId)
       .emit('VOICE_STATE_UPDATE',
-      { memberIds: vc.memberIds, userId, voice, }
+      { memberIds: vc.memberIds, userId, voice, } as Args.VoiceStateUpdate
     );
   }
 

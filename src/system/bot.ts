@@ -71,11 +71,11 @@ export class SystemBot {
 
       if (message.content.toLowerCase() === 'hi') {
         this.socket.emit('MESSAGE_CREATE', {
-          author: this.self,
-          channel: message.channel,
+          authorId: this.self._id,
+          channelId: message.channelId,
           content: `Hi, @${author.username}!`
         });
-      }      
+      }
     });
   }
 

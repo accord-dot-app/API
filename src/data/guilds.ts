@@ -4,8 +4,7 @@ import DBWrapper from './db-wrapper';
 export default class Guilds extends DBWrapper<string, GuildDocument> {
   protected getOrCreate(id: string) {
     return Guild.findById(id)
-      ?.populate('owner')
-      .populate('members')
+      ?.populate('members')
       .populate('roles')
       .populate('channels')
       .exec();
@@ -17,18 +16,13 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
       .populate('members')
       .populate('roles')
       .exec())
-      .filter(g => g.members.some(m => m.user === userId as any));
+      .filter(g => g.members.some(m => m.userId === userId));
     
     const guilds = [];
     for (const userGuild of userGuilds) {
       const guild = await userGuild
-        .populate('owner')
-        .populate('channels')
+        ?.populate('channels')
         .execPopulate();
-      for (const member of userGuild.members)
-        await member
-          .populate('user')
-          .execPopulate();
       guilds.push(guild);
     }
     return guilds;
@@ -36,7 +30,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
 
   public async getUserGuild(userId: string, guildId: string) {
     const guild = await Guild.findById(guildId);
-    const inGuild = guild.members.some(m => m.user as any === userId);
+    const inGuild = guild.members.some(m => m.userId === userId);
     return (inGuild) ? guild : null;
   }
 }
