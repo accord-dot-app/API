@@ -13,14 +13,15 @@ export default class implements WSEvent {
   ) {}
 
   // TODO: validate all role values
-  async invoke(ws: WebSocket, client: Socket, { role }: Params.GuildRoleUpdate) {
+  async invoke(ws: WebSocket, client: Socket, { roleId, partialRole, guildId }: Params.GuildRoleUpdate) {
     const userId = ws.sessions.get(client.id);
-    const canManage = await this.guard.can(userId, role.guildId, GeneralPermission.MANAGE_ROLES);
+    const canManage = await this.guard.can(userId, guildId, GeneralPermission.MANAGE_ROLES);
     if (!canManage) return;
 
-    ws.io.sockets
-      .to(role.guildId)
-      .emit('GUILD_ROLE_UPDATE',
-        { role: await Role.findByIdAndUpdate(role._id, role) } as Args.GuildRoleUpdate);
+    await Role.updateOne({ _id: roleId }, partialRole)
+
+    ws.io
+      .to(guildId)
+      .emit('GUILD_ROLE_UPDATE', { partialRole } as Args.GuildRoleUpdate);
   }
 }

@@ -38,8 +38,6 @@ export default class implements WSEvent {
 
     ws.io.sockets
       .to(guildId)
-      .emit('CHANNEL_CREATE', {
-        channel
-      } as Args.ChannelCreate);
+      .emit('CHANNEL_CREATE', { channel } as Args.ChannelCreate);
   }
 }

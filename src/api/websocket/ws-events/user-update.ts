@@ -6,9 +6,9 @@ import WSEvent, { Args, Params } from './ws-event';
 export default class implements WSEvent {
   on = 'USER_UPDATE';
 
+  // TODO: validate if client is user
   async invoke(ws: WebSocket, client: Socket, { userId, partialUser }: Params.UserUpdate) {
-    client.emit('USER_UPDATE', {
-      user: await User.findByIdAndUpdate(userId, { $set: partialUser })
-    } as Args.UserUpdate);
+    await User.findByIdAndUpdate(userId, { $set: partialUser })
+    client.emit('USER_UPDATE', { partialUser } as Args.UserUpdate);
   }
 }

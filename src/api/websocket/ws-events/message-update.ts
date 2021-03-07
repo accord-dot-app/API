@@ -14,7 +14,7 @@ const metascraper = require('metascraper')([
 export default class implements WSEvent {
   on = 'MESSAGE_UPDATE';
 
-  async invoke(ws: WebSocket, client: Socket, { messageId, withEmbed }: Params.MessageUpdate) {
+  async invoke(ws: WebSocket, client: Socket, { messageId, partialMessage, withEmbed }: Params.MessageUpdate) {
     const message = await Message.findById(messageId);
     await message.update({
       content: message.content,
@@ -25,7 +25,7 @@ export default class implements WSEvent {
 
     ws.io
       .to(message.channelId)
-      .emit('MESSAGE_UPDATE', { message } as Args.MessageUpdate);
+      .emit('MESSAGE_UPDATE', { messageId, partialMessage } as Args.MessageUpdate);
   }
 }
 

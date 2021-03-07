@@ -35,13 +35,13 @@ export default class implements WSEvent {
       channelId: partialMessage.channelId,
       content: partialMessage.content,
       embed: await this.getEmbed(partialMessage),
-      guild: partialMessage.guild,
+      guildId: partialMessage.guildId,
       createdAt: new Date(),
       updatedAt: null
     });
 
     ws.io
-      .to(partialMessage.channel._id)
+      .to(partialMessage.channelId)
       .emit('MESSAGE_CREATE', { message } as Args.MessageCreate);
   }
 

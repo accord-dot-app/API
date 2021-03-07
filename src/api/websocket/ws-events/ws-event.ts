@@ -1,8 +1,4 @@
 import { Socket } from 'socket.io';
-import { ChannelDocument } from '../../../data/models/channel';
-import { GuildDocument } from '../../../data/models/guild';
-import { GuildMemberDocument } from '../../../data/models/guild-member';
-import { InviteDocument } from '../../../data/models/invite';
 import { WebSocket } from '../websocket';
 
 // TODO: make non-default
@@ -20,7 +16,7 @@ export namespace Params {
   export interface CancelFriendRequest extends AcceptFriendRequest {}
   export interface ChannelCreate {
     guildId: string;
-    partialChannel: any;
+    partialChannel: Types.PartialChannel;
   }
   export interface GuildDelete {
     guildId: string;
@@ -30,20 +26,26 @@ export namespace Params {
     userId: string;
   }
   export interface GuildMemberUpdate {
-    member: any;
+    guildId: string;
+    partialMember: Types.PartialMember;
+    userId: string;
   }
   export interface GuildRoleCreate {
-    partialRole: any;
+    guildId: string;
+    partialRole: Types.PartialRole;
   }
   export interface GuildRoleDelete {
     roleId: string;
     guildId: string;
   }
   export interface GuildRoleUpdate {
-    role: any;
+    roleId: string;
+    guildId: string;
+    partialRole: Types.PartialRole;
   }
   export interface GuildUpdate {
-    guild: any;
+    guildId: string;
+    partialGuild: Types.PartialGuild;
   }
   export interface InviteCreate {
     guildId: string;
@@ -51,7 +53,7 @@ export namespace Params {
     userId: string;
   }
   export interface MessageCreate {
-    partialMessage: any;
+    partialMessage: Types.PartialMessage;
   }
   export interface MessageDelete {
     channelId: string;
@@ -59,10 +61,11 @@ export namespace Params {
   }
   export interface MessageUpdate {
     messageId: string;
+    partialMessage: Types.PartialMessage;
     withEmbed: boolean;
   }
   export interface MessageCreate {
-    partialMessage: any;
+    partialMessage: Types.PartialMessage;
   }
   export interface Ready {
     key: string;
@@ -82,7 +85,7 @@ export namespace Params {
     userId: string;
   }
   export interface UserUpdate {
-    partialUser: any;
+    partialUser: Types.PartialUser;
     userId: string;
   }
   export interface VoiceStateUpdate {
@@ -114,7 +117,8 @@ export namespace Args {
     member: any;
   }
   export interface GuildMemberUpdate {
-    member: any;
+    partialMember: any;
+    userId: string;
   }
   export interface GuildRoleCreate {
     role: any;
@@ -123,10 +127,12 @@ export namespace Args {
     roleId: string;
   }
   export interface GuildRoleUpdate {
-    role: any;
+    roleId: string;
+    partialRole: any;
   }
   export interface GuildUpdate {
-    guild: any;
+    guildId: any;
+    partialGuild: Types.PartialGuild;
   }
   export interface InviteCreate {
     invite: any;
@@ -138,7 +144,8 @@ export namespace Args {
     messageId: string;
   }
   export interface MessageUpdate {
-    message: any;
+    messageId: string;
+    partialMessage: any;
   }
   export interface PresenceUpdate {
     userId: string;
@@ -153,8 +160,43 @@ export namespace Args {
     userId: string;
   }
   export interface UserUpdate {
-    user: any;
+    partialUser: any;
   }
-  export interface VoiceStateUpdate {}
+  export interface VoiceStateUpdate {
+    userId: string;
+    voice: any;
+    memberIds: string[];
+  }
   export interface VoiceServerUpdate {}
+}
+
+export namespace Types {
+  export interface PartialChannel {
+    name: string;
+    type: any;
+  }
+  export interface PartialGuild {
+    name: string;
+  }
+  export interface PartialMember {
+    
+  }
+  export interface PartialMessage {
+    authorId: string;
+    channelId: string;
+    content: string;
+    guildId?: string;
+  }
+  export interface PartialRole {
+    name: string;
+    color: string;
+    hoisted: boolean;
+    mentionable: boolean;
+    permissions: number;
+    position: number;
+  }
+  export interface PartialUser {
+    avatarURL: string;
+    username: string;
+  }
 }

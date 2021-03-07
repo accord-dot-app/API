@@ -36,10 +36,6 @@ export default class implements WSEvent {
     guild.members.push(member);
     await guild.save();
 
-    await member
-      .populate('user')
-      .execPopulate();
-
     this.joinGuildRooms(client, guild);
 
     ws.io

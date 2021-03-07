@@ -15,17 +15,19 @@ export default class implements WSEvent {
   ) {}
 
   // TODO: throw errors when cannot manage
-  async invoke(ws: WebSocket, client: Socket, { partialRole }: Params.GuildRoleCreate) {
+  async invoke(ws: WebSocket, client: Socket, { guildId, partialRole }: Params.GuildRoleCreate) {
     const userId = ws.sessions.get(client.id);
-    const canManage = await this.guard.can(userId, partialRole.guildId, GeneralPermission.MANAGE_ROLES);
+    const canManage = await this.guard.can(userId, guildId, GeneralPermission.MANAGE_ROLES);
+    // if adding an audit log, you would log the client made a role here
     if (!canManage) return;
 
     const role = await Role.create({
       ...partialRole,
       _id: generateSnowflake(),
-      createdAt: new Date()
+      createdAt: new Date(),
+      guildId
     });
-    const guild = await Guild.findById(partialRole.guildId);
+    const guild = await Guild.findById(guildId);
     await guild.updateOne({ $set: { roles: guild.roles.concat(role) } });
 
     ws.io.sockets

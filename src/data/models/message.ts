@@ -17,7 +17,7 @@ export interface MessageDocument extends Document {
   content: string;
   createdAt: Date;
   embed: MessageEmbed;
-  guild?: GuildDocument;
+  guildId: string;
   updatedAt: Date;
 }
 
@@ -28,6 +28,6 @@ export const Message = model<MessageDocument>('message', new Schema({
   content: String,
   createdAt: { type: Date, default: new Date() },
   embed: Object,
-  guild: { type: String, ref: 'guild' },
+  guild: { type: String, ref: 'guild' }, // guild -> guildId
   updatedAt: Date
 }).index({ channel: 1, createdAt: 1 }));

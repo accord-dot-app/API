@@ -16,10 +16,6 @@ export default class Messages extends DBWrapper<string, MessageDocument> {
   }
 
   public getChannelMessages(channelId: string) {
-    return Message
-      .find({ channel: channelId as any })
-      .populate('author')
-      .populate('channel')
-      .exec();
+    return Message.find({ channelId });
   }
 }

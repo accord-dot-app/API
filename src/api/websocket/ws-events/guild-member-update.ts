@@ -6,9 +6,9 @@ export default class implements WSEvent {
   on = 'GUILD_MEMBER_UPDATE';
 
   // TODO: validate can manage etc.
-  async invoke(ws: WebSocket, _: Socket, { member }: Params.GuildMemberUpdate) {
+  async invoke(ws: WebSocket, _: Socket, { userId, guildId, partialMember }: Params.GuildMemberUpdate) {
     ws.io.sockets
-      .to(member.guild._id)
-      .emit('GUILD_MEMBER_UPDATE', { member } as Args.GuildMemberUpdate);
+      .to(guildId)
+      .emit('GUILD_MEMBER_UPDATE', { userId, partialMember } as Args.GuildMemberUpdate);
   }
 }

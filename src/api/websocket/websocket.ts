@@ -38,7 +38,7 @@ export class WebSocket {
             await event.invoke.bind(event)(this, client, data);
             client.send(`SENT - ${event.on}`);
           } catch (error) {
-            client.send(`Error on executing: ${event.on}\n${error.message}`);
+            client.send(`Server error on executing: ${event.on}\n${error.message}`);
           }
         });
     });

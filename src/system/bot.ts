@@ -11,6 +11,7 @@ import { GuildMember } from '../data/models/guild-member';
 import Deps from '../utils/deps';
 import Messages from '../data/messages';
 import Users from '../data/users';
+import { Args, Params } from '../api/websocket/ws-events/ws-event';
 
 export class SystemBot {
   public readonly socket = io(`http://localhost:${process.env.PORT}`);
@@ -56,25 +57,26 @@ export class SystemBot {
     Log.info('Initialized bot', 'bot');
   }
 
-  public sendMessage(channel: ChannelDocument, guild: GuildDocument, content: string) {
+  public sendMessage(channelId: string, guildId: string, content: string) {
     this.socket.emit('MESSAGE_CREATE', {
-      author: this.self, channel, content, guild,
-    });
+      partialMessage: {
+        authorId: this.self._id,
+        channelId: channelId,
+        content,
+        guildId: guildId,
+      }
+    } as Params.MessageCreate);
   }
 
   private hookWSEvents() {
-    this.socket.on('MESSAGE_CREATE', async (message: MessageDocument) => {
+    this.socket.on('MESSAGE_CREATE', async ({ message }: Args.MessageCreate) => {
       const author = await this.users.get(message.authorId);
 
       message = await this.messages.get(message._id);
       if (!message.guild && author.bot) return;
 
       if (message.content.toLowerCase() === 'hi') {
-        this.socket.emit('MESSAGE_CREATE', {
-          authorId: this.self._id,
-          channelId: message.channelId,
-          content: `Hi, @${author.username}!`
-        });
+        this.sendMessage(message.channelId, message.guildId, `Hi, @${author.username}!`)
       }
     });
   }

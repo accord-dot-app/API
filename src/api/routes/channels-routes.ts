@@ -40,16 +40,9 @@ router.get('/:guildId/:channelId', updateUser, validateUser, async (req, res) =>
       throw new TypeError('You are not a member of this guild.');
 
     const channelMsgs = [];
-    const msgs = await Message
-      .find({ guild: req.params.guildId, channel: req.params.channelId } as any)
-    
-    for (const msg of msgs.slice(+req.query.start || 0, +req.query.end || 25))
-      channelMsgs.push(
-        await msg
-          .populate('author')
-          .populate('channel')
-          .execPopulate()
-      );
+    const msgs = (await Message
+      .find({ guild: req.params.guildId, channel: req.params.channelId } as any))
+      .slice(+req.query.start || 0, +req.query.end || 25);
     
     res.json(channelMsgs);
   } catch (err) {
