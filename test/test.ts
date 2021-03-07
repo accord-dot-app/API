@@ -14,6 +14,10 @@ connect(process.env.MONGO_URI, {
 });
 
 (async() => {
-  await import('./integration/message-create.tests');
-  await import('./integration/voice-state-update.tests');
+  // await import('./integration/channel-create.tests');
+  // await import('./integration/message-create.tests');
+  // await import('./integration/ready.tests');
+  // await import('./integration/voice-state-update.tests');
+
+  await import('./unit/snowflake-entity.tests');
 })();

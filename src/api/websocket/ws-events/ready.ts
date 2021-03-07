@@ -5,7 +5,7 @@ import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
 import WSEvent from './ws-event';
-
+ 
 export default class implements WSEvent {
   on = 'READY';
 
@@ -16,7 +16,8 @@ export default class implements WSEvent {
 
   async invoke(ws: WebSocket, client: Socket, { key, guildIds, channelIds }) {   
     const alreadyLoggedIn = ws.sessions.has(client.id);
-    if (alreadyLoggedIn) return;
+    if (alreadyLoggedIn)
+      throw new TypeError('Already logged in elsewhere');
 
     const { id: userId } = this.guard.decodeKey(key);
     ws.sessions.set(client.id, userId);
@@ -26,7 +27,7 @@ export default class implements WSEvent {
       throw new TypeError('User not found');
 
     await this.joinRooms(client, { user, guildIds, channelIds });
-    await User.findByIdAndUpdate(userId, { status: 'ONLINE' });
+    await User.updateOne({ _id: userId }, { status: 'ONLINE' });
 
     for (const id in client.adapter.rooms) {
       ws.io
@@ -38,7 +39,7 @@ export default class implements WSEvent {
     }
   }
 
-  async joinRooms(client: Socket, { user, guildIds, channelIds }) {
+  private async joinRooms(client: Socket, { user, guildIds, channelIds }) {
     const alreadyJoinedRooms = Object.keys(client.rooms).length > 1;
     if (alreadyJoinedRooms) return;
 

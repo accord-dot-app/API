@@ -53,12 +53,12 @@ describe('voice-state-update', () => {
 
     it('connected to channel, adds self to vc members', async () => {
       const guild = await mock.guild();
-      ws.sessions.set(client.id, guild.owner.id);
+      ws.sessions.set(client.id, guild.ownerId);
 
       const vc = guild.channels[1];
 
       await event.invoke(ws, client, {
-        userId: guild.owner.id,
+        userId: guild.ownerId,
         voice: {
           guildId: guild.id,
           channelId: vc.id,
@@ -68,17 +68,17 @@ describe('voice-state-update', () => {
 
       const result = await Channel.findById(vc.id);
 
-      expect(result.memberIds).to.include(guild.owner.id);
+      expect(result.memberIds).to.include(guild.ownerId);
     });
 
     it('owner attempts to connect, authorized', async () => {
       const guild = await mock.guild();
-      ws.sessions.set(client.id, guild.owner.id);
+      ws.sessions.set(client.id, guild.ownerId);
 
       const vc = guild.channels[1];
 
       const result = () => event.invoke(ws, client, {
-        userId: guild.owner.id,
+        userId: guild.ownerId,
         voice: {
           guildId: guild.id,
           channelId: vc.id,

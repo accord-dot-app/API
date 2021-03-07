@@ -1,9 +1,12 @@
 import { Router } from 'express';
 import { User } from '../../data/models/user';
-import jwt from 'jsonwebtoken';
 import passport from 'passport';
+import Deps from '../../utils/deps';
+import Users from '../../data/users';
 
 export const router = Router();
+
+const users = Deps.get<Users>(Users);
 
 router.post('/login',
   passport.authenticate('local', { failWithError: false }),
@@ -11,8 +14,8 @@ router.post('/login',
   const user = await User.findOne({ username: req.body.username }); 
   if (!user)
     return res.status(400).json({ message: 'Invalid Credentials' });
-
-  const token = jwt.sign({ _id: user._id }, 'secret' , { expiresIn : '7d' });
   
-  return res.status(200).json(token);
+  return res.status(200).json(
+    users.createToken(user.id)
+  );
 });

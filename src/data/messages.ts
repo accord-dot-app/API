@@ -3,12 +3,7 @@ import { Message, MessageDocument } from './models/message';
 
 export default class Messages extends DBWrapper<string, MessageDocument> {
   protected async getOrCreate(id: string) {
-    return await Message
-      .findById(id)
-      ?.populate('author')
-      .populate('channel')
-      .populate('guild')
-      .exec();
+    return await Message.findById(id);
   }
 
   protected create(id: string) {
@@ -22,10 +17,7 @@ export default class Messages extends DBWrapper<string, MessageDocument> {
 
   public getChannelMessages(channelId: string) {
     return Message
-      .find({
-        channel: channelId as any,
-        createdAt: 
-      })
+      .find({ channel: channelId as any })
       .populate('author')
       .populate('channel')
       .exec();

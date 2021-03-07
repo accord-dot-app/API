@@ -3,7 +3,7 @@ import { WebSocket } from '../../src/api/websocket/websocket';
 import Deps from '../../src/utils/deps';
 import { expect } from 'chai';
 import io from 'socket.io-client';
-import { Message } from '../../src/data/models/message';
+import { Message, MessageDocument } from '../../src/data/models/message';
 import { GuildMember } from '../../src/data/models/guild-member';
 import { Mock } from '../mock';
 import { Guild } from '../../src/data/models/guild';
@@ -42,7 +42,7 @@ describe('message-create', () => {
   describe('invoke', () => {
     it('spoofed author, throws error', async () => {
       const partialMessage = new Message();
-      partialMessage.author = { _id: 'user_2' } as any;
+      partialMessage.authorId = 'user_2';
 
       const result = () => event.invoke(ws, client, partialMessage);
 
@@ -95,11 +95,11 @@ describe('message-create', () => {
     
     it('user is guild owner, message created', async () => {
       const guild = await mock.guild();
-      ws.sessions.set(client.id, guild.owner.id);
+      ws.sessions.set(client.id, guild.ownerId);
 
-      const partialMessage = new Message({
-        author: guild.owner,
-        channel: guild.channels[0],
+      const partialMessage: MessageDocument = new Message({
+        authorId: guild.ownerId,
+        channelId: guild.channels[0]._id,
         content: 'hi',
         guild
       });
@@ -111,10 +111,10 @@ describe('message-create', () => {
 
     it('message is too long, rejected', async () => {
       const guild = await mock.guild();
-      ws.sessions.set(client.id, guild.owner.id);
+      ws.sessions.set(client.id, guild.ownerId);
 
       const partialMessage = new Message({
-        author: guild.owner,
+        author: guild.ownerId,
         channel: guild.channels[0],
         content: new Array(3001).fill('a').join(''),
         guild

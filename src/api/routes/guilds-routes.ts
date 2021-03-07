@@ -11,11 +11,15 @@ import { Invite } from '../../data/models/invite';
 import { Message } from '../../data/models/message';
 import { defaultPermissions, GeneralPermission, Role } from '../../data/models/role';
 import { SystemBot } from '../../system/bot';
+import Channels from '../../data/channels';
+import Roles from '../../data/roles';
 
 export const router = Router();
 
 const bot = Deps.get<SystemBot>(SystemBot);
+const channels = Deps.get<Channels>(Channels);
 const guilds = Deps.get<Guilds>(Guilds);
+const roles = Deps.get<Roles>(Roles);
 
 router.get('/', updateUser, validateUser, async (req, res) => {
   try {
@@ -32,33 +36,12 @@ router.post('/', updateUser, validateUser, async (req, res) => {
     const guildId = generateSnowflake();
     const everyoneRoleId = generateSnowflake();
 
-    const channels = [
-      await Channel.create({
-        _id: generateSnowflake(),
-        name: 'general',
-        summary: '',
-        createdAt: new Date(),
-        guildId,
-        type: 'TEXT',
-        memberIds: []
-      }),
-      await Channel.create({
-        _id: generateSnowflake(),
-        name: 'General',
-        summary: '',
-        createdAt: new Date(),
-        guildId,
-        type: 'VOICE',
-        memberIds: []
-      })
-    ];
-
     const guild = await Guild.create({
       _id: guildId,
       name: req.body.name,
       nameAcronym: getNameAcronym(req.body.name),
       createdAt: new Date(),
-      owner: res.locals.user,
+      ownerId: res.locals.user._id,
       members: [
         await GuildMember.create({
           user: res.locals.user,
@@ -67,19 +50,12 @@ router.post('/', updateUser, validateUser, async (req, res) => {
         })
       ],
       roles: [
-        await Role.create({
-          _id: everyoneRoleId,
-          color: '#A2B6AD',
-          createdAt: new Date(),
-          guildId,
-          mentionable: false,
-          hoisted: false,
-          name: '@everyone',
-          position: 0,
-          permissions: defaultPermissions
-        })
+        await roles.createEveryone(guildId, everyoneRoleId)
       ],
-      channels,
+      channels: [
+        await channels.createText(guildId),
+        await channels.createVoice(guildId),
+      ],
       iconURL: null
     });
     

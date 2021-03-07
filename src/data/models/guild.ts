@@ -10,7 +10,7 @@ export interface GuildDocument extends Document {
   createdAt: Date;
   nameAcronym: string;
   iconURL: string;
-  owner: UserDocument;
+  ownerId: string;
   channels: ChannelDocument[];
   members: GuildMemberDocument[];
   roles: RoleDocument[];
@@ -22,7 +22,7 @@ export const Guild = model<GuildDocument>('guild', new Schema({
   createdAt: { type: Date, default: new Date() },
   nameAcronym: String,
   iconURL: String,
-  owner: { type: String, ref: 'user' },
+  ownerId: String, // owner -> ownerId
   channels: [{ type: String, ref: 'channel' }],
   members: [{ type: String, ref: 'guildMember' }],
   roles: [{ type: String, ref: 'role' }],

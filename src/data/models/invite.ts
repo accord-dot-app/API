@@ -6,8 +6,8 @@ export interface InviteDocument extends Document {
   _id: string;
   createdAt: Date;
   expiresAt: Date;
-  inviter: UserDocument;
-  guild: GuildDocument;
+  inviterId: string;
+  guildId: string;
   maxUses: number;
   uses: number;
 }
