@@ -8,6 +8,8 @@ export default interface WSEvent {
   invoke: (ws: WebSocket, client: Socket, data: any) => any;
 }
 
+// REMEMBER: Sync types below with Website project.
+// -> in ws.service.ts
 export namespace Params {
   export interface AcceptFriendRequest {
     friendId: string;
