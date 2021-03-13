@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io';
+import { UserTypes } from '../../../data/types/entity-types';
 import { Channel } from '../../../data/models/channel';
-import { User, UserVoiceState } from '../../../data/models/user';
+import { User } from '../../../data/models/user';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
@@ -39,9 +40,9 @@ export default class implements WSEvent {
     );
   }
 
-  private async handleVCMembers(oldVoice: UserVoiceState, voice: UserVoiceState, userId: string) {
+  private async handleVCMembers(oldVoice: UserTypes.VoiceState, newVoice: UserTypes.VoiceState, userId: string) {
     const oldVC = await Channel.findById(oldVoice.channelId);
-    const vc = await Channel.findById(voice.channelId);
+    const vc = await Channel.findById(newVoice.channelId);
     if (!vc) {
       const index = oldVC.memberIds.indexOf(userId);
       oldVC.memberIds.splice(index, 1);

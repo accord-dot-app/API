@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
+import { PermissionTypes } from '../../../data/types/entity-types';
 import { Channel } from '../../../data/models/channel';
 import { Guild } from '../../../data/models/guild';
-import { GeneralPermission } from '../../../data/models/role';
 import { generateSnowflake } from '../../../data/snowflake-entity';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
@@ -16,9 +16,7 @@ export default class implements WSEvent {
   ) {}
 
   async invoke(ws: WebSocket, client: Socket, { partialChannel, guildId }: Params.ChannelCreate) {
-    const userId = ws.sessions.get(client.id);
-    const canManage = await this.guard.can(userId, guildId, GeneralPermission.MANAGE_CHANNELS);
-    if (!canManage) return;
+    await this.guard.can(client, guildId, PermissionTypes.General.MANAGE_CHANNELS);
     
     const channel = await Channel.create({
       _id: generateSnowflake(),

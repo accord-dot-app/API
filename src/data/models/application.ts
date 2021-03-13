@@ -1,14 +1,10 @@
 import { Document, model, Schema } from 'mongoose';
 import { generateSnowflake } from '../snowflake-entity';
 import faker from 'faker';
-import { UserDocument } from './user';
+import { Lean } from '../types/entity-types';
 
-export interface ApplicationDocument extends Document {
+export interface ApplicationDocument extends Document, Lean.Application {
   _id: string;
-  createdAt: Date;
-  description: string;
-  name: string;
-  owner: UserDocument;
 }
 
 export const Application = model<ApplicationDocument>('application', new Schema({

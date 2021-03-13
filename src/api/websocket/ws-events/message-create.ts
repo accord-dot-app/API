@@ -1,11 +1,12 @@
 import { Socket } from 'socket.io';
-import { Message, MessageEmbed } from '../../../data/models/message';
+import { Message } from '../../../data/models/message';
 import { generateSnowflake } from '../../../data/snowflake-entity';
 import { WebSocket } from '../websocket';
 import WSEvent, { Args, Params } from './ws-event';
 import got from 'got';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
+import { MessageTypes } from '../../../data/types/entity-types';
 
 const metascraper = require('metascraper')([
   require('metascraper-description')(),
@@ -45,7 +46,7 @@ export default class implements WSEvent {
       .emit('MESSAGE_CREATE', { message } as Args.MessageCreate);
   }
 
-  public async getEmbed(message: any): Promise<MessageEmbed> {
+  public async getEmbed(message: any): Promise<MessageTypes.Embed> {
     try {
       const containsURL = /([https://].*)/.test(message.content);
       if (!containsURL)

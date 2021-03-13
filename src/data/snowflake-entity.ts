@@ -1,5 +1,4 @@
 import cluster from 'cluster';
-import { parse } from 'dotenv/types';
 
 let lastSnowflake: string;
 let inc = 0;

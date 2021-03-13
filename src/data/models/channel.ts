@@ -1,15 +1,8 @@
 import { Document, model, Schema } from 'mongoose';
+import { Lean } from '../types/entity-types';
 
-export type ChannelType = 'DM' | 'TEXT' | 'VOICE';
-
-export interface ChannelDocument extends Document {
-  createdAt: Date;
-  guildId?: string;
-  memberIds?: string[];
-  name?: string;
-  recipientIds?: string[];
-  summary?: string;
-  type: ChannelType;
+export interface ChannelDocument extends Document, Lean.Channel {
+  _id: string;
 }
 
 export const Channel = model<ChannelDocument>('channel', new Schema({

@@ -1,24 +1,8 @@
 import { Document, model, Schema } from 'mongoose';
-import { ChannelDocument } from './channel';
-import { GuildDocument } from './guild';
-import { UserDocument } from './user';
+import { Lean } from '../types/entity-types';
 
-export interface MessageEmbed {
-  description: string;
-  image: string;
-  title: string;
-  url: string;
-}
-
-export interface MessageDocument extends Document {
+export interface MessageDocument extends Document, Lean.Message {
   _id: string;
-  authorId: string;
-  channelId: string;
-  content: string;
-  createdAt: Date;
-  embed: MessageEmbed;
-  guildId: string;
-  updatedAt: Date;
 }
 
 export const Message = model<MessageDocument>('message', new Schema({

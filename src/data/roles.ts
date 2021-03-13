@@ -1,30 +1,19 @@
 import DBWrapper from './db-wrapper';
+import { Lean, PermissionTypes } from './types/entity-types';
 import { GuildMemberDocument } from './models/guild-member';
-import { defaultPermissions, GeneralPermission, hasPermission, Role, RoleDocument, TextChannelPermission, VoiceChannelPermission } from './models/role';
+import { defaultPermissions, hasPermission, Role, RoleDocument } from './models/role';
 
 export default class Roles extends DBWrapper<string, RoleDocument> {
   protected async getOrCreate(id: string) {
     return await Role.findById(id).exec();
   }
 
-  public async hasPermission(
-    member: GuildMemberDocument,
-    permission: GeneralPermission | TextChannelPermission | VoiceChannelPermission) {
-    const query = member.roleIds.map(_id => ({ _id }));
-
-    let totalPerms = 0;
-    totalPerms = (await Role.find(query))
-      .map(c => c.permissions)
-      .reduce(p => totalPerms | p);
+  public async hasPermission(member: Lean.GuildMember, permission: PermissionTypes.Permission) {
+    const totalPerms = (await Role
+      .find({ _id: { $in: member.roleIds } }))
+      .reduce((acc, value) => value.permissions | acc, 0);
       
     return hasPermission(totalPerms, permission);
-
-    /* inherit permissions from lower roles
-
-    moderator perms -> ['KICK_MEMBERS']
-    @everyone perms -> ['READ_MESSAGES']
-
-    */
   }
 
   public createEveryone(guildId: string, roleId: string) {

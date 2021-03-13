@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
-import { FriendRequestType, User } from '../../../data/models/user';
+import { UserTypes } from '../../../data/types/entity-types';
+import { User } from '../../../data/models/user';
 import { WebSocket } from '../websocket';
 import WSEvent, { Args, Params } from './ws-event';
 
@@ -19,7 +20,7 @@ export default class implements WSEvent {
       } as Args.SendFriendRequest);
   }
 
-  async addFriendRequest(userId: string, friendId: string, type: FriendRequestType) {
+  async addFriendRequest(userId: string, friendId: string, type: UserTypes.FriendRequestType) {
     const user = await User.findById(userId);
 
     const alreadyPending = user.friendRequests.some(r => r.userId === friendId);

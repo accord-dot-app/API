@@ -11,9 +11,7 @@ import { Channel } from '../../src/data/models/channel';
 import { API } from '../../src/api/server';
 import VoiceStateUpdate from '../../src/api/websocket/ws-events/voice-state-update';
 import { expect } from 'chai';
-import { Role, VoiceChannelPermission } from '../../src/data/models/role';
-
-const mock = new Mock();
+import { Role } from '../../src/data/models/role';
 
 describe('voice-state-update', () => {
   const userId = 'user_1';
@@ -52,7 +50,7 @@ describe('voice-state-update', () => {
     });
 
     it('connected to channel, adds self to vc members', async () => {
-      const guild = await mock.guild();
+      const guild = await Mock.guild();
       ws.sessions.set(client.id, guild.ownerId);
 
       const vc = guild.channels[1];
@@ -72,7 +70,7 @@ describe('voice-state-update', () => {
     });
 
     it('owner attempts to connect, authorized', async () => {
-      const guild = await mock.guild();
+      const guild = await Mock.guild();
       ws.sessions.set(client.id, guild.ownerId);
 
       const vc = guild.channels[1];
@@ -90,18 +88,18 @@ describe('voice-state-update', () => {
     });
 
     it('member attempts to connect, has default perms, authorized', async () => {
-      const guild = await mock.guild();
-      const member = await mock.guildMember(
-        await mock.user(),
+      const guild = await Mock.guild();
+      const member = await Mock.guildMember(
+        await Mock.user(),
         guild.id,
         guild.roles
       );        
       const vc = guild.channels[1];
 
-      ws.sessions.set(client.id, member.user.id);
+      ws.sessions.set(client.id, member.userId);
 
       const result = () => event.invoke(ws, client, {
-        userId: member.user.id,
+        userId: member.userId,
         voice: {
           guildId: guild.id,
           channelId: vc.id,
@@ -113,21 +111,21 @@ describe('voice-state-update', () => {
     });
 
     it('user attempts to connect, channel locked, unauthorized', async () => {
-      const guild = await mock.guild();
-      guild.roles[0] = await mock.role(guild.id, 0);
+      const guild = await Mock.guild();
+      guild.roles[0] = await Mock.role(guild.id, 0);
       await guild.save();
 
-      const member = await mock.guildMember(
-        await mock.user(),
+      const member = await Mock.guildMember(
+        await Mock.user(),
         guild.id,
-        guild.roles
+        guild.roles,
       );        
       const vc = guild.channels[1];
 
-      ws.sessions.set(client.id, member.user.id);
+      ws.sessions.set(client.id, member.userId);
 
       const result = () => event.invoke(ws, client, {
-        userId: member.user.id,
+        userId: member.userId,
         voice: {
           guildId: guild.id,
           channelId: vc.id,
@@ -139,7 +137,7 @@ describe('voice-state-update', () => {
     });
 
     it('non-guild user attempts to connect, has default perms, unauthorized', async () => {
-      const guild = await mock.guild();
+      const guild = await Mock.guild();
       const vc = guild.channels[1];
 
       const result = () => event.invoke(ws, client, {

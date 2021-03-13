@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
+import { PermissionTypes } from '../../data/types/entity-types';
 import Guilds from '../../data/guilds';
 import { Guild, GuildDocument } from '../../data/models/guild';
-import { Permission } from '../../data/models/role';
 import Roles from '../../data/roles';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
@@ -46,7 +46,7 @@ export async function validateGuildOwner(req, res, next) {
     : res.code(401).json({ code: 401, message: 'You do not own this guild!' });
 }
 
-export function validateHasPermission(permission: Permission) {
+export function validateHasPermission(permission: PermissionTypes.Permission) {
   return async (req, res, next) => {
     const guild: GuildDocument = res.locals.guild;
     const member = guild.members.find(m => m.userId === res.locals.user._id);

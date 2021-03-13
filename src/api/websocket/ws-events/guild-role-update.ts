@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
-import { GeneralPermission, Role } from '../../../data/models/role';
+import { PermissionTypes } from '../../../data/types/entity-types';
+import { Role } from '../../../data/models/role';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
@@ -14,9 +15,7 @@ export default class implements WSEvent {
 
   // TODO: validate all role values
   async invoke(ws: WebSocket, client: Socket, { roleId, partialRole, guildId }: Params.GuildRoleUpdate) {
-    const userId = ws.sessions.get(client.id);
-    const canManage = await this.guard.can(userId, guildId, GeneralPermission.MANAGE_ROLES);
-    if (!canManage) return;
+    await this.guard.can(client, guildId, PermissionTypes.General.MANAGE_ROLES);
 
     await Role.updateOne({ _id: roleId }, partialRole)
 

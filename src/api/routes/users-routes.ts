@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import { User, UserVoiceState } from '../../data/models/user';
-import { generateSnowflake } from '../../data/snowflake-entity';
+import { User } from '../../data/models/user';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import jwt from 'jsonwebtoken';

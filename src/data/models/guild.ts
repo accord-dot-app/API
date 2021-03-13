@@ -1,19 +1,8 @@
 import { Document, model, Schema } from 'mongoose';
-import { ChannelDocument } from './channel';
-import { GuildMemberDocument } from './guild-member';
-import { RoleDocument } from './role';
-import { UserDocument } from './user';
+import { Lean } from '../types/entity-types';
 
-export interface GuildDocument extends Document {
+export interface GuildDocument extends Document, Lean.Guild {
   _id: string;
-  name: string;
-  createdAt: Date;
-  nameAcronym: string;
-  iconURL: string;
-  ownerId: string;
-  channels: ChannelDocument[];
-  members: GuildMemberDocument[];
-  roles: RoleDocument[];
 }
 
 export const Guild = model<GuildDocument>('guild', new Schema({

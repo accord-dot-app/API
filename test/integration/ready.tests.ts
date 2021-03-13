@@ -7,10 +7,10 @@ import { User, UserDocument } from '../../src/data/models/user';
 import { expect } from 'chai';
 import jwt from 'jsonwebtoken';
 import Users from '../../src/data/users';
-import { generateSnowflake } from '../../src/data/snowflake-entity';
+import { Mock } from '../mock';
 
-describe('channel-create', () => {
-  const client = io(`http://localhost:${process.env.PORT}`) as any;;
+describe('ready', () => {
+  const client = io(`http://localhost:${process.env.PORT}`) as any;
   let ws: WebSocket;
   let event: ChannelCreate;
   let users: Users;
@@ -22,12 +22,12 @@ describe('channel-create', () => {
     ws = Deps.get<WebSocket>(WebSocket);
     event = new ChannelCreate();
     users = new Users();
-    user = await users.createUser('test_user', 'Testing@123');
+    user = await Mock.user();
   });
 
   afterEach(async () => await User.deleteMany({}));
 
-  it('user already logged in, returns', async () => {
+  it('user already logged in, fulfilled', async () => {
     ws.sessions.set(client.id, user.id);
     
     const result = () => event.invoke(ws, client, {
@@ -36,7 +36,7 @@ describe('channel-create', () => {
       channelIds: [],
     });
 
-    expect(result()).to.throw();
+    await expect(result()).to.be.fulfilled;
   });
 
   it('user does not exist, returns', async () => {

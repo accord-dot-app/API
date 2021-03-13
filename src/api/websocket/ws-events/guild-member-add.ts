@@ -3,6 +3,7 @@ import Guilds from '../../../data/guilds';
 import Invites from '../../../data/invites';
 import { GuildDocument } from '../../../data/models/guild';
 import { GuildMember } from '../../../data/models/guild-member';
+import { User } from '../../../data/models/user';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
 import WSEvent, { Args, Params } from './ws-event';
@@ -25,9 +26,13 @@ export default class implements WSEvent {
     invite.uses++;
 
     (invite.maxUses && invite.uses >= invite.maxUses)
-      ? await invite.deleteOne()
+      ? await invite.remove()
       : await invite.save();
 
+    await User.updateOne(
+      { _id: userId },
+      { guilds: { $push: guild } as any }
+    );
     const member = await GuildMember.create({
       userId,
       guildId: guild._id,
@@ -41,15 +46,14 @@ export default class implements WSEvent {
     ws.io
       .to(guild._id)
       .emit('GUILD_MEMBER_ADD', { member } as Args.GuildMemberAdd);
-
     ws.io
       .to(client.id)
       .emit('GUILD_JOIN', { guild } as Args.GuildJoin);
   }
 
-  joinGuildRooms(client: Socket, guild: GuildDocument) {
+  public joinGuildRooms(client: Socket, guild: GuildDocument) {
     client.join(guild.id);
     for (const channel of guild.channels)
-      client.join(channel.id);
+      client.join(channel._id);
   }
 }

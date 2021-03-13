@@ -73,7 +73,7 @@ export class SystemBot {
       const author = await this.users.get(message.authorId);
 
       message = await this.messages.get(message._id);
-      if (!message.guild && author.bot) return;
+      if (!message.guildId && author.bot) return;
 
       if (message.content.toLowerCase() === 'hi') {
         this.sendMessage(message.channelId, message.guildId, `Hi, @${author.username}!`)

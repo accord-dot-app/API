@@ -1,11 +1,11 @@
-import { SystemBot } from '../system/bot';
-import Deps from '../utils/deps';
 import DBWrapper from './db-wrapper';
 import jwt from 'jsonwebtoken';
-import { User, UserDocument, UserVoiceState } from './models/user';
+import { User, UserDocument } from './models/user';
 import { generateSnowflake } from './snowflake-entity';
 import { readdirSync } from 'fs';
 import { resolve } from 'path';
+import { Guild } from './models/guild';
+import { UserTypes } from './types/entity-types';
 
 export default class Users extends DBWrapper<string, UserDocument> {
   private avatarNames = [];
@@ -35,6 +35,22 @@ export default class Users extends DBWrapper<string, UserDocument> {
     });
   }
 
+  public async getGuilds(userId: string) {
+    return (await User
+      .findById(userId, 'guilds')
+      .populate('guilds')
+      .populate({ path: 'guilds', model: Guild })
+      .exec()).guilds;
+  }
+
+  public async getGuild(userId: string, guildId: string) {
+    return (await User
+      .findOne({ _id: userId, guilds: guildId as any }, 'guilds')
+      .populate('guilds')
+      .populate({ path: 'guilds', model: Guild })
+      .exec()).guilds;
+  }
+
   public async getSystemUser() {
     return this.systemUser = await User.findOne({ username: 'DClone' })
       ?? await User.create({
@@ -47,6 +63,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
         username: 'DClone',
         friends: [],
         friendRequests: [],
+        guilds: [],
         voice: null,
       });
   }
@@ -66,7 +83,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
       createdAt: new Date(),
       friends: [],
       status: 'ONLINE',
-      voice: new UserVoiceState()
+      voice: new UserTypes.VoiceState()
     }, password);
   }
 

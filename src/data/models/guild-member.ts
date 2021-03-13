@@ -1,9 +1,8 @@
-import { Document, model, Schema } from 'mongoose';
+import { Document, model, Schema, Types } from 'mongoose';
+import { Lean } from '../types/entity-types';
 
-export interface GuildMemberDocument extends Document {
-  guildId: string;
-  roleIds: string[];
-  userId: string;
+export interface GuildMemberDocument extends Document, Lean.GuildMember {
+  _id: Types.ObjectId;
 }
 
 export const GuildMember = model<GuildMemberDocument>('guildMember', new Schema({

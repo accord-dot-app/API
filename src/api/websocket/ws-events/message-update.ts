@@ -1,8 +1,9 @@
 import { Socket } from 'socket.io';
-import { Message, MessageDocument, MessageEmbed } from '../../../data/models/message';
+import { Message, MessageDocument } from '../../../data/models/message';
 import { WebSocket } from '../websocket';
 import WSEvent, { Args, Params } from './ws-event';
 import got from 'got';
+import { MessageTypes } from '../../../data/types/entity-types';
 
 const metascraper = require('metascraper')([
   require('metascraper-description')(),
@@ -29,7 +30,7 @@ export default class implements WSEvent {
   }
 }
 
-async function getEmbed(message: MessageDocument): Promise<MessageEmbed> {
+async function getEmbed(message: MessageDocument): Promise<MessageTypes.Embed> {
   try {
     const containsURL = /([https://].*)/.test(message.content);
     if (!containsURL)

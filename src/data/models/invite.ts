@@ -1,15 +1,8 @@
 import { Document, model, Schema } from 'mongoose';
-import { GuildDocument } from './guild';
-import { UserDocument } from './user';
+import { Lean } from '../types/entity-types';
 
-export interface InviteDocument extends Document {
+export interface InviteDocument extends Document, Lean.Invite {
   _id: string;
-  createdAt: Date;
-  expiresAt: Date;
-  inviterId: string;
-  guildId: string;
-  maxUses: number;
-  uses: number;
 }
 
 export const Invite = model<InviteDocument>('invite', new Schema({

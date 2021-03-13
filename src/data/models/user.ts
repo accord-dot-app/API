@@ -1,33 +1,9 @@
 import { Document, model, Schema } from 'mongoose';
 import passportLocalMongoose from 'passport-local-mongoose';
+import { Lean, UserTypes } from '../types/entity-types';
 
-export type StatusType = 'ONLINE' | 'DND' | 'IDLE' | 'OFFLINE';
-
-export class UserVoiceState {
-  channelId?: string;
-  guildId: string;
-  selfMuted = false;
-}
-
-export interface FriendRequest {
-  userId: string,
-  type: FriendRequestType
-}
-
-export type FriendRequestType = 'OUTGOING' | 'INCOMING';
-export type BadgeType = 'VIEWER' | 'DEVELOPER';
-
-export interface UserDocument extends Document {
+export interface UserDocument extends Document, Lean.User {
   _id: string;
-  avatarURL: string;
-  badges: BadgeType[];
-  bot: boolean;
-  createdAt: Date;
-  friends: string[];
-  friendRequests: FriendRequest[];
-  status: StatusType;
-  username: string;
-  voice: UserVoiceState;
 }
 
 export const User = model<UserDocument>('user', new Schema({
@@ -38,7 +14,8 @@ export const User = model<UserDocument>('user', new Schema({
   createdAt: Date,
   friends: [{ type: String, ref: 'user' }],
   friendRequests: { type: Array, default: [] },
+  guilds: [{ type: String, ref: 'guild' }],
   status: String,
   username: String,
-  voice: { type: Object, default: new UserVoiceState() }
+  voice: { type: Object, default: new UserTypes.VoiceState() }
 }).plugin(passportLocalMongoose));

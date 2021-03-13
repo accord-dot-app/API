@@ -17,19 +17,18 @@ export default class implements WSEvent {
   ) {}
 
   async invoke(ws: WebSocket, client: Socket, { key, guildIds, channelIds }: Params.Ready) {   
-    const alreadyLoggedIn = ws.sessions.has(client.id);
-    if (alreadyLoggedIn)
-      throw new TypeError('Already logged in elsewhere');
-
     const { id: userId } = this.guard.decodeKey(key);
     ws.sessions.set(client.id, userId);
+
+    const alreadyLoggedIn = ws.sessions.has(client.id);
+    if (!alreadyLoggedIn)
+      await User.updateOne({ _id: userId }, { status: 'ONLINE' });
 
     const user = await this.users.get(userId);
     if (!user)
       throw new TypeError('User not found');
 
     await this.joinRooms(client, { user, guildIds, channelIds });
-    await User.updateOne({ _id: userId }, { status: 'ONLINE' });
 
     for (const id in client.adapter.rooms) {
       ws.io
