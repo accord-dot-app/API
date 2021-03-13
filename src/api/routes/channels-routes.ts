@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import Guilds from '../../data/guilds';
+import { Request, Router } from 'express';
 import Messages from '../../data/messages';
 import { Channel } from '../../data/models/channel';
 import { Message } from '../../data/models/message';
+import { Lean } from '../../data/types/entity-types';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import { updateUser, validateUser } from '../modules/middleware';
@@ -32,13 +32,6 @@ router.get('/@me/:channelId', updateUser, validateUser, async (req, res) => {
 
 router.get('/:guildId/:channelId', updateUser, validateUser, async (req, res) => {
   try {
-    const userGuilds = await users.getGuilds(res.locals.user._id);
-    const guild = userGuilds.find(g => g._id === req.params.guildId);
-    
-    const userInGuild = guild.members.some(m => m.userId === res.locals.user._id);
-    if (!userInGuild)
-      throw new TypeError('You are not a member of this guild.');
-
     const channelMsgs = (await Message
       .find({
         guildId: req.params.guildId,

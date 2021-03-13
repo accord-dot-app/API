@@ -23,7 +23,7 @@ export default class implements WSEvent {
   ) {}
 
   async invoke(ws: WebSocket, client: Socket, { partialMessage }: Params.MessageCreate) {
-    this.guard.validateIsUser(client, partialMessage.authorId);
+    this.guard.validateIsUser(client, partialMessage.authorId); // TODO: added this everywhere
     await this.guard.canAccessChannel(client, partialMessage.channelId);
 
     const maxLength = 3000;

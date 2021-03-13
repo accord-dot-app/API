@@ -28,7 +28,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
     return await User.find({
       $or: [
         { _id: this.systemUser._id },
-        { friends: userId },
+        { friends: userId as any },
         { friendRequests: { userId, type: 'INCOMING' } },
         { friendRequests: { userId, type: 'OUTGOING' } }
       ]
@@ -37,9 +37,19 @@ export default class Users extends DBWrapper<string, UserDocument> {
 
   public async getGuilds(userId: string) {
     return (await User
-      .findById(userId, 'guilds')
-      .populate('guilds')
-      .populate({ path: 'guilds', model: Guild })
+      .findById(userId)
+      .populate({
+        path: 'guilds',
+        populate: { path: 'channels' }
+      })
+      .populate({
+        path: 'guilds',
+        populate: { path: 'members' }
+      })
+      .populate({
+        path: 'guilds',
+        populate: { path: 'roles' }
+      })
       .exec()).guilds;
   }
 
@@ -47,7 +57,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
     return (await User
       .findOne({ _id: userId, guilds: guildId as any }, 'guilds')
       .populate('guilds')
-      .populate({ path: 'guilds', model: Guild })
+      .populate({ path: 'channels', model: Guild })
       .exec()).guilds;
   }
 

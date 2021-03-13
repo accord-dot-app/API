@@ -35,7 +35,6 @@ export class WSGuard {
   public async canAccessChannel(client: Socket, channelId: string) {
     const channel = await this.channels.get(channelId);    
     const canAccess = await this.canAccess(channel, client);
-  
     if (!canAccess)
       throw new TypeError('Missing Permissions');    
   }  

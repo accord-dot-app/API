@@ -10,7 +10,6 @@ export namespace Lean {
     name: string;
     owner: User;
   }
-
   export interface Channel {
     _id: string;
     createdAt: Date;
@@ -21,7 +20,6 @@ export namespace Lean {
     summary?: string;
     type: ChannelTypes.Type;
   }
-
   export interface Guild {
     _id: string;
     name: string;
@@ -33,14 +31,12 @@ export namespace Lean {
     members: GuildMember[];
     roles: Role[];
   }
-
   export interface GuildMember {
     _id: Types.ObjectId;
     guildId: string;
     roleIds: string[];
     userId: string;
-  }
-  
+  }  
   export interface Invite {
     _id: string;
     createdAt: Date;
@@ -49,8 +45,7 @@ export namespace Lean {
     guildId: string;
     maxUses: number;
     uses: number;
-  }
-  
+  }  
   export interface Message {
     _id: string;
     authorId: string;
@@ -60,8 +55,7 @@ export namespace Lean {
     embed: MessageTypes.Embed;
     guildId: string;
     updatedAt: Date;
-  }
-  
+  }  
   export interface Role {
     _id: string;
     color: string;
@@ -73,16 +67,15 @@ export namespace Lean {
     permissions: number;
     position: number;
   }
-  
   export interface User {
     _id: string;
     avatarURL: string;
     badges: UserTypes.BadgeType[];
     bot: boolean;
     createdAt: Date;
-    friends: string[];
+    friends: this[];
     friendRequests: UserTypes.FriendRequest[];
-    guilds: Guild[];
+    guilds: string[] | Guild[];
     status: UserTypes.StatusType;
     username: string;
     voice: UserTypes.VoiceState;

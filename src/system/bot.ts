@@ -1,13 +1,10 @@
-import { Channel, ChannelDocument } from '../data/models/channel';
-import { User, UserDocument } from '../data/models/user';
+import { Channel } from '../data/models/channel';
+import { UserDocument } from '../data/models/user';
 import { generateSnowflake } from '../data/snowflake-entity';
 import io from 'socket.io-client';
 import Log from '../utils/log';
-import { Guild, GuildDocument } from '../data/models/guild';
 import { Invite } from '../data/models/invite';
 import { generateInviteCode } from '../utils/utils';
-import { MessageDocument } from '../data/models/message';
-import { GuildMember } from '../data/models/guild-member';
 import Deps from '../utils/deps';
 import Messages from '../data/messages';
 import Users from '../data/users';
@@ -36,23 +33,19 @@ export class SystemBot {
   }
 
   private async readyUp() {
-    const channels = await Channel.find({
+    const dmChannels = await Channel.find({
       type: 'DM',
       recipientIds: this.self._id
     });
-    const channelIds: string[] = channels.map(d => d.id);
-    const guildIds: string[] = [];
 
-    const botMembers = await GuildMember.find({ user: this.self.id });
-    for (const member of botMembers) {
-      const guild = await Guild.findById(member.guildId);
-      guildIds.push(guild.id);
-
-      for (const channel of guild.channels)
-        channelIds.push(channel as any);
-    }
-
-    this.socket.emit('READY', { user: this.self, guildIds, channelIds });
+    this.socket.emit('READY', {
+      channelIds: (await this.self
+        .execPopulate() as any).guilds
+        .flatMap(g => g.channels as string[]),
+        // .concat(dmChannels.flatMap(c => c.id)),
+      guildIds: this.self.guilds as string[],
+      key: this.users.createToken(this.self.id),
+    } as Params.Ready);
 
     Log.info('Initialized bot', 'bot');
   }

@@ -15,7 +15,6 @@ export default class implements WSEvent {
   async invoke(ws: WebSocket, client: Socket, { guildId }: Params.GuildDelete) {
     await this.guard.validateIsOwner(client, guildId);
     await Guild.deleteOne({ _id: guildId });
-    // only owner !
 
     ws.io
       .to(guildId)

@@ -15,9 +15,7 @@ import { User } from '../../data/models/user';
 export const router = Router();
 
 const bot = Deps.get<SystemBot>(SystemBot);
-const channels = Deps.get<Channels>(Channels);
 const guilds = Deps.get<Guilds>(Guilds);
-const roles = Deps.get<Roles>(Roles);
 const users = Deps.get<Users>(Users);
 
 router.get('/', updateUser, validateUser, async (req, res) => {

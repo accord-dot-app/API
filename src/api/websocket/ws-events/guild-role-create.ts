@@ -27,7 +27,9 @@ export default class implements WSEvent {
       guildId
     });
     const guild = await Guild.findById(guildId);
-    await guild.updateOne({ $set: { roles: guild.roles.concat(role) } });
+    await guild.updateOne({
+      $set: { roles: guild.roles.concat(role) }
+    });
 
     ws.io.sockets
       .to(guild._id)

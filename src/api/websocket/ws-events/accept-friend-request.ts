@@ -13,12 +13,15 @@ export default class implements WSEvent {
   constructor(private users = Deps.get<Users>(Users)) {}
 
   async invoke(ws: WebSocket, client: Socket, { senderId, friendId }: Params.AcceptFriendRequest) {
+    const sender = await this.users.get(senderId);
+    const friend = await this.users.get(friendId);
+
     ws.io.sockets
       .to(senderId)
       .to(friendId)
       .emit('ACCEPT_FRIEND_REQUEST', {
-        sender: await this.acceptFriendRequest(senderId, friendId),
-        friend: await this.acceptFriendRequest(friendId, senderId),
+        sender: await this.acceptFriend(sender, friend),
+        friend: await this.acceptFriend(friend, sender),
         dmChannel: await Channel.create({
           _id: generateSnowflake(),
           createdAt: new Date(),
@@ -28,28 +31,15 @@ export default class implements WSEvent {
       } as Args.AcceptFriendRequest);
   }
 
-  async acceptFriendRequest(userId: string, friendId: string) {
-    const user = await this.users.get(userId);
-
-    this.removeFriendRequest(user, friendId);
-
-    const friendExists = user.friends.includes(friendId);
+  async acceptFriend(user: UserDocument, friend: UserDocument) {
+    const friendExists = user.friends.includes(friend);
     if (friendExists)
       return user;
 
-    user.friends.push(friendId);
-
-    await user.updateOne({
-      $set: {
-        friends: user.friends,
-        friendRequests: user.friendRequests
-      }
+    await user.update({
+      $pull: { friendRequests: friend },
+      $push: { friends: friend }
     });
     return user;
-  }
-
-  private removeFriendRequest(user: UserDocument, friendId: string) {
-    const index = user.friendRequests.findIndex(r => r.userId === friendId);
-    user.friendRequests.splice(index, 1);
   }
 }
