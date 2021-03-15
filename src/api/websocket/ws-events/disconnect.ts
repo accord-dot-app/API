@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io';
+import Channels from '../../../data/channels';
 import { Channel } from '../../../data/models/channel';
 import { UserDocument } from '../../../data/models/user';
 import Users from '../../../data/users';
@@ -9,11 +10,13 @@ import WSEvent from './ws-event';
 export default class implements WSEvent {
   on = 'disconnect';
 
-  constructor(private users = Deps.get<Users>(Users)) {}
+  constructor(
+    private channels = Deps.get<Channels>(Channels),
+    private users = Deps.get<Users>(Users),
+  ) {}
 
-  async invoke(ws: WebSocket, client: Socket) {    
+  public async invoke(ws: WebSocket, client: Socket) {    
     const userId = ws.sessions.get(client.id);
-
     const user = await this.users.get(userId);
     if (!user) return;
 
@@ -35,16 +38,16 @@ export default class implements WSEvent {
     }
   }
 
-  async disconnectFromVC(user: UserDocument, userId: string) {
-    const channel = await Channel.findById(user.voice.channelId);
-  
+  public async disconnectFromVC(user: UserDocument, userId: string) {
+    const channel = await this.channels.get(user.voice.channelId);  
     const index = channel.memberIds.indexOf(userId);
+
     await channel.updateOne({
       members: channel.memberIds.splice(index, 1)
     });
   }
 
-  async setOfflineStatus(ws: WebSocket, user: UserDocument) {
+  public async setOfflineStatus(ws: WebSocket, user: UserDocument) {
     const isConnectedElsewhere = ws.connectedUserIds.includes(user._id);
     if (isConnectedElsewhere) return;
 

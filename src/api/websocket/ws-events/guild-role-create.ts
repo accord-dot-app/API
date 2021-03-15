@@ -26,13 +26,13 @@ export default class implements WSEvent {
       createdAt: new Date(),
       guildId
     });
-    const guild = await Guild.findById(guildId);
-    await guild.updateOne({
-      $set: { roles: guild.roles.concat(role) }
+    await Guild.updateOne(
+      { _id: guildId },
+      { $push: { roles: role },
     });
 
     ws.io.sockets
-      .to(guild._id)
+      .to(guildId)
       .emit('GUILD_ROLE_CREATE', { role } as Args.GuildRoleCreate);
   }
 }

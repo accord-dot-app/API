@@ -26,19 +26,24 @@ export default class implements WSEvent {
     const movedGuild = oldVC && oldVC.guildId !== vc?.guildId;
     if (movedGuild)
       ws.io
-        .to(oldVC.guildId)
-        .emit('VOICE_STATE_UPDATE',
-        { memberIds: vc.memberIds, userId, voice, }
+        .to(oldVC?.guildId ?? '')
+        .emit('VOICE_STATE_UPDATE', {
+          memberIds: vc?.memberIds,
+          userId,
+          voice,
+        }
       );
 
     oldUser.voice = voice;
     await oldUser.save();
 
     ws.io
-      .to(voice.guildId)
-      .to(vc.guildId)
-      .emit('VOICE_STATE_UPDATE',
-      { memberIds: vc?.memberIds, userId, voice, } as Args.VoiceStateUpdate
+      .to(voice.guildId ?? '')
+      .emit('VOICE_STATE_UPDATE', {
+        memberIds: vc?.memberIds,
+        userId,
+        voice,
+      } as Args.VoiceStateUpdate
     );
   }
 

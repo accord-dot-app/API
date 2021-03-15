@@ -18,6 +18,9 @@ export default class implements WSEvent {
 
   async invoke(ws: WebSocket, client: Socket, { key, guildIds, channelIds }: Params.Ready) {   
     const { id: userId } = this.guard.decodeKey(key);
+    if (!userId)
+      throw new TypeError('Invalid User ID');
+ 
     ws.sessions.set(client.id, userId);
 
     const alreadyLoggedIn = ws.sessions.has(client.id);
@@ -46,10 +49,10 @@ export default class implements WSEvent {
 
     const ids = []
       .concat(
-        this.systemBot.self._id,
+        this.systemBot.self?.id,
         guildIds,
         channelIds,
-        user._id,
+        user.id,
         
         user.friendRequests.map(r => r.userId),
         user.friends.map(u => u._id)

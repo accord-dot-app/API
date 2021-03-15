@@ -1,25 +1,26 @@
-import { Request, Router } from 'express';
+import { Router } from 'express';
+import Channels from '../../data/channels';
 import Messages from '../../data/messages';
-import { Channel } from '../../data/models/channel';
 import { Message } from '../../data/models/message';
-import { Lean } from '../../data/types/entity-types';
-import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import { updateUser, validateUser } from '../modules/middleware';
 
 export const router = Router();
 
+const channels = Deps.get<Channels>(Channels);
 const messages = Deps.get<Messages>(Messages);
-const users = Deps.get<Users>(Users);
 
 router.get('/@me/:channelId', updateUser, validateUser, async (req, res) => {
   try {
+    const start = +(req.query.start || 0);
+    const end = +(req.query.end || 25);
     const channelId = req.params.channelId;
+
     let channelMessages = (await messages
       .getChannelMessages(channelId))
-      .slice(+req.query.start || 0, +req.query.end || 25);
+      .slice(start, end);
 
-    const channel = await Channel.findById(channelId);
+    const channel = await channels.get(channelId);
     const canMessageUser = channel.memberIds.includes(res.locals.user._id);
     if (!canMessageUser)
       throw new TypeError('You are not friends with this user.');
@@ -32,12 +33,14 @@ router.get('/@me/:channelId', updateUser, validateUser, async (req, res) => {
 
 router.get('/:guildId/:channelId', updateUser, validateUser, async (req, res) => {
   try {
+    const start = +(req.query.start || 0);
+    const end = +(req.query.end || 25);
     const channelMsgs = (await Message
       .find({
         guildId: req.params.guildId,
         channelId: req.params.channelId
       }))
-      .slice(+req.query.start || 0, +req.query.end || 25);
+      .slice(start, end);
     
     res.json(channelMsgs);
   } catch (err) {

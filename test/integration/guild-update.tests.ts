@@ -7,7 +7,7 @@ import { Guild, GuildDocument } from '../../src/data/models/guild';
 import { User, UserDocument } from '../../src/data/models/user';
 import { Mock } from '../mock';
 import { expect } from 'chai';
-import { PermissionTypes.General, Role } from '../../src/data/models/role';
+import { PermissionTypes } from '../../src/data/types/entity-types';
 
 describe('guild-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
@@ -46,7 +46,9 @@ describe('guild-update', () => {
   it('user is has MANAGE_GUILD perms, fulfilled', async () => {
     const role = await Mock.role(guild.id, PermissionTypes.General.MANAGE_GUILD);
     await guild.update({
-      members: { $push: await Mock.guildMember(user, guild.id, [role]) }
+      members: {
+        $push: await Mock.guildMember(user.id, guild.id, [role])
+      }
     });
 
     const invoke = () => event.invoke(ws, client, {

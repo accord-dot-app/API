@@ -1,5 +1,5 @@
-import { Guild, GuildDocument } from '../../data/models/guild';
-import { GuildMember, GuildMemberDocument } from '../../data/models/guild-member';
+import { Guild } from '../../data/models/guild';
+import { GuildMember } from '../../data/models/guild-member';
 import jwt from 'jsonwebtoken';
 import Deps from '../../utils/deps';
 import { WebSocket } from '../websocket/websocket';
@@ -18,7 +18,7 @@ export class WSGuard {
   ) {}
 
   private userId(client: Socket) {
-    return this.ws.sessions.get(client.id);
+    return this.ws.sessions.get(client.id) ?? '';
   }
 
   public validateIsUser(client: Socket, userId: string) {
@@ -32,8 +32,10 @@ export class WSGuard {
       throw new TypeError('Only Guild Owner Can Do This');
   }
 
-  public async canAccessChannel(client: Socket, channelId: string) {
-    const channel = await this.channels.get(channelId);    
+  public async canAccessChannel(client: Socket, channelId?: string) {
+    const channel = await this.channels.get(channelId);
+    if (!channel) return false;
+
     const canAccess = await this.canAccess(channel, client);
     if (!canAccess)
       throw new TypeError('Missing Permissions');    
@@ -47,27 +49,24 @@ export class WSGuard {
     return this.can(client, channel.guildId, PermissionTypes.Voice.CONNECT);
   }
 
-  public async can(client: Socket, guildId: string, permission: PermissionTypes.Permission) {
+  public async can(client: Socket, guildId: string | undefined, permission: PermissionTypes.Permission) {
     const userId = this.userId(client);
     const member = await GuildMember.findOne({ guildId, userId });
     if (!member)
       throw new TypeError('Member Not Found');
   
     const guild = await Guild.findById(guildId);
+    if (!guild)
+      throw new TypeError('Guild Not Found');
+
     const can = this.roles.hasPermission(member, permission)
       || guild.ownerId === userId;
     if (!can)
       throw new TypeError('Missing Permissions');
-  }
+  }  
 
-  private async getHighestRole(member: GuildMemberDocument, guild: GuildDocument) {
-    const roleId = member.roleIds[member.roleIds.length - 1];
-    return await Role.findById(roleId);
-  }
-  
-
-  public decodeKey(key: string) {
+  public decodeKey(key: string): { id?: string } {
     const token: any = jwt.decode(key);
-    return { id: token?._id as string };
+    return { id: token?._id };
   }
 }

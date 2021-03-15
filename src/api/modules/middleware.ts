@@ -50,6 +50,8 @@ export function validateHasPermission(permission: PermissionTypes.Permission) {
   return async (req, res, next) => {
     const guild: GuildDocument = res.locals.guild;
     const member = guild.members.find(m => m.userId === res.locals.user._id);
+    if (!member)
+      return res.status(401);
 
     return (roles.hasPermission(member, permission))
       ? next()

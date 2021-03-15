@@ -7,6 +7,7 @@ import got from 'got';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { MessageTypes } from '../../../data/types/entity-types';
+import { Partial } from '../../../data/types/ws-types';
 
 const metascraper = require('metascraper')([
   require('metascraper-description')(),
@@ -38,7 +39,6 @@ export default class implements WSEvent {
       embed: await this.getEmbed(partialMessage),
       guildId: partialMessage.guildId,
       createdAt: new Date(),
-      updatedAt: null
     });
 
     ws.io
@@ -46,20 +46,13 @@ export default class implements WSEvent {
       .emit('MESSAGE_CREATE', { message } as Args.MessageCreate);
   }
 
-  public async getEmbed(message: any): Promise<MessageTypes.Embed> {
+  public async getEmbed(message: Partial.Message): Promise<MessageTypes.Embed | undefined> {
     try {
-      const containsURL = /([https://].*)/.test(message.content);
-      if (!containsURL)
-        return null;
-  
-      const targetURL = /([https://].*)/
-        .exec(message.content)[0]
-        .split(' ')[0];  
+      const targetURL = /([https://].*)/.exec(message.content)?.[0];  
+      if (!targetURL) return;
   
       const { body: html, url } = await got(targetURL);
       return await metascraper({ html, url });
-    } catch {
-      return null;
-    }
+    } catch {}
   }
 }

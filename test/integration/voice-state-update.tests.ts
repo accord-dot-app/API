@@ -6,12 +6,13 @@ import { Message } from '../../src/data/models/message';
 import { GuildMember } from '../../src/data/models/guild-member';
 import { Mock } from '../mock';
 import { Guild } from '../../src/data/models/guild';
-import { User, UserVoiceState } from '../../src/data/models/user';
+import { User } from '../../src/data/models/user';
 import { Channel } from '../../src/data/models/channel';
 import { API } from '../../src/api/server';
 import VoiceStateUpdate from '../../src/api/websocket/ws-events/voice-state-update';
 import { expect } from 'chai';
 import { Role } from '../../src/data/models/role';
+import { UserTypes } from '../../src/data/types/entity-types';
 
 describe('voice-state-update', () => {
   const userId = 'user_1';
@@ -43,7 +44,7 @@ describe('voice-state-update', () => {
     it('spoofed author, throws error', async () => {
       const result = () => event.invoke(ws, client, {
         userId: 'user_2',
-        voice: new UserVoiceState()
+        voice: new UserTypes.VoiceState()
       });
 
       await expect(result()).to.be.rejectedWith('Unauthorized');
@@ -58,13 +59,13 @@ describe('voice-state-update', () => {
       await event.invoke(ws, client, {
         userId: guild.ownerId,
         voice: {
-          guildId: guild.id,
-          channelId: vc.id,
+          guildId: guild._id,
+          channelId: vc._id,
           selfMuted: false
-        } as UserVoiceState
+        } as UserTypes.VoiceState
       });
 
-      const result = await Channel.findById(vc.id);
+      const result = await Channel.findById(vc._id);
 
       expect(result.memberIds).to.include(guild.ownerId);
     });
@@ -78,10 +79,10 @@ describe('voice-state-update', () => {
       const result = () => event.invoke(ws, client, {
         userId: guild.ownerId,
         voice: {
-          guildId: guild.id,
-          channelId: vc.id,
+          guildId: guild._id,
+          channelId: vc._id,
           selfMuted: false
-        } as UserVoiceState
+        } as UserTypes.VoiceState
       });
 
       await expect(result()).to.be.fulfilled;
@@ -89,9 +90,10 @@ describe('voice-state-update', () => {
 
     it('member attempts to connect, has default perms, authorized', async () => {
       const guild = await Mock.guild();
+      const user = await Mock.user();
       const member = await Mock.guildMember(
-        await Mock.user(),
-        guild.id,
+        user.id,
+        guild._id,
         guild.roles
       );        
       const vc = guild.channels[1];
@@ -101,10 +103,10 @@ describe('voice-state-update', () => {
       const result = () => event.invoke(ws, client, {
         userId: member.userId,
         voice: {
-          guildId: guild.id,
-          channelId: vc.id,
+          guildId: guild._id,
+          channelId: vc._id,
           selfMuted: false
-        } as UserVoiceState
+        } as UserTypes.VoiceState
       });
 
       await expect(result()).to.be.fulfilled;
@@ -112,12 +114,13 @@ describe('voice-state-update', () => {
 
     it('user attempts to connect, channel locked, unauthorized', async () => {
       const guild = await Mock.guild();
-      guild.roles[0] = await Mock.role(guild.id, 0);
+      guild.roles[0] = await Mock.role(guild._id, 0);
       await guild.save();
 
+      const user = await Mock.user([guild.id]);
       const member = await Mock.guildMember(
-        await Mock.user(),
-        guild.id,
+        user.id,
+        guild._id,
         guild.roles,
       );        
       const vc = guild.channels[1];
@@ -127,10 +130,10 @@ describe('voice-state-update', () => {
       const result = () => event.invoke(ws, client, {
         userId: member.userId,
         voice: {
-          guildId: guild.id,
-          channelId: vc.id,
+          guildId: guild._id,
+          channelId: vc._id,
           selfMuted: false
-        } as UserVoiceState
+        } as UserTypes.VoiceState
       });
 
       await expect(result()).to.be.rejectedWith('Missing Permissions');
@@ -143,10 +146,10 @@ describe('voice-state-update', () => {
       const result = () => event.invoke(ws, client, {
         userId,
         voice: {
-          guildId: guild.id,
-          channelId: vc.id,
+          guildId: guild._id,
+          channelId: vc._id,
           selfMuted: false
-        } as UserVoiceState
+        } as UserTypes.VoiceState
       });
 
       await expect(result()).to.be.rejectedWith('Missing Permissions');

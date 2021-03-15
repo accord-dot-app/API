@@ -17,10 +17,12 @@ export default class implements WSEvent {
 
   async invoke(ws: WebSocket, client: Socket, { messageId, partialMessage, withEmbed }: Params.MessageUpdate) {
     const message = await Message.findById(messageId);
+    if (!message)
+      throw new TypeError('Message Not Found');
+
     await message.update({
-      content: message.content,
-      embed: withEmbed ? await getEmbed(message) : null,
-      createdAt: message.createdAt,
+      content: partialMessage.content,
+      embed: (withEmbed) ? await this.getEmbed(message) : undefined,
       updatedAt: new Date()
     });
 
@@ -28,19 +30,14 @@ export default class implements WSEvent {
       .to(message.channelId)
       .emit('MESSAGE_UPDATE', { messageId, partialMessage } as Args.MessageUpdate);
   }
-}
 
-async function getEmbed(message: MessageDocument): Promise<MessageTypes.Embed> {
-  try {
-    const containsURL = /([https://].*)/.test(message.content);
-    if (!containsURL)
-      return null;
-
-    const targetURL = /([https://].*)/.exec(message.content)[0];  
-
-    const { body: html, url } = await got(targetURL);
-    return await metascraper({ html, url });
-  } catch {
-    return null;
+  public async getEmbed(message: MessageDocument): Promise<MessageTypes.Embed | undefined> {
+    try {
+      const targetURL = /([https://].*)/.exec(message.content)?.[0];  
+      if (!targetURL) return;
+  
+      const { body: html, url } = await got(targetURL);
+      return await metascraper({ html, url });
+    } catch {}
   }
 }

@@ -2,8 +2,11 @@ import DBWrapper from './db-wrapper';
 import { Message, MessageDocument } from './models/message';
 
 export default class Messages extends DBWrapper<string, MessageDocument> {
-  protected async getOrCreate(id: string) {
-    return await Message.findById(id);
+  public async get(id: string | undefined) {
+    const message = await Message.findById(id);
+    if (!message)
+      throw new TypeError('Message Not Found');
+    return message;
   }
 
   protected create(id: string) {

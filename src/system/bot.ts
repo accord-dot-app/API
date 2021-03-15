@@ -96,7 +96,6 @@ export class SystemBot {
     const invite = await Invite.create({
       _id: generateInviteCode(),
       createdAt: new Date(),
-      expiresAt: null,
       guildId,
       inviterId: this.self._id,
       maxUses: 1,

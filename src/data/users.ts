@@ -17,10 +17,14 @@ export default class Users extends DBWrapper<string, UserDocument> {
       .filter(n => n.startsWith('avatar'));
   }
 
-  protected async getOrCreate(id: string) {
-    return (await User.findById(id))
+  public async get(id: string | undefined) {
+    const user = (await User
+      .findById(id))
       ?.populate('friends')
       .execPopulate();
+    if (!user)
+      throw new TypeError('User Not Found');
+    return user;
   }
 
   public async getKnown(userId: string) {

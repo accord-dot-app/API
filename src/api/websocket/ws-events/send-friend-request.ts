@@ -22,6 +22,7 @@ export default class implements WSEvent {
 
   async addFriendRequest(userId: string, friendId: string, type: UserTypes.FriendRequestType) {
     const user = await User.findById(userId);
+    if (!user) return;
 
     const alreadyPending = user.friendRequests.some(r => r.userId === friendId);
     if (alreadyPending)
@@ -29,7 +30,8 @@ export default class implements WSEvent {
 
     user.friendRequests.push({ userId: friendId, type });
 
-    await user.updateOne({ $set: { friendRequests: user.friendRequests } });
-    return user;
+    return user.update({
+      $set: { friendRequests: user.friendRequests }
+    });
   }
 }

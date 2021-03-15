@@ -9,7 +9,7 @@ export class WebSocket {
   events: WSEvent[] = [];
   io: SocketServer;
   
-  sessions = new Map<string, string>();
+  sessions = new SessionManager();
 
   get connectedUserIds() {
     return Array.from(this.sessions.values());
@@ -44,5 +44,14 @@ export class WebSocket {
     });
 
     Log.info('Started WebSocket', 'ws');
+  }
+}
+
+export class SessionManager extends Map<string, string> {
+  public get(key: string): string  {
+    const userId = super.get(key);
+    if (!userId)
+      throw new TypeError('User Not Logged In')
+    return userId;
   }
 }

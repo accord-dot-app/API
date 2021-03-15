@@ -4,18 +4,20 @@ config({ path: 'test/.env' });
 
 import { use } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import spies from 'chai-spies';
 import { connect } from 'mongoose';
 
 use(chaiAsPromised);
+use(spies);
 
-connect(process.env.MONGO_URI, { 
-  useUnifiedTopology: true, 
-  useNewUrlParser: true, 
-  useFindAndModify: false,
-  useCreateIndex: true,
-});
+(async() => { 
+  await connect(process.env.MONGO_URI, { 
+    useUnifiedTopology: true, 
+    useNewUrlParser: true, 
+    useFindAndModify: false,
+    useCreateIndex: true,
+  });  
 
-(async() => {
   await import('./integration/channel-create.tests');
   await import('./integration/guild-update.tests');
   await import('./integration/message-create.tests');

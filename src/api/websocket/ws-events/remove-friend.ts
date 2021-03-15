@@ -24,6 +24,7 @@ export default class implements WSEvent {
 
   async removeFriendAndUpdate(userId: string, friendId: string) {
     const user = await this.users.get(userId);
+    if (!user) return;
 
     this.removeFriend(user, friendId);
 

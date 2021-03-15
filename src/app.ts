@@ -1,19 +1,6 @@
-// import './data/types/env';
+import './data/types/env';
 import { config } from 'dotenv';
 config();
-
-declare global
-{
-  namespace NodeJS
-  {
-    export interface ProcessEnv
-    {
-      API_URL: string;
-      MONGO_URI: string;
-      PORT: string;
-    }
-  }
-}
 
 import { connect } from 'mongoose';
 import { API } from './api/server';

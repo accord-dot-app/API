@@ -13,12 +13,16 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
     private roles = Deps.get<Roles>(Roles),
   ) { super(); }
 
-  protected getOrCreate(id: string) {
-    return Guild.findById(id)
+  public async get(id: string | undefined) {
+    const guild = await Guild
+      .findById(id)
       ?.populate('members')
       .populate('roles')
       .populate('channels')
       .exec();
+    if (!guild)
+      throw new TypeError('User Not Found');
+    return guild;
   }
 
   public async create(name: string, ownerId: string) {    
@@ -45,7 +49,6 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
         await this.channels.createText(guildId),
         await this.channels.createVoice(guildId),
       ],
-      iconURL: null
     });
   }
 }

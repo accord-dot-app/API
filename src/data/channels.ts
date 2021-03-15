@@ -1,11 +1,13 @@
 import DBWrapper from './db-wrapper';
 import { Channel, ChannelDocument, DMChannelDocument, TextChannelDocument, VoiceChannelDocument } from './models/channel';
 import { generateSnowflake } from './snowflake-entity';
-import { ChannelTypes } from './types/entity-types';
 
 export default class Channels extends DBWrapper<string, ChannelDocument> {
-  protected async getOrCreate(id: string) {
-    return await Channel.findById(id);
+  public async get(id: string | undefined) {
+    const channel = await Channel.findById(id);
+    if (!channel)
+      throw new TypeError('Channel Not Found');
+    return channel;
   }
 
   public async getDM(id: string) {

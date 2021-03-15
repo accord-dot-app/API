@@ -18,7 +18,6 @@ export class Mock {
       name: 'Mock Guild',
       createdAt: new Date(),
       nameAcronym: 'MG',
-      iconURL: null,
       ownerId: owner.id,
       channels: [
         await this.channel('TEXT', guildId),
