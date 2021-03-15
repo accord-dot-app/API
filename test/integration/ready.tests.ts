@@ -27,7 +27,7 @@ describe('ready', () => {
   afterEach(async () => await user.remove());
 
   it('user already logged in, fulfilled', async () => {
-    ws.sessions.set(key, user.id);
+    ws.sessions.set(client.id, user.id);
 
     const invoke = () => event.invoke(ws, client, {
       key,

@@ -51,7 +51,7 @@ export class SessionManager extends Map<string, string> {
   public get(key: string): string  {
     const userId = super.get(key);
     if (!userId)
-      throw new TypeError('User Not Logged In')
+      throw new TypeError('User Not Logged In');
     return userId;
   }
 }

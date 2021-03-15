@@ -13,7 +13,7 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
   public async hasPermission(member: Lean.GuildMember, permission: PermissionTypes.Permission) {
     const totalPerms = (await Role
       .find({ _id: { $in: member.roleIds } }))
-      .reduce((acc, value) => value.permissions | acc, 0);
+      .reduce((acc, value) => value.permissions | acc, 0);    
       
     return hasPermission(totalPerms, permission);
   }

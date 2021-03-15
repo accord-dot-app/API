@@ -6,11 +6,13 @@ import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
 import WSEvent, { Args, Params } from './ws-event';
+import Users from '../../../data/users';
 
 export default class implements WSEvent {
   on = 'VOICE_STATE_UPDATE';
 
   constructor(
+    private users = Deps.get<Users>(Users),
     private guard = Deps.get<WSGuard>(WSGuard)
   ) {}
 
@@ -18,9 +20,7 @@ export default class implements WSEvent {
     this.guard.validateIsUser(client, userId);
     await this.guard.canAccessChannel(client, voice?.channelId);
 
-    const oldUser = await User.findById(userId);
-    if (!oldUser) return;
-
+    const oldUser = await this.users.get(userId);
     const { oldVC, vc } = await this.handleVCMembers(oldUser.voice, voice, userId);
 
     const movedGuild = oldVC && oldVC.guildId !== vc?.guildId;

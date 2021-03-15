@@ -11,7 +11,7 @@ export class Mock {
   public static async guild() {
     const guildId = generateSnowflake();
     const owner = await this.user([guildId]);
-    const roles = [ await this.role(guildId) ];
+    const memberUser = await this.user([guildId]);
 
     return await Guild.create({
       _id: guildId,
@@ -19,14 +19,15 @@ export class Mock {
       createdAt: new Date(),
       nameAcronym: 'MG',
       ownerId: owner.id,
+      roles: [ await this.everyoneRole(guildId) ], // must go above
       channels: [
         await this.channel('TEXT', guildId),
         await this.channel('VOICE', guildId),
       ],
       members: [
-        await this.guildMember(owner.id, guildId, roles),
+        await this.guildMember(owner.id, guildId),
+        await this.guildMember(memberUser.id, guildId),
       ],
-      roles,
     });
   }
 
@@ -46,12 +47,17 @@ export class Mock {
     });
   }
 
-  public static async guildMember(userId: string, guildId: string, extraRoles?: Lean.Role[]) {
+  public static async guildMember(userId: string, guildId: string, extraRoles: Lean.Role[] = []) {
+    const everyoneRole = await Role.findOne({ guildId, name: '@everyone' });
+    
     return await GuildMember.create({
       _id: new Types.ObjectId(),
       userId: userId,
       guildId: guildId,
-      roleIds: extraRoles?.map(r => r._id)
+      roleIds: [everyoneRole as Lean.Role]
+        .concat(extraRoles)
+        .filter(r => r)
+        .map(r => r._id)
     });
   }
 
@@ -62,7 +68,6 @@ export class Mock {
       guildId,
       memberIds: [],
       name: `Mock ${type} Channel`,
-      memberIds: [],
       summary: '',
       type
     });
@@ -77,6 +82,20 @@ export class Mock {
       hoisted: false,
       mentionable: true,
       name: 'Mock Role',
+      permissions,
+      position: 0
+    });
+  }
+
+  public static async everyoneRole(guildId: string, permissions = defaultPermissions) {
+    return await Role.create({
+      _id: generateSnowflake(),
+      color: '#FFFFFF',
+      createdAt: new Date(),
+      guildId,
+      hoisted: false,
+      mentionable: true,
+      name: '@everyone',
       permissions,
       position: 0
     });
