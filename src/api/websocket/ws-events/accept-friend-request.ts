@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io';
+import Channels from '../../../data/channels';
 import { Channel } from '../../../data/models/channel';
 import { UserDocument } from '../../../data/models/user';
 import { generateSnowflake } from '../../../data/snowflake-entity';
@@ -10,7 +11,10 @@ import WSEvent, { Args, Params } from './ws-event';
 export default class implements WSEvent {
   on = 'ACCEPT_FRIEND_REQUEST';
 
-  constructor(private users = Deps.get<Users>(Users)) {}
+  constructor(
+    private channels = Deps.get<Channels>(Channels),
+    private users = Deps.get<Users>(Users),
+  ) {}
 
   async invoke(ws: WebSocket, client: Socket, { senderId, friendId }: Params.AcceptFriendRequest) {
     const sender = await this.users.get(senderId);
@@ -22,12 +26,7 @@ export default class implements WSEvent {
       .emit('ACCEPT_FRIEND_REQUEST', {
         sender: await this.acceptFriend(sender, friend),
         friend: await this.acceptFriend(friend, sender),
-        dmChannel: await Channel.create({
-          _id: generateSnowflake(),
-          createdAt: new Date(),
-          recipientIds: [senderId, friendId],
-          type: 'DM'
-        })
+        dmChannel: await this.channels.createDM(senderId, friendId)
       } as Args.AcceptFriendRequest);
   }
 

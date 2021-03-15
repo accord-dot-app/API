@@ -1,3 +1,4 @@
+import '../src/data/types/env';
 import { config } from 'dotenv';
 config({ path: 'test/.env' });
 
@@ -10,7 +11,8 @@ use(chaiAsPromised);
 connect(process.env.MONGO_URI, { 
   useUnifiedTopology: true, 
   useNewUrlParser: true, 
-  useFindAndModify: false 
+  useFindAndModify: false,
+  useCreateIndex: true,
 });
 
 (async() => {
@@ -18,7 +20,7 @@ connect(process.env.MONGO_URI, {
   await import('./integration/guild-update.tests');
   await import('./integration/message-create.tests');
   await import('./integration/ready.tests');
-  // await import('./integration/voice-state-update.tests');
+  await import('./integration/voice-state-update.tests');
 
   await import('./unit/snowflake-entity.tests');
 })();

@@ -1,9 +1,16 @@
 import { Document, model, Schema } from 'mongoose';
-import { Lean } from '../types/entity-types';
+import { ChannelTypes, Lean } from '../types/entity-types';
 
-export interface ChannelDocument extends Document, Lean.Channel {
+export interface DMChannelDocument extends Document, ChannelTypes.DM {
   _id: string;
 }
+export interface TextChannelDocument extends Document, ChannelTypes.Text {
+  _id: string;
+}
+export interface VoiceChannelDocument extends Document, ChannelTypes.Voice {
+  _id: string;
+}
+export type ChannelDocument = DMChannelDocument | TextChannelDocument | VoiceChannelDocument;
 
 export const Channel = model<ChannelDocument>('channel', new Schema({
   _id: String,
@@ -11,7 +18,6 @@ export const Channel = model<ChannelDocument>('channel', new Schema({
   guildId: String,
   memberIds: { type: Array, default: [] },
   name: String,
-  recipientIds: { type: Array, default: [] },
   summary: String,
   type: String
 }));

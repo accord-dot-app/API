@@ -35,7 +35,7 @@ export class SystemBot {
   private async readyUp() {
     const dmChannels = await Channel.find({
       type: 'DM',
-      recipientIds: this.self._id
+      memberIds: this.self._id
     });
 
     this.socket.emit('READY', {
@@ -64,9 +64,9 @@ export class SystemBot {
   private hookWSEvents() {
     this.socket.on('MESSAGE_CREATE', async ({ message }: Args.MessageCreate) => {
       const author = await this.users.get(message.authorId);
+      if (!author) return;
 
-      message = await this.messages.get(message._id);
-      if (!message.guildId && author.bot) return;
+      if (!message.guildId || author.bot) return;
 
       if (message.content.toLowerCase() === 'hi') {
         this.sendMessage(message.channelId, message.guildId, `Hi, @${author.username}!`)
@@ -83,12 +83,12 @@ export class SystemBot {
   }
 
   async getDMChannel(user: UserDocument) {
-    return await Channel.findOne({ recipientIds: [user._id, this.self._id] })
+    return await Channel.findOne({ memberIds: [user._id, this.self._id] })
       ?? await Channel.create({
         _id: generateSnowflake(),
         createdAt: new Date(),
         type: 'DM',
-        recipientIds: [user._id, this.self._id]
+        memberIds: [user._id, this.self._id]
       });
   }
 

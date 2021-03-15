@@ -7,5 +7,6 @@
   "cSpell.words": [
     "cooldown",
     "metascraper"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

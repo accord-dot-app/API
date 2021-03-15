@@ -20,7 +20,7 @@ router.get('/@me/:channelId', updateUser, validateUser, async (req, res) => {
       .slice(+req.query.start || 0, +req.query.end || 25);
 
     const channel = await Channel.findById(channelId);
-    const canMessageUser = channel.recipientIds.includes(res.locals.user._id);
+    const canMessageUser = channel.memberIds.includes(res.locals.user._id);
     if (!canMessageUser)
       throw new TypeError('You are not friends with this user.');
 

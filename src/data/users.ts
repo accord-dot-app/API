@@ -4,11 +4,10 @@ import { User, UserDocument } from './models/user';
 import { generateSnowflake } from './snowflake-entity';
 import { readdirSync } from 'fs';
 import { resolve } from 'path';
-import { Guild } from './models/guild';
 import { UserTypes } from './types/entity-types';
 
 export default class Users extends DBWrapper<string, UserDocument> {
-  private avatarNames = [];
+  private avatarNames: string[] = [];
   private systemUser: UserDocument;
 
   constructor() {
@@ -38,7 +37,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
   public async getGuilds(userId: string) {
     return (await User
       .findById(userId)
-      .populate({
+      ?.populate({
         path: 'guilds',
         populate: { path: 'channels' }
       })
@@ -50,15 +49,28 @@ export default class Users extends DBWrapper<string, UserDocument> {
         path: 'guilds',
         populate: { path: 'roles' }
       })
-      .exec()).guilds;
+      .exec())?.guilds;
   }
 
   public async getGuild(userId: string, guildId: string) {
     return (await User
-      .findOne({ _id: userId, guilds: guildId as any }, 'guilds')
-      .populate('guilds')
-      .populate({ path: 'channels', model: Guild })
-      .exec()).guilds;
+      .findOne({
+        _id: userId,
+        guilds: guildId as any
+      }, 'guilds')
+      ?.populate({
+        path: 'guilds',
+        populate: { path: 'channels' }
+      })
+      .populate({
+        path: 'guilds',
+        populate: { path: 'members' }
+      })
+      .populate({
+        path: 'guilds',
+        populate: { path: 'roles' }
+      })
+      .exec())?.guilds;
   }
 
   public async getSystemUser() {
@@ -74,7 +86,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
         friends: [],
         friendRequests: [],
         guilds: [],
-        voice: null,
+        voice: new UserTypes.VoiceState,
       });
   }
 

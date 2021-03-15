@@ -1,13 +1,13 @@
 import { Document } from 'mongoose';
 
-export default abstract class DBWrapper<T1, T2 extends Document> {
-  get(identifier: T1) {
+export default abstract class DBWrapper<K, T extends Document> {
+  get(identifier: K) {
     return this.getOrCreate(identifier);
   }
 
-  protected abstract getOrCreate(type: T1): Promise<T2>;
+  protected abstract getOrCreate(type: K): Promise<T | null | undefined>;
 
-  save(savedType: T2) {
-    return savedType.save();
+  save(savedType: T) {
+    return savedType?.save();
   }
 }

@@ -10,11 +10,6 @@ export default class Messages extends DBWrapper<string, MessageDocument> {
     return new Message({ _id: id }).save();
   }
 
-  public populate(doc: MessageDocument) {
-    return doc
-      .execPopulate();
-  }
-
   public getChannelMessages(channelId: string) {
     return Message.find({ channelId });
   }

@@ -82,7 +82,7 @@ describe('message-create', () => {
 
       const partialMessage = new Message({
         authorId: user.id,
-        channelId: guild.channels[0].id,
+        channelId: guild.channels[0]._id,
         content: 'hi',
         guildId: guild.id,
       }) as Types.PartialMessage;

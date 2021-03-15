@@ -11,7 +11,8 @@
     "removeComments": true,
     "resolveJsonModule": true,
     "strict": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": false,
     "target": "ES2020",
     "watch": true
   },

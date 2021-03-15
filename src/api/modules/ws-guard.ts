@@ -41,7 +41,7 @@ export class WSGuard {
   private async canAccess(channel: ChannelDocument, client: Socket) {
     const userId = this.userId(client);
     if (channel.type === 'DM')
-      return channel.recipientIds?.includes(userId);
+      return channel.memberIds?.includes(userId);
     else if (channel.type === 'TEXT')
       return this.can(client, channel.guildId, PermissionTypes.Text.SEND_MESSAGES);
     return this.can(client, channel.guildId, PermissionTypes.Voice.CONNECT);

@@ -1,10 +1,11 @@
-import { Channel, ChannelType } from '../src/data/models/channel';
-import { Guild, GuildDocument } from '../src/data/models/guild';
+import { Channel } from '../src/data/models/channel';
+import { Guild } from '../src/data/models/guild';
 import { GuildMember } from '../src/data/models/guild-member';
-import { User, UserDocument, UserVoiceState } from '../src/data/models/user';
+import { User } from '../src/data/models/user';
 import { generateSnowflake } from '../src/data/snowflake-entity';
 import { Types } from 'mongoose';
 import { defaultPermissions, Role, RoleDocument } from '../src/data/models/role';
+import { ChannelTypes, Lean, UserTypes } from '../src/data/types/entity-types';
 
 export class Mock {
   public static async guild() {
@@ -24,13 +25,13 @@ export class Mock {
         await this.channel('VOICE', guildId),
       ],
       members: [
-        await this.guildMember(owner, guildId, roles),
+        await this.guildMember(owner.id, guildId, roles),
       ],
       roles,
     });
   }
 
-  public static async user(guildIds = []) {
+  public static async user(guildIds: string[] = []) {
     return await User.create({
       _id: generateSnowflake(),
       avatarURL: '',
@@ -42,29 +43,27 @@ export class Mock {
       guilds: guildIds,
       status: 'ONLINE',
       username: 'Mock User',
-      voice: new UserVoiceState()
+      voice: new UserTypes.VoiceState()
     });
   }
 
-  public static async guildMember(user: UserDocument, guild: GuildDocument, extraRoles?: RoleDocument[]) {
+  public static async guildMember(userId: string, guildId: string, extraRoles?: Lean.Role[]) {
     return await GuildMember.create({
       _id: new Types.ObjectId(),
-      guildId,
-      roleIds: guild.roles
-        .concat(extraRoles?
-          .map(r => r.id) ?? []),
-      userId: user.id
+      userId: userId,
+      guildId: guildId,
+      roleIds: extraRoles?.map(r => r._id)
     });
   }
 
-  public static async channel(type: ChannelType, guildId?: string) {
+  public static async channel(type: ChannelTypes.Type, guildId?: string) {
     return await Channel.create({
       _id: generateSnowflake(),
       createdAt: new Date(),
       guildId,
       memberIds: [],
       name: `Mock ${type} Channel`,
-      recipientIds: [],
+      memberIds: [],
       summary: '',
       type
     });
