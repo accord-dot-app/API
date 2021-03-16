@@ -116,8 +116,6 @@ export namespace Params {
   }
   export interface Ready {
     key: string;
-    guildIds: string[];
-    channelIds: string[];
   }
   export interface RemoveFriend {
     friendId: string;

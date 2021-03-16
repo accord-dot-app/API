@@ -7,11 +7,13 @@ import Users from '../../src/data/users';
 import { Mock } from '../mock';
 import { WebSocket } from '../../src/api/websocket/websocket';
 import io from 'socket.io-client';
+import SocketIO from 'socket.io';
 
 describe('ready', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
-  const event = new ChannelCreate();
-  const users = new Users();
+  
+  let event: ChannelCreate;
+  let users: Users;
   let key: string;
   let user: UserDocument;
   let ws: WebSocket;
@@ -19,16 +21,39 @@ describe('ready', () => {
   beforeEach(async () => {
     Deps.get<API>(API);
 
+    event = new ChannelCreate();
+    users = new Users();
+
+    client.join = () => {};
+    client.adapter = { rooms: [] };
+
     ws = new WebSocket();
     user = await Mock.user();
     key = users.createToken(user.id);
+
+    ws.sessions.set(client.id, user.id);
   });
 
   afterEach(async () => await user.remove());
+  after(() => client.disconnect());
 
   it('user already logged in, fulfilled', async () => {
-    ws.sessions.set(client.id, user.id);
+    await event.invoke(ws, client, {
+      key,
+      channelIds: [],
+      guildIds: [],
+    });
 
+    const invoke = () => event.invoke(ws, client, {
+      key,
+      channelIds: [],
+      guildIds: [],
+    });
+
+    await expect(invoke()).to.be.fulfilled;
+  });
+
+  it('joins all guild rooms', async () => {
     const invoke = () => event.invoke(ws, client, {
       key,
       channelIds: [],

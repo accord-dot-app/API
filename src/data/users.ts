@@ -4,7 +4,8 @@ import { User, UserDocument } from './models/user';
 import { generateSnowflake } from './snowflake-entity';
 import { readdirSync } from 'fs';
 import { resolve } from 'path';
-import { UserTypes } from './types/entity-types';
+import { Lean, UserTypes } from './types/entity-types';
+import { Channel } from './models/channel';
 
 export default class Users extends DBWrapper<string, UserDocument> {
   private avatarNames: string[] = [];
@@ -53,7 +54,11 @@ export default class Users extends DBWrapper<string, UserDocument> {
         path: 'guilds',
         populate: { path: 'roles' }
       })
-      .exec())?.guilds;
+      .exec())?.guilds as Lean.Guild[] | undefined;
+  }
+
+  public async getDMChannels(userId: string) {
+    return await Channel.find({ memberIds: userId };
   }
 
   public async getGuild(userId: string, guildId: string) {

@@ -1,7 +1,6 @@
 import { Socket } from 'socket.io';
-import { ChannelTypes, UserTypes } from '../../../data/types/entity-types';
+import { UserTypes } from '../../../data/types/entity-types';
 import { Channel, VoiceChannelDocument } from '../../../data/models/channel';
-import { User } from '../../../data/models/user';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';

@@ -5,9 +5,8 @@ import Deps from '../../utils/deps';
 import { WebSocket } from '../websocket/websocket';
 import { Socket } from 'socket.io';
 import Channels from '../../data/channels';
-import { ChannelDocument } from '../../data/models/channel';
 import Roles from '../../data/roles';
-import { PermissionTypes } from '../../data/types/entity-types';
+import { Lean, PermissionTypes } from '../../data/types/entity-types';
 
 export class WSGuard {
   constructor(
@@ -25,28 +24,31 @@ export class WSGuard {
       throw new TypeError('Unauthorized');
   }
 
-  public async validateIsOwner(client: Socket, guildId: string) {
-    const member = await GuildMember.findOne({
-      guildId,
+  public async validateIsOwner(client: Socket, guildId: string) {    
+    const isOwner = await Guild.exists({
+      _id: guildId,
       ownerId: this.userId(client)
-    });
-    if (!member)
+    });    
+    if (!isOwner)
       throw new TypeError('Only Guild Owner Can Do This');
   }
 
   public async canAccessChannel(client: Socket, channelId?: string) {
     const channel = await this.channels.get(channelId);
-    const canAccess = await this.canAccess(channel, client);
-    if (!canAccess)
-      throw new TypeError('Missing Permissions');    
+    await this.canAccess(channel, client);
   }  
-  private async canAccess(channel: ChannelDocument, client: Socket) {
+  private async canAccess(channel: Lean.Channel, client: Socket) {    
     const userId = this.userId(client);
-    if (channel.type === 'DM')
-      return channel.memberIds?.includes(userId);
-    else if (channel.type === 'TEXT')
-      return this.can(client, channel.guildId, PermissionTypes.Text.SEND_MESSAGES);
-    return this.can(client, channel.guildId, PermissionTypes.Voice.CONNECT);
+    if (channel.type === 'TEXT') {
+      await this.can(client, channel.guildId, PermissionTypes.Text.SEND_MESSAGES);
+      return;
+    } else if (channel.type === 'VOICE') {
+      await this.can(client, channel.guildId, PermissionTypes.Voice.CONNECT);
+      return;
+    }    
+    const inGroup = channel.memberIds?.includes(userId);
+    if (!inGroup)
+      throw new TypeError('Not DM Member');
   }
 
   public async can(client: Socket, guildId: string | undefined, permission: PermissionTypes.Permission) {
@@ -58,9 +60,9 @@ export class WSGuard {
     const guild = await Guild.findById(guildId);
     if (!guild)
       throw new TypeError('Guild Not Found');
-    
-    const can = this.roles.hasPermission(member, permission)
-      || guild.ownerId === userId;
+      
+    const can = await this.roles.hasPermission(member, permission)
+      || guild.ownerId === userId;    
     if (!can)
       throw new TypeError('Missing Permissions');
   }  

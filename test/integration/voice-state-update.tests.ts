@@ -48,7 +48,7 @@ describe('voice-state-update', () => {
     await User.deleteMany({});
   });
 
-  it('spoofed author, throws error', async () => {
+  it('spoofed user, throws error', async () => {
     const result = () => event.invoke(ws, client, {
       userId: user.id,
       voice: new UserTypes.VoiceState()

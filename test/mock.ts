@@ -4,8 +4,9 @@ import { GuildMember } from '../src/data/models/guild-member';
 import { User } from '../src/data/models/user';
 import { generateSnowflake } from '../src/data/snowflake-entity';
 import { Types } from 'mongoose';
-import { defaultPermissions, Role, RoleDocument } from '../src/data/models/role';
+import { defaultPermissions, Role } from '../src/data/models/role';
 import { ChannelTypes, Lean, UserTypes } from '../src/data/types/entity-types';
+import { WebSocket } from '../src/api/websocket/websocket';
 
 export class Mock {
   public static async guild() {
@@ -99,5 +100,12 @@ export class Mock {
       permissions,
       position: 0
     });
+  }
+
+  public static async removeMemberPerms(guild: Lean.Guild) {
+    await Role.updateOne(
+      { _id: guild.roles[0]._id },
+      { permissions: 0 },
+    );
   }
 }
