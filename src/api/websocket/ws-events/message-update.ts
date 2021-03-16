@@ -31,7 +31,7 @@ export default class implements WSEvent {
       content: partialMessage.content,
       embed: (withEmbed) ? await this.getEmbed(message) : undefined,
       updatedAt: new Date()
-    });
+    }, { runValidators: true });
 
     ws.io
       .to(message.channelId)

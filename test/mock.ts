@@ -19,6 +19,16 @@ export class Mock {
     };
   }
 
+  public static async message(author: Lean.User, channelId: string) {
+    return await Message.create({
+      _id: generateSnowflake(),
+      authorId: author._id,
+      channelId,
+      content: 'hi',
+      createdAt: new Date(),
+    });
+  }
+
   public static async guild() {
     const guildId = generateSnowflake();
     const owner = await this.user([guildId]);

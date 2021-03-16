@@ -1,8 +1,6 @@
 import { Socket } from 'socket.io';
 import Channels from '../../../data/channels';
-import { Channel } from '../../../data/models/channel';
 import { UserDocument } from '../../../data/models/user';
-import { generateSnowflake } from '../../../data/snowflake-entity';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
