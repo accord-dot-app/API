@@ -5,8 +5,7 @@ import { User } from '../src/data/models/user';
 import { generateSnowflake } from '../src/data/snowflake-entity';
 import { Types } from 'mongoose';
 import { defaultPermissions, Role } from '../src/data/models/role';
-import { ChannelTypes, InviteTypes, Lean, UserTypes } from '../src/data/types/entity-types';
-import { WebSocket } from '../src/api/websocket/websocket';
+import { ChannelTypes, InviteTypes, Lean, PermissionTypes, UserTypes } from '../src/data/types/entity-types';
 import { Message } from '../src/data/models/message';
 import { Invite } from '../src/data/models/invite';
 import { Application } from '../src/data/models/application';
@@ -128,6 +127,13 @@ export class Mock {
     await Role.updateOne(
       { _id: guild.roles?.[0]._id },
       { permissions: 0 },
+    );
+  }
+
+  public static async giveEveryoneAdmin(guild: Lean.Guild) {
+    await Role.updateOne(
+      { _id: guild.roles[0]._id },
+      { permissions: PermissionTypes.General.ADMINISTRATOR }
     );
   }
 

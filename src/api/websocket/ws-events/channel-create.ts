@@ -21,20 +21,22 @@ export default class implements WSEvent {
     const channel = await Channel.create({
       _id: generateSnowflake(),
       name: partialChannel.name,
-      summary: '',
+      summary: partialChannel.summary,
       createdAt: new Date(),
       guildId,
       type: partialChannel.type,
       memberIds: []
     });
 
-    await Guild.updateOne({ _id: guildId }, {
-      $push: {
-        channels: channel
-      }
-    }).lean();
+    await Guild.updateOne(
+      { _id: guildId },
+      { $push: { channels: channel } },
+      { runValidators: true }
+    ).lean();
 
-    ws.io.sockets
+    client.join(channel.id);
+
+    ws.io
       .to(guildId)
       .emit('CHANNEL_CREATE', { channel } as Args.ChannelCreate);
   }

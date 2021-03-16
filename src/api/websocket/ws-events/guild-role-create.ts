@@ -31,7 +31,7 @@ export default class implements WSEvent {
       { $push: { roles: role },
     });
 
-    ws.io.sockets
+    ws.io
       .to(guildId)
       .emit('GUILD_ROLE_CREATE', { role } as Args.GuildRoleCreate);
   }

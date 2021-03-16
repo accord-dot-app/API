@@ -22,6 +22,6 @@ export default class implements WSEvent {
     // const guild = await this.guilds.getUserGuild(userId, guildId);
     // if (!guild) return;
     
-    // ws.io.sockets.emit('VOICE_CHANNEL_UPDATE', { channel, user });
+    // ws.io.emit('VOICE_CHANNEL_UPDATE', { channel, user });
   }
 }

@@ -13,7 +13,7 @@ export default class implements WSEvent {
   async invoke(ws: WebSocket, client: Socket, { senderId, friendId }: Params.RemoveFriend) {
     if (!friendId) return;
 
-    ws.io.sockets
+    ws.io
       .to(senderId)
       .to(friendId)
       .emit('REMOVE_FRIEND', {

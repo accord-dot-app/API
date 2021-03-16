@@ -48,6 +48,10 @@ export default class implements WSEvent {
   }
 
   private async handleInvite(invite: InviteDocument) {
+    const inviteExpired = Number(invite.options?.expiresAt?.getTime()) < new Date().getTime();
+    if (inviteExpired)
+      throw new TypeError('Invite Expired');
+    
     invite.uses++;
 
     (invite.options?.maxUses && invite.uses >= invite.options.maxUses)

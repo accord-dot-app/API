@@ -11,7 +11,7 @@ export default class implements WSEvent {
     const friend = await User.findOne({ username: friendUsername });
     if (!friend || friend._id === senderId) return;
 
-    ws.io.sockets
+    ws.io
       .to(senderId)
       .to(friend._id)
       .emit('SEND_FRIEND_REQUEST', {

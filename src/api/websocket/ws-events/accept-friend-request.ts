@@ -20,7 +20,7 @@ export default class implements WSEvent {
     const sender = await this.users.get(senderId);
     const friend = await this.users.get(friendId);
 
-    ws.io.sockets
+    ws.io
       .to(senderId)
       .to(friendId)
       .emit('ACCEPT_FRIEND_REQUEST', {

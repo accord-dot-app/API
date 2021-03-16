@@ -1,5 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
-import { ChannelTypes, Lean } from '../types/entity-types';
+import { ChannelTypes } from '../types/entity-types';
 
 export interface DMChannelDocument extends Document, ChannelTypes.DM {
   _id: string;
@@ -16,8 +16,24 @@ export const Channel = model<ChannelDocument>('channel', new Schema({
   _id: String,
   createdAt: { type: Date, default: new Date() },
   guildId: String,
-  memberIds: { type: Array, default: [] },
-  name: String,
-  summary: String,
-  type: String
+  memberIds: {
+    maxlength: 69,
+    type: Array,
+    default: [],
+  },
+  name: {
+    type: String,
+    minlength: 1,
+    maxlength: 32,
+  },
+  summary: {
+    type: String,
+    maxlength: 128,
+  },
+  type: {
+    type: String,
+    validate: (val: string): val is ChannelTypes.Type => {
+      return val === 'TEXT' || val === 'VOICE' || val === 'DM';
+    }
+  }
 }));

@@ -19,7 +19,7 @@ export default class implements WSEvent {
 
     await Role.deleteOne({ _id: roleId });
 
-    ws.io.sockets
+    ws.io
       .to(guildId)
       .emit('GUILD_ROLE_DELETE', { roleId } as Args.GuildRoleDelete);
   }

@@ -88,26 +88,28 @@ describe('message-create', () => {
       await expect(result()).to.be.fulfilled;
     });
 
-    it('message is too short, rejected', async () => {
-      const result = () => event.invoke(ws, client, {
-        channelId: guild.channels[0]._id,
-        partialMessage: {
-          content: ''
-        },
+    describe('validation', () => {
+      it('message is too short, rejected', async () => {
+        const result = () => event.invoke(ws, client, {
+          channelId: guild.channels[0]._id,
+          partialMessage: {
+            content: ''
+          },
+        });
+  
+        await expect(result()).to.be.rejectedWith('minimum');
       });
-
-      await expect(result()).to.be.rejectedWith('minimum');
-    });
-
-    it('message is too long, rejected', async () => {
-      const result = () => event.invoke(ws, client, {
-        channelId: guild.channels[0]._id,
-        partialMessage: {
-          content: new Array(3001).fill('a').join('')
-        },
+  
+      it('message is too long, rejected', async () => {
+        const result = () => event.invoke(ws, client, {
+          channelId: guild.channels[0]._id,
+          partialMessage: {
+            content: new Array(3001).fill('a').join('')
+          },
+        });
+  
+        await expect(result()).to.be.rejectedWith('maximum');
       });
-
-      await expect(result()).to.be.rejectedWith('maximum');
     });
   });
 });

@@ -80,6 +80,18 @@ describe('guild-member-add', () => {
     expect(invite).to.be.null;
   });
 
+  it('invite expired, rejected', async () => {
+    const invite = await Mock.invite(guild._id, {
+      expiresAt: new Date(0)
+    });
+
+    const result = () => event.invoke(ws, client, {
+      inviteCode: invite._id,
+    });
+
+    await expect(result()).to.be.rejectedWith('Invite Expired');
+  });
+
   it('invalid invite code, rejected', async () => {
     const result = () => event.invoke(ws, client, {
       inviteCode: '',

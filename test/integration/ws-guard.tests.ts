@@ -11,6 +11,7 @@ import Channels from '../../src/data/channels';
 import Roles from '../../src/data/roles';
 import { PermissionTypes } from '../../src/data/types/entity-types';
 import { GuildMember } from '../../src/data/models/guild-member';
+import { Role } from '../../src/data/models/role';
 
 describe('ws-guard', () => {
   let client: any;
@@ -83,6 +84,15 @@ describe('ws-guard', () => {
     const result = () => guard.canAccessChannel(client, textChannelId);
 
     await expect(result()).to.be.rejectedWith('Missing Permissions');
+  });
+
+  it('canAccessChannel, text channel, guild admin, fulfilled', async () => {
+    await Mock.giveEveryoneAdmin(guild);
+    const textChannelId = guild.channels[0]._id;
+
+    const result = () => guard.canAccessChannel(client, textChannelId);
+
+    await expect(result()).to.be.fulfilled;
   });
 
   it('canAccessChannel, text channel, guild owner, fulfilled', async () => {

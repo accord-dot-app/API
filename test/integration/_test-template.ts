@@ -48,4 +48,9 @@ describe(addeventnamehere, () => {
 
     await expect(result()).to.be.rejectedWith();
   });
+
+  async function makeGuildOwner() {
+    ws.sessions.set(client.id, guild.ownerId);
+    await Mock.clearRolePerms(guild);
+  }
 });

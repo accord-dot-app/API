@@ -64,7 +64,11 @@ export class WSGuard {
     const can = await this.roles.hasPermission(member, permission)
       || guild.ownerId === userId;    
     if (!can)
-      throw new TypeError(`Missing Permissions - ${permission}`);
+      throw new TypeError(`Missing Permissions - ${
+        PermissionTypes.General[permission]
+        || PermissionTypes.Text[permission]
+        || PermissionTypes.Voice[permission]
+      }`);
   }  
 
   public decodeKey(key: string): { id?: string } {
