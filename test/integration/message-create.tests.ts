@@ -3,125 +3,111 @@ import { WebSocket } from '../../src/api/websocket/websocket';
 import Deps from '../../src/utils/deps';
 import { expect } from 'chai';
 import io from 'socket.io-client';
-import { Message } from '../../src/data/models/message';
-import { GuildMember } from '../../src/data/models/guild-member';
 import { Mock } from '../mock';
-import { Guild } from '../../src/data/models/guild';
-import { User } from '../../src/data/models/user';
-import { Channel } from '../../src/data/models/channel';
+import { GuildDocument } from '../../src/data/models/guild';
+import { Channel, ChannelDocument } from '../../src/data/models/channel';
 import { API } from '../../src/api/server';
-import { Role } from '../../src/data/models/role';
-import { Types } from '../../src/api/websocket/ws-types';
+import { User, UserDocument } from '../../src/data/models/user';
 
 describe('message-create', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;;
   let event: MessageCreate;
   let ws: WebSocket;
+  let user: UserDocument;
+  let channel: ChannelDocument;
+  let guild: GuildDocument;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     Deps.get<API>(API);
 
-    event = new MessageCreate();
     ws = Deps.get<WebSocket>(WebSocket);
-    
-    ws.sessions.set(client.id, 'user_1');
+    event = new MessageCreate();
+    guild = await Mock.guild();
+    user = await User.findById(guild.members[1].userId);
+    channel = await Channel.findById(guild.channels[0]._id);    
+
+    ws.sessions.set(client.id, user.id);
   });
 
+  afterEach(() => ws.sessions.clear());
   after(async () => {
     client.disconnect();
-    
-    await Channel.deleteMany({});
-    await Guild.deleteMany({});
-    await GuildMember.deleteMany({});
-    await Message.deleteMany({});
-    await Role.deleteMany({});
-    await User.deleteMany({});
+    await Mock.cleanDB();
   });
 
   describe('invoke', () => {
-    it('spoofed author, throws error', async () => {
-      const partialMessage: Types.PartialMessage = new Message();
-      partialMessage.authorId = 'user_2';
-
-      const result = () => event.invoke(ws, client, { partialMessage });
-
-      await expect(result()).to.be.rejectedWith('Unauthorized');
-    });
-
-    it('user is guild member with send message perms, message created', async () => {
+    it('not a guild member, rejected', async () => {
       const user = await Mock.user();
-      const guild = await Mock.guild();
       ws.sessions.set(client.id, user.id);
 
-      const role = await Mock.role(guild.id);
-      guild.members.push(
-        await Mock.guildMember(user, guild.id, [role])
-      );
+      const result = () => event.invoke(ws, client, {
+        channelId: channel._id,
+        partialMessage: {
+          content: 'a'
+        },
+      });
 
-      const partialMessage = new Message({
-        authorId: user.id,
-        channelId: guild.channels[0].id,
-        content: 'hi',
-        guildId: guild.id,
-      }) as Types.PartialMessage;
+      await expect(result()).to.be.rejectedWith('Member Not Found');
+    });
 
-      const result = () => event.invoke(ws, client, { partialMessage });
+    it('user is guild member with send message perms, fulfilled', async () => {
+      const result = () => event.invoke(ws, client, {
+        channelId: guild.channels[0]._id,
+        partialMessage: {
+          content: 'hi'
+        },
+      });
 
       await expect(result()).to.be.fulfilled;
     });
     
-    it('user is guild member without chat perms, message created', async () => {
-      const user = await Mock.user();
-      const guild = await Mock.guild();
-      ws.sessions.set(client.id, user.id);
+    it('user is guild member without chat perms, rejected', async () => {
+      await Mock.clearRolePerms(guild);
 
-      const mutedRole = await Mock.role(guild.id, 0);
-      guild.members.push(
-        await Mock.guildMember(user, guild.id, [mutedRole])
-      );
-
-      const partialMessage = new Message({
-        authorId: user.id,
+      const result = () => event.invoke(ws, client, {
         channelId: guild.channels[0]._id,
-        content: 'hi',
-        guildId: guild.id,
-      }) as Types.PartialMessage;
-
-      const result = () => event.invoke(ws, client, { partialMessage });
+        partialMessage: {
+          content: 'hi'
+        },
+      });
 
       await expect(result()).to.be.rejectedWith('Missing Permissions');
     });
     
-    it('user is guild owner, message created', async () => {
+    it('user is guild owner, fulfilled', async () => {
       const guild = await Mock.guild();
       ws.sessions.set(client.id, guild.ownerId);
 
-      const partialMessage = new Message({
-        authorId: guild.ownerId,
-        channelId: guild.channels[0].id,
-        content: 'hi',
-        guildId: guild.id,
-      }) as Types.PartialMessage;
-
-      const result = () => event.invoke(ws, client, { partialMessage });
+      const result = () => event.invoke(ws, client, {
+        channelId: guild.channels[0]._id,
+        partialMessage: {
+          content: 'hi'
+        },
+      });
 
       await expect(result()).to.be.fulfilled;
     });
 
+    it('message is too short, rejected', async () => {
+      const result = () => event.invoke(ws, client, {
+        channelId: guild.channels[0]._id,
+        partialMessage: {
+          content: ''
+        },
+      });
+
+      await expect(result()).to.be.rejectedWith('minimum');
+    });
+
     it('message is too long, rejected', async () => {
-      const guild = await Mock.guild();
-      ws.sessions.set(client.id, guild.ownerId);
+      const result = () => event.invoke(ws, client, {
+        channelId: guild.channels[0]._id,
+        partialMessage: {
+          content: new Array(3001).fill('a').join('')
+        },
+      });
 
-      const partialMessage = new Message({
-        authorId: guild.ownerId,
-        channelId: guild.channels[0].id,
-        content: new Array(3001).fill('a').join(''),
-        guildId: guild.id,
-      }) as Types.PartialMessage;
-
-      const result = () => event.invoke(ws, client, { partialMessage });
-
-      await expect(result()).to.be.rejectedWith('Content Too Long');
+      await expect(result()).to.be.rejectedWith('maximum');
     });
   });
 });

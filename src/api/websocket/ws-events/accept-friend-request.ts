@@ -6,10 +6,10 @@ import { generateSnowflake } from '../../../data/snowflake-entity';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params } from './ws-event';
+import WSEvent, { Args, Params, WSEventParams } from './ws-event';
 
 export default class implements WSEvent {
-  on = 'ACCEPT_FRIEND_REQUEST';
+  on: keyof WSEventParams = 'ACCEPT_FRIEND_REQUEST';
 
   constructor(
     private channels = Deps.get<Channels>(Channels),

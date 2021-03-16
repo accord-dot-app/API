@@ -2,10 +2,10 @@ import { Socket } from 'socket.io';
 import { Invite } from '../../../data/models/invite';
 import { generateInviteCode } from '../../../utils/utils';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params } from './ws-event';
+import WSEvent, { Args, Params, WSEventParams } from './ws-event';
 
 export default class implements WSEvent {
-  on = 'INVITE_CREATE';
+  on: keyof WSEventParams = 'INVITE_CREATE';
 
   async invoke(ws: WebSocket, client: Socket, { guildId, userId, options }: Params.InviteCreate) {
     ws.io
@@ -16,8 +16,8 @@ export default class implements WSEvent {
           createdAt: new Date(),
           guildId: guildId,
           inviterId: userId,
-          maxUses: options?.maxUses,
-          uses: 0
+          options,
+          uses: 0,
         })
       } as Args.InviteCreate);
   }

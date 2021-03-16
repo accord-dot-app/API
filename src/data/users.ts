@@ -31,6 +31,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
   public async getKnown(userId: string) {
     return await User.find({
       $or: [
+        { _id: userId },
         { _id: this.systemUser._id },
         { friends: userId as any },
         { friendRequests: { userId, type: 'INCOMING' } },
@@ -58,7 +59,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
   }
 
   public async getDMChannels(userId: string) {
-    return await Channel.find({ memberIds: userId };
+    return await Channel.find({ memberIds: userId });
   }
 
   public async getGuild(userId: string, guildId: string) {
@@ -86,12 +87,12 @@ export default class Users extends DBWrapper<string, UserDocument> {
     return this.systemUser = await User.findOne({ username: 'DClone' })
       ?? await User.create({
         _id: generateSnowflake(),
-        avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/avatar_grey.png`,
+        avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/bot.png`,
         badges: [],
         bot: true,
         createdAt: new Date(),
         status: 'ONLINE',
-        username: 'DClone',
+        username: '2PG',
         friends: [],
         friendRequests: [],
         guilds: [],
@@ -103,7 +104,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
     return jwt.sign({ _id: userId }, 'secret' , { expiresIn : '7d' })
   }
 
-  public createUser(username: string, password: any) {
+  public createUser(username: string, password: any): Promise<UserDocument> {
     const randomAvatar = this.getRandomAvatar();
     return (User as any).register({
       _id: generateSnowflake(),

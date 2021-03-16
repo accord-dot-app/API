@@ -8,6 +8,7 @@ import { User } from '../../src/data/models/user';
 import { Channel } from '../../src/data/models/channel';
 import { API } from '../../src/api/server';
 import VoiceServerUpdate from '../../src/api/websocket/ws-events/voice-state-update';
+import { Mock } from '../mock';
 
 describe('voice-server-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
@@ -20,8 +21,10 @@ describe('voice-server-update', () => {
     ws.sessions.set(client.id, 'user_1');
   });
 
-  afterEach(async () => {
-    await Message.deleteMany({});
+  afterEach(() => ws.sessions.clear());
+  after(async () => {
+    client.disconnect();
+    await Mock.cleanDB();
   });
 
   describe('invoke', () => {

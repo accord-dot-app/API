@@ -7,10 +7,10 @@ import { User } from '../../../data/models/user';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params } from './ws-event';
+import WSEvent, { Args, Params, WSEventParams } from './ws-event';
 
 export default class implements WSEvent {
-  on = 'GUILD_MEMBER_REMOVE';
+  on: keyof WSEventParams = 'GUILD_MEMBER_DELETE';
 
   constructor(
     private guilds = Deps.get<Guilds>(Guilds),
@@ -18,7 +18,7 @@ export default class implements WSEvent {
     private users = Deps.get<Users>(Users),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { guildId, userId }: Params.GuildMemberRemove) {
+  async invoke(ws: WebSocket, client: Socket, { guildId, userId }: Params.GuildMemberDelete) {
     const guild = await this.guilds.get(guildId);
     const memberExists = guild.members.some(m => m.userId === userId);
     if (memberExists)
@@ -33,7 +33,7 @@ export default class implements WSEvent {
 
     ws.io
       .to(guildId)
-      .emit('GUILD_MEMBER_REMOVE', { userId } as Args.GuildMemberRemove);
+      .emit('GUILD_MEMBER_REMOVE', { userId } as Args.GuildMemberDelete);
     ws.io
       .to(client.id)
       .emit('GUILD_LEAVE', { guildId } as Args.GuildLeave);

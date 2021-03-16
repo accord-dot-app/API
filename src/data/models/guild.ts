@@ -7,7 +7,11 @@ export interface GuildDocument extends Document, Lean.Guild {
 
 export const Guild = model<GuildDocument>('guild', new Schema({
   _id: String,
-  name: String,
+  name: {
+    type: String,
+    minlength: 1,
+    maxlength: 32,
+  },
   createdAt: { type: Date, default: new Date() },
   nameAcronym: String,
   iconURL: String,

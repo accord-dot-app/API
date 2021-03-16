@@ -19,11 +19,14 @@ use(spies);
   }, (err) => console.log(err));
 
   await import('./integration/channel-create.tests');
+  await import('./integration/guild-member-add.tests');
   await import('./integration/guild-update.tests');
   await import('./integration/message-create.tests');
+  await import('./integration/invite-delete.tests');
+  // await import('./integration/message-update.tests');
   await import('./integration/ready.tests');
   // await import('./integration/voice-state-update.tests');
   await import('./integration/ws-guard.tests');
 
-  await import('./unit/snowflake-entity.tests');
+  await import('./unit/snowflake-entity.tests')
 })();

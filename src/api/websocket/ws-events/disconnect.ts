@@ -2,17 +2,20 @@ import { Socket } from 'socket.io';
 import Channels from '../../../data/channels';
 import { Channel } from '../../../data/models/channel';
 import { UserDocument } from '../../../data/models/user';
+import { Lean } from '../../../data/types/entity-types';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent from './ws-event';
+import voiceStateUpdate from './voice-state-update';
+import WSEvent, { Args, WSEventParams } from './ws-event';
 
 export default class implements WSEvent {
-  on = 'disconnect';
+  on: keyof WSEventParams = 'disconnect';
 
   constructor(
     private channels = Deps.get<Channels>(Channels),
     private users = Deps.get<Users>(Users),
+    private voiceState = Deps.get<voiceStateUpdate>(voiceStateUpdate),
   ) {}
 
   public async invoke(ws: WebSocket, client: Socket) {    
@@ -21,11 +24,7 @@ export default class implements WSEvent {
     if (!user) return;
 
     if (user.voice.channelId)
-      await this.disconnectFromVC(user, userId);
-
-    ws.sessions.delete(client.id);
-    client.leaveAll();
-
+      await this.disconnectFromVC(user, ws, client);
     await this.setOfflineStatus(ws, user);
 
     for (const id in client.adapter.rooms) {
@@ -34,22 +33,34 @@ export default class implements WSEvent {
         .emit('PRESENCE_UPDATE', {
           userId,
           status: user.status
-        });      
+        } as Args.PresenceUpdate);      
     }
+
+    ws.sessions.delete(client.id);
+    client.leaveAll();
   }
 
-  public async disconnectFromVC(user: UserDocument, userId: string) {
-    const channel = await this.channels.get(user.voice.channelId);  
-    const index = channel.memberIds.indexOf(userId);
+  public async disconnectFromVC(user: Lean.User, ws: WebSocket, client: Socket) {
+    const channelId = user.voice.channelId;
+    if (!channelId) return;
 
-    await channel.updateOne({
-      members: channel.memberIds.splice(index, 1)
+    await Channel.updateOne(
+      { _id: channelId },
+      { $pull: { members: user._id } }
+    );
+    
+    await this.voiceState.invoke(ws, client, {
+      userId: user._id,
+      voice: {
+        selfMuted: false,
+        channelId,
+      }
     });
   }
 
   public async setOfflineStatus(ws: WebSocket, user: UserDocument) {
-    const isConnectedElsewhere = ws.connectedUserIds.includes(user._id);
-    if (isConnectedElsewhere) return;
+    const userConnected = ws.connectedUserIds.includes(user._id);
+    if (userConnected) return;
 
     user.status = 'OFFLINE';
     await user.save();

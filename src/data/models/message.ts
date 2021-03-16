@@ -9,9 +9,12 @@ export const Message = model<MessageDocument>('message', new Schema({
   _id: String,
   authorId: String, // author -> authorId
   channelId: String, // channel -> channelId
-  content: String,
+  content: {
+    type: String,
+    minlength: 1,
+    maxlength: 3000,
+  },
   createdAt: { type: Date, default: new Date() },
   embed: Object,
-  guild: { type: String, ref: 'guild' }, // guild -> guildId
   updatedAt: Date
 }).index({ channel: 1, createdAt: 1 }));

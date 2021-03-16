@@ -15,7 +15,7 @@ export class WSGuard {
     private ws = Deps.get<WebSocket>(WebSocket),
   ) {}
 
-  private userId(client: Socket) {
+  public userId(client: Socket) {
     return this.ws.sessions.get(client.id) ?? '';
   }
 
@@ -64,7 +64,7 @@ export class WSGuard {
     const can = await this.roles.hasPermission(member, permission)
       || guild.ownerId === userId;    
     if (!can)
-      throw new TypeError('Missing Permissions');
+      throw new TypeError(`Missing Permissions - ${permission}`);
   }  
 
   public decodeKey(key: string): { id?: string } {

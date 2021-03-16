@@ -6,10 +6,10 @@ import { GuildMember } from '../../../data/models/guild-member';
 import { User } from '../../../data/models/user';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params } from './ws-event';
+import WSEvent, { Args, Params, WSEventParams } from './ws-event';
 
 export default class implements WSEvent {
-  on = 'GUILD_MEMBER_ADD';
+  on: keyof WSEventParams = 'GUILD_MEMBER_ADD';
 
   constructor(
     private guilds = Deps.get<Guilds>(Guilds),
@@ -25,7 +25,7 @@ export default class implements WSEvent {
     
     invite.uses++;
 
-    (invite.maxUses && invite.uses >= invite.maxUses)
+    (invite.options.maxUses && invite.uses >= invite.options.maxUses)
       ? await invite.remove()
       : await invite.save();
 

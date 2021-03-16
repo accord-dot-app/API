@@ -2,12 +2,9 @@ import { Router } from 'express';
 import { User } from '../../data/models/user';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
-import jwt from 'jsonwebtoken';
 import { updateUser } from '../modules/middleware';
 import Channels from '../../data/channels';
 import { SystemBot } from '../../system/bot';
-import { readdirSync } from 'fs';
-import { resolve } from 'path';
 
 export const router = Router();
 
@@ -31,7 +28,8 @@ router.post('/', async (req, res) => {
       throw new TypeError('Username is taken.');
 
     const user = await users.createUser(req.body.username, req.body.password); 
-    await bot.dm(user, 'Hello there new user :thinking:!');
+    const dm = await channels.createDM(bot.self._id, user._id);
+    await bot.message(dm, 'Hello there new user :smile:!');
     
     res.status(201).json(
       users.createToken(user.id)

@@ -1,28 +1,25 @@
 import { Channel } from '../data/models/channel';
 import { UserDocument } from '../data/models/user';
 import { generateSnowflake } from '../data/snowflake-entity';
-import io from 'socket.io-client';
 import Log from '../utils/log';
 import { Invite } from '../data/models/invite';
 import { generateInviteCode } from '../utils/utils';
 import Deps from '../utils/deps';
-import Messages from '../data/messages';
 import Users from '../data/users';
-import { Args, Params } from '../api/websocket/ws-events/ws-event';
+import { Args } from '../api/websocket/ws-events/ws-event';
+import { WSService } from './ws-service';
+import { Lean } from '../data/types/entity-types';
+import Channels from '../data/channels';
 
 export class SystemBot {
-  public readonly socket = io(`http://localhost:${process.env.PORT}`);
-
   private _self: UserDocument;
   get self() { return this._self; }
 
   constructor(
-    private messages = Deps.get<Messages>(Messages),
+    private channels = Deps.get<Channels>(Channels),
     private users = Deps.get<Users>(Users),
-  ) {
-    this.socket.on('connect', () => Log.info('Connected to ws client', 'bot'));
-    this.socket.connect();
-  }
+    private ws = Deps.get<WSService>(WSService),
+  ) {}
 
   public async init() {
     this._self = await this.users.getSystemUser();
@@ -33,52 +30,30 @@ export class SystemBot {
   }
 
   private async readyUp() {
-    const dmChannels = await Channel.find({
-      type: 'DM',
-      memberIds: this.self._id
-    });
-
-    this.socket.emit('READY', {
-      channelIds: (await this.self
-        .execPopulate() as any).guilds
-        .flatMap(g => g.channels as string[]),
-        // .concat(dmChannels.flatMap(c => c.id)),
-      guildIds: this.self.guilds as string[],
-      key: this.users.createToken(this.self.id),
-    } as Params.Ready);
+    const key = this.users.createToken(this.self.id);
+    this.ws.emit('READY', { key });
 
     Log.info('Initialized bot', 'bot');
   }
 
-  public sendMessage(channelId: string, guildId: string, content: string) {
-    this.socket.emit('MESSAGE_CREATE', {
-      partialMessage: {
-        authorId: this.self._id,
-        channelId: channelId,
-        content,
-        guildId: guildId,
-      }
-    } as Params.MessageCreate);
-  }
-
   private hookWSEvents() {
-    this.socket.on('MESSAGE_CREATE', async ({ message }: Args.MessageCreate) => {
+    this.ws.on('MESSAGE_CREATE', async ({ message }: Args.MessageCreate) => {
       const author = await this.users.get(message.authorId);
-      if (!author) return;
-
-      if (!message.guildId || author.bot) return;
+      const channel = await this.channels.get(message.channelId);
+      if (!author || channel.type !== 'TEXT' || author.bot) return;
 
       if (message.content.toLowerCase() === 'hi') {
-        this.sendMessage(message.channelId, message.guildId, `Hi, @${author.username}!`)
+        await this.message(channel, `Hi, @${author.username}!`)
       }
     });
   }
 
-  async dm(recipient: UserDocument, content: string) {
-    this.socket.emit('MESSAGE_CREATE', {
-      author: this.self,
-      channel: await this.getDMChannel(recipient),
-      content
+  async message(channel: Lean.Channel, content: string) {
+    this.ws.emit('MESSAGE_CREATE', {
+      channelId: channel._id,
+      partialMessage: {
+        content,
+      }
     });
   }
 
@@ -98,20 +73,19 @@ export class SystemBot {
       createdAt: new Date(),
       guildId,
       inviterId: this.self._id,
-      maxUses: 1,
+      options: {
+        maxUses: 1,
+      },
       uses: 0
     });
 
-    this.socket.emit('GUILD_MEMBER_ADD', {
+    this.ws.emit('GUILD_MEMBER_ADD', {
       inviteCode: invite.id,
-      user: this.self
+      userId: this.self._id,
     });
 
-    const systemChannel = await Channel.findOne({ guildId, type: 'TEXT' });
-    this.socket.emit('MESSAGE_CREATE', {
-      author: this.self,
-      channel: systemChannel,
-      content: `Hi, I'm **2PG**! 🤖`
-    });
+    const systemChannel = await this.channels.getSystem(guildId);
+    if (systemChannel)
+      await this.message(systemChannel, `Hi, I'm **2PG**! 🤖`);
   }
 }

@@ -3,10 +3,10 @@ import { User, UserDocument } from '../../../data/models/user';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params } from './ws-event';
+import WSEvent, { Args, Params, WSEventParams } from './ws-event';
 
 export default class implements WSEvent {
-  on = 'REMOVE_FRIEND';
+  on: keyof WSEventParams = 'REMOVE_FRIEND';
 
   constructor(private users = Deps.get<Users>(Users)) {}
 

@@ -5,8 +5,11 @@ import { User } from '../src/data/models/user';
 import { generateSnowflake } from '../src/data/snowflake-entity';
 import { Types } from 'mongoose';
 import { defaultPermissions, Role } from '../src/data/models/role';
-import { ChannelTypes, Lean, UserTypes } from '../src/data/types/entity-types';
+import { ChannelTypes, InviteTypes, Lean, UserTypes } from '../src/data/types/entity-types';
 import { WebSocket } from '../src/api/websocket/websocket';
+import { Message } from '../src/data/models/message';
+import { Invite } from '../src/data/models/invite';
+import { Application } from '../src/data/models/application';
 
 export class Mock {
   public static async guild() {
@@ -102,10 +105,32 @@ export class Mock {
     });
   }
 
-  public static async removeMemberPerms(guild: Lean.Guild) {
+  public static async invite(guildId: string, options?: InviteTypes.InviteOptions) {
+    return await Invite.create({
+      _id: generateSnowflake(),
+      createdAt: new Date(),
+      inviterId: generateSnowflake(),
+      options,
+      guildId,
+      uses: 0,
+    });
+  }
+
+  public static async clearRolePerms(guild: Lean.Guild) {
     await Role.updateOne(
-      { _id: guild.roles[0]._id },
+      { _id: guild.roles?.[0]._id },
       { permissions: 0 },
     );
+  }
+
+  public static async cleanDB() {
+    await Application.deleteMany({});
+    await Channel.deleteMany({});
+    await Guild.deleteMany({});
+    await GuildMember.deleteMany({});
+    await Invite.deleteMany({});
+    await Message.deleteMany({});
+    await Role.deleteMany({});
+    await User.deleteMany({});
   }
 }

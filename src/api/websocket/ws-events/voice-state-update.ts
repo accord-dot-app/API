@@ -4,11 +4,11 @@ import { Channel, VoiceChannelDocument } from '../../../data/models/channel';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params } from './ws-event';
+import WSEvent, { Args, Params, WSEventParams } from './ws-event';
 import Users from '../../../data/users';
 
 export default class implements WSEvent {
-  on = 'VOICE_STATE_UPDATE';
+  on: keyof WSEventParams = 'VOICE_STATE_UPDATE';
 
   constructor(
     private users = Deps.get<Users>(Users),
@@ -25,7 +25,7 @@ export default class implements WSEvent {
     const movedGuild = oldVC && oldVC.guildId !== vc?.guildId;
     if (movedGuild)
       ws.io
-        .to(oldVC?.guildId ?? '')
+        .to(oldVC?._id ?? '')
         .emit('VOICE_STATE_UPDATE', {
           memberIds: vc?.memberIds,
           userId,

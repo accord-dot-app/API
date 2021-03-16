@@ -4,20 +4,27 @@ import { Guild } from '../../../data/models/guild';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params } from './ws-event';
+import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { getNameAcronym } from '../../../utils/utils';
 
 export default class implements WSEvent {
-  on = 'GUILD_UPDATE';
+  on: keyof WSEventParams = 'GUILD_UPDATE';
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { guildId, partialGuild }: Params.GuildUpdate) {
-    // ensure owner has sufficient perms
+  async invoke(ws: WebSocket, client: Socket, { guildId, partialGuild }: Params.GuildUpdate) { 
     await this.guard.can(client, guildId, PermissionTypes.General.MANAGE_GUILD);
 
-    await Guild.updateOne({ _id: guildId }, { partialGuild });
+    await Guild.updateOne(
+      { _id: guildId },
+      {
+        ...partialGuild,
+        nameAcronym: getNameAcronym(partialGuild.name)
+      },
+      { runValidators: true }
+    );
 
     ws.io
       .to(guildId)

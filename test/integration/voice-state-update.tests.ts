@@ -37,15 +37,10 @@ describe('voice-state-update', () => {
     ws.sessions.set(client.id, user.id);
   });
 
+  afterEach(() => ws.sessions.clear());
   after(async () => {
     client.disconnect();
-    
-    await Channel.deleteMany({});
-    await Guild.deleteMany({});
-    await GuildMember.deleteMany({});
-    await Message.deleteMany({});
-    await Role.deleteMany({});
-    await User.deleteMany({});
+    await Mock.cleanDB();
   });
 
   it('spoofed user, throws error', async () => {

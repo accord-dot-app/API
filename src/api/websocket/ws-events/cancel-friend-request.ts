@@ -2,10 +2,10 @@ import { Socket } from 'socket.io';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params } from './ws-event';
+import WSEvent, { Args, Params, WSEventParams } from './ws-event';
 
 export default class implements WSEvent {
-  on = 'CANCEL_FRIEND_REQUEST';
+  on: keyof WSEventParams = 'CANCEL_FRIEND_REQUEST';
 
   constructor(private users = Deps.get<Users>(Users)) {}
 

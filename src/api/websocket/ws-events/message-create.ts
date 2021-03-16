@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 import { Message } from '../../../data/models/message';
 import { generateSnowflake } from '../../../data/snowflake-entity';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params } from './ws-event';
+import WSEvent, { Args, Params, WSEventParams } from './ws-event';
 import got from 'got';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
@@ -17,32 +17,26 @@ const metascraper = require('metascraper')([
 ]);
 
 export default class implements WSEvent {
-  on = 'MESSAGE_CREATE';
+  on: keyof WSEventParams = 'MESSAGE_CREATE';
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard)
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { partialMessage }: Params.MessageCreate) {
-    this.guard.validateIsUser(client, partialMessage.authorId); // TODO: added this everywhere
-    await this.guard.canAccessChannel(client, partialMessage.channelId);
-
-    const maxLength = 3000;
-    if (partialMessage.content.length > maxLength)
-      throw new TypeError('Content Too Long');
+  async invoke(ws: WebSocket, client: Socket, { channelId, partialMessage }: Params.MessageCreate) {
+    await this.guard.canAccessChannel(client, channelId);
 
     const message = await Message.create({
       _id: generateSnowflake(),
-      authorId: partialMessage.authorId,
-      channelId: partialMessage.channelId,
+      authorId: this.guard.userId(client),
+      channelId,
       content: partialMessage.content,
       embed: await this.getEmbed(partialMessage),
-      guildId: partialMessage.guildId,
       createdAt: new Date(),
     });
 
     ws.io
-      .to(partialMessage.channelId)
+      .to(channelId)
       .emit('MESSAGE_CREATE', { message } as Args.MessageCreate);
   }
 

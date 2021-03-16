@@ -1,13 +1,13 @@
 import Deps from '../../src/utils/deps';
 import { API } from '../../src/api/server';
 import ChannelCreate from '../../src/api/websocket/ws-events/ready';
-import { UserDocument } from '../../src/data/models/user';
+import { User, UserDocument } from '../../src/data/models/user';
 import { expect } from 'chai';
 import Users from '../../src/data/users';
 import { Mock } from '../mock';
 import { WebSocket } from '../../src/api/websocket/websocket';
 import io from 'socket.io-client';
-import SocketIO from 'socket.io';
+import { SystemBot } from '../../src/system/bot';
 
 describe('ready', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
@@ -24,42 +24,71 @@ describe('ready', () => {
     event = new ChannelCreate();
     users = new Users();
 
-    client.join = () => {};
-    client.adapter = { rooms: [] };
-
-    ws = new WebSocket();
+    ws = Deps.get<WebSocket>(WebSocket);
     user = await Mock.user();
     key = users.createToken(user.id);
+
+    client.adapter = { rooms: new Map() }
+    client.join = (...args) => {
+      for (const arg of args)
+        client.adapter.rooms.set(arg, arg);
+    };
 
     ws.sessions.set(client.id, user.id);
   });
 
-  afterEach(async () => await user.remove());
-  after(() => client.disconnect());
+  afterEach(() => ws.sessions.clear());
+  after(async () => {
+    client.disconnect();
+    await Mock.cleanDB();
+  });
 
   it('user already logged in, fulfilled', async () => {
-    await event.invoke(ws, client, {
-      key,
-      channelIds: [],
-      guildIds: [],
-    });
+    await event.invoke(ws, client, { key });
 
-    const invoke = () => event.invoke(ws, client, {
-      key,
-      channelIds: [],
-      guildIds: [],
-    });
+    const invoke = () => event.invoke(ws, client, { key });
 
     await expect(invoke()).to.be.fulfilled;
   });
 
-  it('joins all guild rooms', async () => {
-    const invoke = () => event.invoke(ws, client, {
-      key,
-      channelIds: [],
-      guildIds: [],
-    });
+  it('joins self user room', async () => {
+    await event.invoke(ws, client, { key });
+    
+    const rooms = Array.from(client.adapter.rooms.values())[0];
+    expect(rooms).to.include(user._id);
+  });
 
-    await expect(invoke()).to.be.fulfilled;
+  it('joins system bot room', async () => {
+    const systemBot = Deps.get<SystemBot>(SystemBot);
+    await systemBot.init();
+
+    await event.invoke(ws, client, { key });
+    
+    const rooms = Array.from(client.adapter.rooms.values())[0];
+    expect(rooms).to.include(systemBot.self._id);
+  });
+
+  it('joins dm channel room', async () => {
+    const dm = await Mock.channel('DM');
+    dm.memberIds.push(user.id);
+    await dm.update(dm);
+
+    await event.invoke(ws, client, { key });    
+
+    const rooms = Array.from(client.adapter.rooms.values())[0];
+    expect(rooms).to.include(dm._id);
+  });
+
+  it('joins guild room', async () => {
+    const guild = await Mock.guild();
+
+    user = await User.findById(guild.ownerId);
+    ws.sessions.set(client.id, user.id);
+    key = users.createToken(user.id);
+
+    await event.invoke(ws, client, { key });
+
+    const rooms = Array.from(client.adapter.rooms.values())[0];
+    expect(rooms).to.include(guild._id);
   });
 });

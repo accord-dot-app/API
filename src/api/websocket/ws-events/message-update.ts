@@ -1,9 +1,12 @@
 import { Socket } from 'socket.io';
 import { Message, MessageDocument } from '../../../data/models/message';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params } from './ws-event';
+import WSEvent, { Args, Params, WSEventParams } from './ws-event';
 import got from 'got';
 import { MessageTypes } from '../../../data/types/entity-types';
+import Deps from '../../../utils/deps';
+import { WSGuard } from '../../modules/ws-guard';
+import Messages from '../../../data/messages';
 
 const metascraper = require('metascraper')([
   require('metascraper-description')(),
@@ -13,13 +16,17 @@ const metascraper = require('metascraper')([
 ]);
 
 export default class implements WSEvent {
-  on = 'MESSAGE_UPDATE';
+  on: keyof WSEventParams = 'MESSAGE_UPDATE';
+
+  constructor(
+    private guard = Deps.get<WSGuard>(WSGuard),
+    private messages = Deps.get<Messages>(Messages),
+  ) {}
 
   async invoke(ws: WebSocket, client: Socket, { messageId, partialMessage, withEmbed }: Params.MessageUpdate) {
-    const message = await Message.findById(messageId);
-    if (!message)
-      throw new TypeError('Message Not Found');
-
+    const message = await this.messages.get(messageId);
+    this.guard.validateIsUser(client, message.authorId);
+    
     await message.update({
       content: partialMessage.content,
       embed: (withEmbed) ? await this.getEmbed(message) : undefined,

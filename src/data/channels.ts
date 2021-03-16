@@ -52,4 +52,8 @@ export default class Channels extends DBWrapper<string, ChannelDocument> {
       memberIds: []
     }) as Promise<VoiceChannelDocument>;
   }
+
+  public async getSystem(guildId: string) {
+    return await Channel.findOne({ guildId, type: 'TEXT' });
+  }
 }

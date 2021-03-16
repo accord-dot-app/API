@@ -37,9 +37,10 @@ describe('ws-guard', () => {
     ws.sessions.set(client.id, user.id);
   });
 
-  afterEach(async () => {
-    await guild.remove();
-    await user.remove();
+  afterEach(() => ws.sessions.clear());
+  after(async () => {
+    client.disconnect();
+    await Mock.cleanDB();
   });
 
   it('validateIsOwner, is not owner, throws error', async () => {
@@ -76,7 +77,7 @@ describe('ws-guard', () => {
   });
 
   it('canAccessChannel, text channel, no perms, rejected', async () => {
-    await Mock.removeMemberPerms(guild);
+    await Mock.clearRolePerms(guild);
     const textChannelId = guild.channels[0]._id;
 
     const result = () => guard.canAccessChannel(client, textChannelId);
@@ -94,7 +95,7 @@ describe('ws-guard', () => {
   });
 
   it('canAccessChannel, voice channel, no perms, rejected', async () => {
-    await Mock.removeMemberPerms(guild);
+    await Mock.clearRolePerms(guild);
     const voiceChannelId = guild.channels[1]._id;
 
     const result = () => guard.canAccessChannel(client, voiceChannelId);
@@ -154,7 +155,7 @@ describe('ws-guard', () => {
   });
 
   it('can, missing perms, rejected', async () => {
-    await Mock.removeMemberPerms(guild);
+    await Mock.clearRolePerms(guild);
 
     const result = () => guard.can(client, guild.id, PermissionTypes.Text.SEND_MESSAGES);
 
@@ -177,6 +178,6 @@ describe('ws-guard', () => {
 
   async function makeGuildOwner() {
     ws.sessions.set(client.id, guild.ownerId);
-    await Mock.removeMemberPerms(guild);
+    await Mock.clearRolePerms(guild);
   }
 });

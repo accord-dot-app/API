@@ -6,10 +6,10 @@ import { SystemBot } from '../../../system/bot';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params } from './ws-event';
+import WSEvent, { Args, Params, WSEventParams } from './ws-event';
  
 export default class implements WSEvent {
-  on = 'READY';
+  on: keyof WSEventParams = 'READY';
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),
@@ -24,14 +24,13 @@ export default class implements WSEvent {
  
     ws.sessions.set(client.id, userId);
 
-    const alreadyLoggedIn = ws.sessions.has(client.id);
-    if (!alreadyLoggedIn)
-      await User.updateOne({ _id: userId }, { status: 'ONLINE' });
-
     const user = await this.users.get(userId);
+    if (user.status === 'OFFLINE')
+      await User.updateOne({ _id: userId }, { status: 'ONLINE' });
     await this.joinRooms(client, user);
 
-    for (const id in client.adapter.rooms) {
+    const knownUsers = this.getKnownUsers(user);
+    for (const id of knownUsers) {      
       ws.io
         .to(id)
         .emit('PRESENCE_UPDATE', {
@@ -45,23 +44,18 @@ export default class implements WSEvent {
     const alreadyJoinedRooms = Object.keys(client.rooms ?? []).length > 1;
     if (alreadyJoinedRooms) return;
 
-    console.log(await this.getRoomIds(user));
-    client.join(await this.getRoomIds(user));
+    const rooms = await this.getRoomIds(user);
+    client.join(rooms);
   }
 
   private async getRoomIds(user: Lean.User) {
-    const roomIds: string[] = [
-      user._id,
-      this.systemBot.self?._id,
-      ...user.friendRequests.map(r => r.userId),
-      ...user.friends.map(u => u._id)
-    ];
+    const roomIds: string[] = this.getKnownUsers(user);
 
     const guilds = await this.users.getGuilds(user._id);
     if (guilds) {
-      const ids = guilds
-        ?.flatMap(g => g.channels.map(c => c._id));
-      roomIds.push(...ids);
+      const channelIds = guilds.flatMap(g => g.channels.map(c => c._id));
+      const guildIds = guilds.map(g => g._id);
+      roomIds.push(...channelIds, ...guildIds);
     }
     const dms = await this.users.getDMChannels(user._id);
     if (dms) {
@@ -69,5 +63,14 @@ export default class implements WSEvent {
       roomIds.push(...ids);
     }
     return roomIds;
+  }
+
+  private getKnownUsers(user: Lean.User) {
+    return [
+      user._id,
+      this.systemBot.self?._id,
+      ...user.friendRequests.map(r => r.userId),
+      ...user.friends.map(u => u._id)
+    ];
   }
 }

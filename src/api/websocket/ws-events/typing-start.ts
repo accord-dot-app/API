@@ -1,9 +1,9 @@
 import { Socket } from 'socket.io';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params } from './ws-event';
+import WSEvent, { Args, Params, WSEventParams } from './ws-event';
 
 export default class implements WSEvent {
-  on = 'TYPING_START';
+  on: keyof WSEventParams = 'TYPING_START';
 
   async invoke(ws: WebSocket, client: Socket, { channelId, userId }: Params.TypingStart) {
     client.broadcast

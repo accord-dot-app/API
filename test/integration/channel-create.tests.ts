@@ -3,7 +3,7 @@ import Deps from '../../src/utils/deps';
 import io from 'socket.io-client';
 import { API } from '../../src/api/server';
 import ChannelCreate from '../../src/api/websocket/ws-events/channel-create';
-import { Channel } from '../../src/data/models/channel';
+import { Mock } from '../mock';
 
 describe('channel-create', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;;
@@ -19,5 +19,9 @@ describe('channel-create', () => {
     ws.sessions.set(client.id, 'user_1');
   });
 
-  afterEach(async () => await Channel.deleteMany({}));
+  afterEach(() => ws.sessions.clear());
+  after(async () => {
+    client.disconnect();
+    await Mock.cleanDB();
+  });
 });
