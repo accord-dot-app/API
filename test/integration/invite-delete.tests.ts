@@ -9,8 +9,9 @@ import { GuildDocument } from '../../src/data/models/guild';
 import { Invite } from '../../src/data/models/invite';
 import { expect } from 'chai';
 import { generateSnowflake } from '../../src/data/snowflake-entity';
+import { Role } from '../../src/data/models/role';
 
-describe('INIVTE_DELETE', () => {
+describe('invite-delete', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;;
   let event: InviteDelete;
   let ws: WebSocket;
@@ -36,8 +37,19 @@ describe('INIVTE_DELETE', () => {
     await Mock.cleanDB();
   });
 
-  it('guild member, default perms, rejected', async () => {
-    let invite = await Mock.invite(guild.id);
+  it('guild member deletes invite, default perms, fulfilled', async () => {
+    const invite = await Mock.invite(guild.id);
+
+    const result = () => event.invoke(ws, client, {
+      inviteCode: invite._id,
+    });
+
+    await expect(result()).to.be.fulfilled;
+  });
+
+  it('guild member deletes invite, no perms, rejected', async () => {
+    await Mock.clearRolePerms(guild);
+    const invite = await Mock.invite(guild.id);
 
     const result = () => event.invoke(ws, client, {
       inviteCode: invite._id,
@@ -46,17 +58,30 @@ describe('INIVTE_DELETE', () => {
     await expect(result()).to.be.rejectedWith('Missing Permissions');
   });
 
-  it('guild member, has perms, fulfilled', async () => {
-    let invite = await Mock.invite(guild.id);
+  it('guild owner deletes invite, fulfilled', async () => {
+    await Mock.clearRolePerms(guild);
+    ws.sessions.set(client.id, guild.ownerId);
+
+    const invite = await Mock.invite(guild.id);
 
     const result = () => event.invoke(ws, client, {
       inviteCode: invite._id,
     });
 
-    await expect(result()).to.be.fulfilled('');
+    await expect(result()).to.be.fulfilled;
   });
 
-  it('invite created then successfully deleted', async () => {
+  it('guild member, has perms, fulfilled', async () => {
+    const invite = await Mock.invite(guild.id);
+
+    const result = () => event.invoke(ws, client, {
+      inviteCode: invite._id,
+    });
+
+    await expect(result()).to.be.fulfilled;
+  });
+
+  it('invite deleted from db', async () => {
     let invite = await Mock.invite(guild.id);
 
     await event.invoke(ws, client, {
@@ -68,8 +93,6 @@ describe('INIVTE_DELETE', () => {
   });
 
   it('invite does not exist, rejected', async () => {
-    const invite = await Mock.invite(guild.id);
-
     const result = () => event.invoke(ws, client, {
       inviteCode: generateSnowflake(),
     });

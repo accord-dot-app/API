@@ -12,6 +12,14 @@ import { Invite } from '../src/data/models/invite';
 import { Application } from '../src/data/models/application';
 
 export class Mock {
+  public static ioClient(client: any) {
+    client.adapter = { rooms: new Map() }
+    client.join = (...args) => {
+      for (const arg of args)
+        client.adapter.rooms.set(arg, arg);
+    };
+  }
+
   public static async guild() {
     const guildId = generateSnowflake();
     const owner = await this.user([guildId]);
@@ -105,7 +113,7 @@ export class Mock {
     });
   }
 
-  public static async invite(guildId: string, options?: InviteTypes.InviteOptions) {
+  public static async invite(guildId: string, options?: InviteTypes.Options) {
     return await Invite.create({
       _id: generateSnowflake(),
       createdAt: new Date(),

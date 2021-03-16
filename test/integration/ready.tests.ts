@@ -28,11 +28,7 @@ describe('ready', () => {
     user = await Mock.user();
     key = users.createToken(user.id);
 
-    client.adapter = { rooms: new Map() }
-    client.join = (...args) => {
-      for (const arg of args)
-        client.adapter.rooms.set(arg, arg);
-    };
+    Mock.ioClient(client);
 
     ws.sessions.set(client.id, user.id);
   });

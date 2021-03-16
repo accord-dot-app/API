@@ -39,7 +39,7 @@ export namespace Lean {
   export interface Invite {
     _id: string;
     createdAt: Date;
-    options: InviteTypes.InviteOptions;
+    options?: InviteTypes.Options;
     inviterId: string;
     guildId: string;
     uses: number;
@@ -115,7 +115,7 @@ export namespace ChannelTypes {
 }
 
 export namespace InviteTypes {
-  export interface InviteOptions {
+  export interface Options {
     expiresAt?: Date;
     maxUses?: number;
   }

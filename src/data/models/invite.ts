@@ -8,7 +8,14 @@ export interface InviteDocument extends Document, Lean.Invite {
 export const Invite = model<InviteDocument>('invite', new Schema({
   _id: String,
   createdAt: Date,
-  options: Object,
+  options: new Schema<InviteTypes.Options>({
+    expiresAt: Date,
+    maxUses: {
+      type: Number,
+      min: 1,
+      max: 1000
+    },
+  }),
   inviterId: String,
   guildId: String,
   uses: Number,
