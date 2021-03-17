@@ -18,7 +18,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
       .filter(n => n.startsWith('avatar'));
   }
 
-  public async get(id: string | undefined) {
+  public async get(id: string | undefined): Promise<UserDocument> {
     const user = (await User
       .findById(id))
       ?.populate('friends')

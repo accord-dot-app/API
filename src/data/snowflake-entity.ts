@@ -1,7 +1,7 @@
 import cluster from 'cluster';
 
-let lastSnowflake: string;
 let inc = 0;
+let lastSnowflake: string;
 export const dcloneEpoch = 1577836800000;
 
 export function generateSnowflake() {

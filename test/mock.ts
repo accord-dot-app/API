@@ -11,7 +11,7 @@ import { Invite } from '../src/data/models/invite';
 import { Application } from '../src/data/models/application';
 import WSEvent from '../src/api/websocket/ws-events/ws-event';
 import { API } from '../src/api/server';
-import { Websocket } from '../src/api/websocket/websocket';
+import { WebSocket } from '../src/api/websocket/websocket';
 import Deps from '../src/utils/deps';
 
 export class Mock {
@@ -86,7 +86,7 @@ export class Mock {
       friendRequests: [],
       guilds: guildIds,
       status: 'ONLINE',
-      username: 'Mock User',
+      username: `Mock User ${generateSnowflake()}`,
       voice: new UserTypes.VoiceState()
     });
   }

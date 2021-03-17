@@ -18,6 +18,8 @@ export default class implements WSEvent {
     const sender = await this.users.get(senderId);
     const friend = await this.users.get(friendId);
 
+    this.validateCanAccept(sender, friend);
+
     ws.io
       .to(senderId)
       .to(friendId)
@@ -28,6 +30,18 @@ export default class implements WSEvent {
       } as Args.AcceptFriendRequest);
   }
 
+  private validateCanAccept(sender: UserDocument, friend: UserDocument) {
+    const maxLength = 100;    
+    if (sender.friends.length >= maxLength)
+      throw new TypeError('User has too much clout');
+    if (sender.friendRequests.length >= maxLength)
+      throw new TypeError('User has too many pending friend requests');
+    if (friend.friends.length >= maxLength)
+      throw new TypeError('You have too much clout');
+    if (friend.friendRequests.length >= maxLength)
+      throw new TypeError('You have too many pending friend requests');
+  }
+
   async acceptFriend(user: UserDocument, friend: UserDocument) {
     const friendExists = user.friends.includes(friend);
     if (friendExists)
@@ -36,7 +50,7 @@ export default class implements WSEvent {
     await user.update({
       $pull: { friendRequests: friend },
       $push: { friends: friend }
-    });
+    }, { runValidators: true });
     return user;
   }
 }

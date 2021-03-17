@@ -11,8 +11,8 @@ export const Message = model<MessageDocument>('message', new Schema({
   channelId: String, // channel -> channelId
   content: {
     type: String,
-    minlength: 1,
-    maxlength: 3000,
+    minlength: [1, 'Content Too Short'],
+    maxlength: [3000, 'Content Too Long'],
   },
   createdAt: { type: Date, default: new Date() },
   embed: Object,

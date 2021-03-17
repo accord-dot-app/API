@@ -16,6 +16,17 @@ export const User = model<UserDocument>('user', new Schema({
   friendRequests: { type: Array, default: [] },
   guilds: [{ type: String, ref: 'guild' }],
   status: String,
-  username: String,
+  username: {
+    type: String,
+    validate: {
+      validator: async (val: string) => {
+        const pattern = /(^(?! |^everyone$|^here$|^me$|^someone$|^discordtag$)[A-Za-z\d\-\_\! ]{2,32}(?<! )$)/;
+        const usernameTaken = await User.exists({ username: val });
+        
+        return pattern.test(val) && !usernameTaken;
+      },
+      message: () => `Username is invalid or taken`,
+    }
+  },
   voice: { type: Object, default: new UserTypes.VoiceState() }
 }).plugin(passportLocalMongoose));

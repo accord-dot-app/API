@@ -2,13 +2,16 @@ import '../src/data/types/env';
 import { config } from 'dotenv';
 config({ path: 'test/.env' });
 
-import { use } from 'chai';
+import { should, use } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import spies from 'chai-spies';
+import chaiSpies from 'chai-spies';
+import chaiThings from 'chai-things';
 import { connect } from 'mongoose';
 
 use(chaiAsPromised);
-use(spies);
+use(chaiSpies);
+use(chaiThings);
+use(should);
 
 (async() => {   
   await connect(process.env.MONGO_URI, { 

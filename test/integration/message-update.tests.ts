@@ -71,7 +71,7 @@ describe('message-update', () => {
         withEmbed: false,
       });
   
-      await expect(result()).to.be.rejectedWith('minimum');
+      await expect(result()).to.be.rejectedWith('Content Too Short');
     });
     it('content too long, rejected', async () => {   
       const message = await Mock.message(user, channelId);
@@ -84,7 +84,7 @@ describe('message-update', () => {
         withEmbed: false,
       });
   
-      await expect(result()).to.be.rejectedWith('maximum');
+      await expect(result()).to.be.rejectedWith('Content Too Long');
     });
   });
 

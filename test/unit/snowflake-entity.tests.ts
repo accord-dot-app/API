@@ -16,4 +16,18 @@ describe('data/snowflake-entity', () => {
     
     expect(date.toString()).to.equal(createdAt.toString());
   });
+
+  it('lots of snowflakes generated, all are unique', () => {
+    const snowflakes = [...new Array(100)].map(generateSnowflake);
+
+    const result = () => {
+      let previousSnowflake = '';
+      for (const snowflake of snowflakes) {
+        if (snowflake === previousSnowflake)
+          throw new TypeError('Snowflake Should Be Unique');
+      }
+    }
+    
+    expect(result).to.not.throw();
+  });
 });

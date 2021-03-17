@@ -97,7 +97,7 @@ describe('message-create', () => {
           },
         });
   
-        await expect(result()).to.be.rejectedWith('minimum');
+        await expect(result()).to.be.rejectedWith('Content Too Short');
       });
   
       it('message is too long, rejected', async () => {
@@ -108,7 +108,7 @@ describe('message-create', () => {
           },
         });
   
-        await expect(result()).to.be.rejectedWith('maximum');
+        await expect(result()).to.be.rejectedWith('Content Too Long');
       });
     });
   });

@@ -2,20 +2,22 @@ import AcceptFriendRequest from '../../src/api/websocket/ws-events/accept-friend
 import { WebSocket } from '../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import { Mock } from '../mock';
-import { UserDocument } from '../../src/data/models/user';
 import { GuildDocument } from '../../src/data/models/guild';
+import { expect } from 'chai';
+import { generateSnowflake } from '../../src/data/snowflake-entity';
+import { UserDocument } from '../../src/data/models/user';
 
 describe('accept-friend-request', () => {
-  const client = io(`http://localhost:${process.env.PORT}`) as any;;
+  const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: AcceptFriendRequest;
   let ws: WebSocket;
 
-  let user: UserDocument;
-  let guild: GuildDocument;
+  let sender: UserDocument;
+  let friend: UserDocument;
 
   beforeEach(async () => {
-    const setup = await Mock.defaultSetup(client, AcceptFriendRequest);
-    se;
+    ({ event, ws, user: sender } = await Mock.defaultSetup(client, AcceptFriendRequest));
+    friend = await Mock.user();
   });
 
   afterEach(() => ws.sessions.clear());
@@ -24,25 +26,80 @@ describe('accept-friend-request', () => {
     await Mock.cleanDB();
   });
 
-  it('fulfilled', async () => {
-    user.id = '123';
+  it('user sends friend request to existing user, fulfilled', async () => {
     const result = () => event.invoke(ws, client, {
-      
+      senderId: sender._id,
+      friendId: friend._id,
     });
 
     await expect(result()).to.be.fulfilled;
   });
 
-  it('rejected', async () => {
+  it('user sends friend request to non existing user, rejected', async () => {
     const result = () => event.invoke(ws, client, {
-      
+      senderId: sender._id,
+      friendId: generateSnowflake(),
     });
 
-    await expect(result()).to.be.rejectedWith();
+    await expect(result()).to.be.rejectedWith('User Not Found');
   });
 
-  async function makeGuildOwner() {
-    ws.sessions.set(client.id, guild.ownerId);
-    await Mock.clearRolePerms(guild);
+  it('sender already has max friends, rejected', async () => {
+    await sender.update({
+      $push: { friends: await getMaxFriends() }
+    });
+
+    const result = () => event.invoke(ws, client, {
+      senderId: sender._id,
+      friendId: friend._id,
+    });
+
+    await expect(result()).to.be.rejectedWith('too much clout');
+  });
+
+
+  it('sender already has max requests, rejected', async () => {
+    const friendRequests: any[] = [...new Array(100)].map(generateSnowflake);
+    await sender.update({ $push: { friendRequests } });
+
+    const result = () => event.invoke(ws, client, {
+      senderId: sender._id,
+      friendId: friend._id,
+    });
+
+    await expect(result()).to.be.rejectedWith('pending friend requests');
+  });
+
+
+  it('friend already has max friends, rejected', async () => {
+    await friend.update({
+      $push: { friends: await getMaxFriends() }
+    });
+
+    const result = () => event.invoke(ws, client, {
+      senderId: sender._id,
+      friendId: friend._id,
+    });
+
+    await expect(result()).to.be.rejectedWith('too much clout');
+  });
+
+  it('friend already has max requests, rejected', async () => {
+    const friendRequests: any[] = [...new Array(100)].map(generateSnowflake);
+    await friend.update({ $push: { friendRequests } });
+
+    const result = () => event.invoke(ws, client, {
+      senderId: sender._id,
+      friendId: friend._id,
+    });
+
+    await expect(result()).to.be.rejectedWith('pending friend requests');
+  });
+
+  async function getMaxFriends() {
+    const friends = [];
+    for (let i = 0; i < 100; i++)
+      friends.push(await Mock.user());
+    return friends;
   }
 });

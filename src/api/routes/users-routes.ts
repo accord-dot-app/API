@@ -23,10 +23,6 @@ router.get('/usernames', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const usernameExists = await User.exists({ username: req.body.username });
-    if (usernameExists)
-      throw new TypeError('Username is taken.');
-
     const user = await users.createUser(req.body.username, req.body.password); 
     const dm = await channels.createDM(bot.self._id, user._id);
     await bot.message(dm, 'Hello there new user :smile:!');
