@@ -27,9 +27,7 @@ router.post('/', async (req, res) => {
     const dm = await channels.createDM(bot.self._id, user._id);
     await bot.message(dm, 'Hello there new user :smile:!');
     
-    res.status(201).json(
-      users.createToken(user.id)
-    );
+    res.status(201).json(users.createToken(user.id));
   } catch (err) {
     res.json({ code: 400, message: err?.message });
   }

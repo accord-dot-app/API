@@ -19,10 +19,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
   }
 
   public async get(id: string | undefined): Promise<UserDocument> {
-    const user = (await User
-      .findById(id))
-      ?.populate('friends')
-      .execPopulate();
+    const user = await User.findById(id);
     if (!user)
       throw new TypeError('User Not Found');
     return user;
@@ -33,9 +30,9 @@ export default class Users extends DBWrapper<string, UserDocument> {
       $or: [
         { _id: userId },
         { _id: this.systemUser._id },
-        { friends: userId as any },
-        { friendRequests: { userId, type: 'INCOMING' } },
-        { friendRequests: { userId, type: 'OUTGOING' } }
+        { friendIds: userId as any },
+        { friendRequestIds: { userId, type: 'INCOMING' } },
+        { friendRequestIds: { userId, type: 'OUTGOING' } }
       ]
     });
   }
@@ -93,8 +90,8 @@ export default class Users extends DBWrapper<string, UserDocument> {
         createdAt: new Date(),
         status: 'ONLINE',
         username: '2PG',
-        friends: [],
-        friendRequests: [],
+        friendIds: [],
+        friendRequestIds: [],
         guilds: [],
         voice: new UserTypes.VoiceState,
       });

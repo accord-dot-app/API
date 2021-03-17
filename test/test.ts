@@ -22,6 +22,7 @@ use(should);
   }, (err) => console.log(err));
 
   await import('./integration/accept-friend-request.tests');
+  await import('./integration/cancel-friend-request.tests');
   await import('./integration/channel-create.tests');
   await import('./integration/guild-member-add.tests');
   await import('./integration/guild-update.tests');

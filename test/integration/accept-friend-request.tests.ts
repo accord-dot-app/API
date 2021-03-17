@@ -5,7 +5,7 @@ import { Mock } from '../mock';
 import { GuildDocument } from '../../src/data/models/guild';
 import { expect } from 'chai';
 import { generateSnowflake } from '../../src/data/snowflake-entity';
-import { UserDocument } from '../../src/data/models/user';
+import { User, UserDocument } from '../../src/data/models/user';
 
 describe('accept-friend-request', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
@@ -26,16 +26,31 @@ describe('accept-friend-request', () => {
     await Mock.cleanDB();
   });
 
-  it('user sends friend request to existing user, fulfilled', async () => {
-    const result = () => event.invoke(ws, client, {
-      senderId: sender._id,
-      friendId: friend._id,
-    });
-
-    await expect(result()).to.be.fulfilled;
+  it('user accepts friend request, fulfilled', async () => {
+    await expect(acceptFriendRequest()).to.be.fulfilled;
   });
 
-  it('user sends friend request to non existing user, rejected', async () => {
+  it('user accepts friend request, creates dm channel', ()_);
+
+  it('user accepts friend request, friend request removed', async () => {
+    await acceptFriendRequest();
+
+    friend = await User.findById(friend.id);
+    sender = await User.findById(sender.id);
+    expect(friend.friendRequestIds).to.be.empty;
+    expect(sender.friendRequestIds).to.be.empty;
+  });
+
+  it('user accepts friend request, friend added', async () => {
+    await acceptFriendRequest();
+
+    friend = await User.findById(friend.id);
+    sender = await User.findById(sender.id);
+    expect(friend.friendIds).to.equal(1);
+    expect(sender.friendIds).to.equal(1);
+  });
+
+  it('user accepts friend request, non existing friend, rejected', async () => {
     const result = () => event.invoke(ws, client, {
       senderId: sender._id,
       friendId: generateSnowflake(),
@@ -46,28 +61,19 @@ describe('accept-friend-request', () => {
 
   it('sender already has max friends, rejected', async () => {
     await sender.update({
-      $push: { friends: await getMaxFriends() }
+      $push: { friendIds: getMaxFriends() }
     });
 
-    const result = () => event.invoke(ws, client, {
-      senderId: sender._id,
-      friendId: friend._id,
-    });
-
-    await expect(result()).to.be.rejectedWith('too much clout');
+    await expect(acceptFriendRequest()).to.be.rejectedWith('too much clout');
   });
 
 
   it('sender already has max requests, rejected', async () => {
-    const friendRequests: any[] = [...new Array(100)].map(generateSnowflake);
-    await sender.update({ $push: { friendRequests } });
-
-    const result = () => event.invoke(ws, client, {
-      senderId: sender._id,
-      friendId: friend._id,
+    await sender.update({
+      $push: { friendRequests: getMaxFriends() }
     });
 
-    await expect(result()).to.be.rejectedWith('pending friend requests');
+    await expect(acceptFriendRequest()).to.be.rejectedWith('pending friend requests');
   });
 
 
@@ -76,30 +82,25 @@ describe('accept-friend-request', () => {
       $push: { friends: await getMaxFriends() }
     });
 
-    const result = () => event.invoke(ws, client, {
-      senderId: sender._id,
-      friendId: friend._id,
-    });
-
-    await expect(result()).to.be.rejectedWith('too much clout');
+    await expect(acceptFriendRequest()).to.be.rejectedWith('too much clout');
   });
 
   it('friend already has max requests, rejected', async () => {
-    const friendRequests: any[] = [...new Array(100)].map(generateSnowflake);
-    await friend.update({ $push: { friendRequests } });
+    await friend.update({
+      $push: { friendRequests: getMaxFriends() }
+    });
 
-    const result = () => event.invoke(ws, client, {
+    await expect(acceptFriendRequest()).to.be.rejectedWith('pending friend requests');
+  });
+
+  async function acceptFriendRequest() {
+    return event.invoke(ws, client, {
       senderId: sender._id,
       friendId: friend._id,
     });
+  }
 
-    await expect(result()).to.be.rejectedWith('pending friend requests');
-  });
-
-  async function getMaxFriends() {
-    const friends = [];
-    for (let i = 0; i < 100; i++)
-      friends.push(await Mock.user());
-    return friends;
+  function getMaxFriends() {
+    return [...new Array(100)].map(generateSnowflake);
   }
 });

@@ -21,11 +21,7 @@ export default class implements WSEvent {
 
   async removeFriendRequest(userId: string, friendId: string) {
     const user = await this.users.get(userId);
-
-    const index = user.friendRequests.findIndex(r => r.userId === friendId);
-    user.friendRequests.splice(index, 1);
-
-    await user.updateOne({ $set: { friendRequests: user.friendRequests } });
+    await user.updateOne({ $pull: { friendRequests: friendId } });
     return user;
   }
 }

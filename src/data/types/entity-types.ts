@@ -70,8 +70,8 @@ export namespace Lean {
     badges: UserTypes.BadgeType[];
     bot: boolean;
     createdAt: Date;
-    friends: this[];
-    friendRequests: UserTypes.FriendRequest[];
+    friendIds: string[];
+    friendRequestIds: string[];
     guilds: string[] | Guild[];
     status: UserTypes.StatusType;
     username: string;

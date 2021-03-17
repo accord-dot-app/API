@@ -28,12 +28,12 @@ export default class implements WSEvent {
 
     this.removeFriend(user, friendId);
 
-    await user.updateOne({ $set: { friends: user.friends } });
+    await user.updateOne({ $set: { friends: user.friendIds } });
     return user;
   }
 
   private removeFriend(user: UserDocument, friendId: string) {
-    const index = user.friends.findIndex((user: any) => user._id === friendId);
-    user.friends.splice(index, 1);
+    const index = user.friendIds.findIndex((user: any) => user._id === friendId);
+    user.friendIds.splice(index, 1);
   }
 }

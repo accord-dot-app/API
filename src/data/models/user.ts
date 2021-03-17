@@ -12,8 +12,18 @@ export const User = model<UserDocument>('user', new Schema({
   badges: { type: Array, default: [] },
   bot: Boolean,
   createdAt: Date,
-  friends: [{ type: String, ref: 'user' }],
-  friendRequests: { type: Array, default: [] },
+  friendIds: [{
+    type: String,
+    ref: 'user',
+  }],
+  friendRequestIds: {
+    type: Array, default: [],
+    // maxlength: 100,
+    validate: {
+      validator: (val: []) => val.length <= 100,
+      message: () => 'pending friend requests'
+    }
+  },
   guilds: [{ type: String, ref: 'guild' }],
   status: String,
   username: {

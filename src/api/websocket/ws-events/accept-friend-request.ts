@@ -32,20 +32,19 @@ export default class implements WSEvent {
 
   private validateCanAccept(sender: UserDocument, friend: UserDocument) {
     const maxLength = 100;    
-    if (sender.friends.length >= maxLength)
+    if (sender.friendIds.length >= maxLength)
       throw new TypeError('User has too much clout');
-    if (sender.friendRequests.length >= maxLength)
-      throw new TypeError('User has too many pending friend requests');
-    if (friend.friends.length >= maxLength)
+    // if (sender.friendRequests.length >= maxLength)
+    //   throw new TypeError('User has too many pending friend requests');
+    if (friend.friendIds.length >= maxLength)
       throw new TypeError('You have too much clout');
-    if (friend.friendRequests.length >= maxLength)
-      throw new TypeError('You have too many pending friend requests');
+    // if (friend.friendRequests.length >= maxLength)
+    //   throw new TypeError('You have too many pending friend requests');
   }
 
   async acceptFriend(user: UserDocument, friend: UserDocument) {
-    const friendExists = user.friends.includes(friend);
-    if (friendExists)
-      return user;
+    const friendExists = user.friendIds.includes(friend._id);
+    if (friendExists) return user;
 
     await user.update({
       $pull: { friendRequests: friend },

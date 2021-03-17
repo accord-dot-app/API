@@ -79,10 +79,7 @@ export class SystemBot {
       uses: 0
     });
 
-    this.ws.emit('GUILD_MEMBER_ADD', {
-      inviteCode: invite.id,
-      userId: this.self._id,
-    });
+    this.ws.emit('GUILD_MEMBER_ADD', { inviteCode: invite.id });
 
     const systemChannel = await this.channels.getSystem(guildId);
     if (systemChannel)
