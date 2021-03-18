@@ -1,5 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
-import { Lean, InviteTypes } from '../types/entity-types';
+import { Lean, InviteTypes, patterns } from '../types/entity-types';
 
 export interface InviteDocument extends Document, Lean.Invite {
   _id: string;
@@ -7,16 +7,27 @@ export interface InviteDocument extends Document, Lean.Invite {
 
 export const Invite = model<InviteDocument>('invite', new Schema({
   _id: String,
-  createdAt: Date,
+  createdAt: {
+    type: Date,
+    required: [true, 'Created At is required'],
+  },
   options: new Schema<InviteTypes.Options>({
     expiresAt: Date,
     maxUses: {
       type: Number,
-      min: 1,
-      max: 1000
+      min: [1, 'Max uses too low'],
+      max: [1000, 'Max uses too high'],
     },
   }),
-  inviterId: String,
-  guildId: String,
+  inviterId: {
+    type: String,
+    required: [true, 'Inviter ID is required'],
+    validate: [patterns.snowflake, 'Invalid Snowflake ID'],
+  },
+  guildId: {
+    type: String,
+    required: [true, 'Guild ID is required'],
+    validate: [patterns.snowflake, 'Invalid Snowflake ID'],
+  },
   uses: Number,
 }));

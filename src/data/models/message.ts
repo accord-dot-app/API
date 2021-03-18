@@ -1,5 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
-import { Lean } from '../types/entity-types';
+import { Lean, patterns } from '../types/entity-types';
 
 export interface MessageDocument extends Document, Lean.Message {
   _id: string;
@@ -7,14 +7,26 @@ export interface MessageDocument extends Document, Lean.Message {
 
 export const Message = model<MessageDocument>('message', new Schema({
   _id: String,
-  authorId: String, // author -> authorId
-  channelId: String, // channel -> channelId
+  authorId: {
+    type: String,
+    required: [true, 'Author ID is required'],
+    validate: [patterns.snowflake, 'Invalid Snowflake ID'],
+  },
+  channelId: {
+    type: String,
+    required: [true, 'Channel ID is required'],
+    validate: [patterns.snowflake, 'Invalid Snowflake ID'],    
+  },
   content: {
     type: String,
-    minlength: [1, 'Content Too Short'],
-    maxlength: [3000, 'Content Too Long'],
+    minlength: [1, 'Content too short'],
+    maxlength: [3000, 'Content too long'],
   },
-  createdAt: { type: Date, default: new Date() },
-  embed: Object,
-  updatedAt: Date
-}).index({ channel: 1, createdAt: 1 }));
+  createdAt: {
+    type: Date,
+    default: new Date(),
+    required: [true, 'Created At is required'],
+  },
+  embed: Object, // TODO: make schema
+  updatedAt: Date,
+}));

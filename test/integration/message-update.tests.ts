@@ -59,35 +59,6 @@ describe('message-update', () => {
     await expect(result()).to.be.rejectedWith('Message Not Found');
   });
 
-  describe('validation', () => {
-    it('content too short, rejected', async () => {    
-      const message = await Mock.message(user, channelId);
-
-      const result = () => event.invoke(ws, client, {
-        messageId: message.id,
-        partialMessage: {
-          content: '',
-        },
-        withEmbed: false,
-      });
-  
-      await expect(result()).to.be.rejectedWith('Content Too Short');
-    });
-    it('content too long, rejected', async () => {   
-      const message = await Mock.message(user, channelId);
-      
-      const result = () => event.invoke(ws, client, {
-        messageId: message.id,
-        partialMessage: {
-          content: new Array(3002).join(' '),
-        },
-        withEmbed: false,
-      });
-  
-      await expect(result()).to.be.rejectedWith('Content Too Long');
-    });
-  });
-
   async function updateMessage(message: Lean.Message) {
     return event.invoke(ws, client, {
       messageId: message.id,
