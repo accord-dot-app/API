@@ -1,5 +1,6 @@
 import { Document, model, Schema } from 'mongoose';
 import { validators } from '../../utils/utils';
+import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns } from '../types/entity-types';
 
 export interface GuildDocument extends Document, Lean.Guild {
@@ -7,7 +8,10 @@ export interface GuildDocument extends Document, Lean.Guild {
 }
 
 export const Guild = model<GuildDocument>('guild', new Schema({
-  _id: String,
+  _id: {
+    type: String,
+    default: generateSnowflake(),
+  },
   name: {
     type: String,
     required: [true, 'Name is required'],

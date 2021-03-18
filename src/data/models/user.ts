@@ -1,15 +1,19 @@
 import { Document, model, Schema } from 'mongoose';
 import passportLocalMongoose from 'passport-local-mongoose';
-import { validators } from '../../utils/utils';
+import { createdAtToDate, validators } from '../../utils/utils';
 import { Lean, patterns, UserTypes } from '../types/entity-types';
 import uniqueValidator from 'mongoose-unique-validator';
+import { generateSnowflake } from '../snowflake-entity';
 
 export interface UserDocument extends Document, Lean.User {
   _id: string;
 }
 
 export const User = model<UserDocument>('user', new Schema({
-  _id: String,
+  _id: {
+    type: String,
+    default: generateSnowflake(),
+  },
   avatarURL: {
     type: String,
     required: [true, 'Avatar URL is required'],
@@ -21,7 +25,7 @@ export const User = model<UserDocument>('user', new Schema({
   bot: Boolean,
   createdAt: {
     type: Date,
-    required: [true, 'Created At is required'],
+    get: createdAtToDate
   },
   friendIds: {
     type: [String],

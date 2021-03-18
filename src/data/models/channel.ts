@@ -1,5 +1,6 @@
 import { Document, model, Schema } from 'mongoose';
 import { validators } from '../../utils/utils';
+import { generateSnowflake } from '../snowflake-entity';
 import { ChannelTypes, Lean, patterns } from '../types/entity-types';
 
 export interface DMChannelDocument extends Document, ChannelTypes.DM {
@@ -14,7 +15,10 @@ export interface VoiceChannelDocument extends Document, ChannelTypes.Voice {
 export type ChannelDocument = DMChannelDocument | TextChannelDocument | VoiceChannelDocument;
 
 export const Channel = model<ChannelDocument>('channel', new Schema({
-  _id: String,
+  _id: {
+    type: String,
+    default: generateSnowflake(),
+  },
   createdAt: {
     type: Date,
     default: new Date(),

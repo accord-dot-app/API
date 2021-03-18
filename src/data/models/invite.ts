@@ -1,4 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
+import { generateSnowflake } from '../snowflake-entity';
 import { Lean, InviteTypes, patterns } from '../types/entity-types';
 
 export interface InviteDocument extends Document, Lean.Invite {
@@ -6,7 +7,10 @@ export interface InviteDocument extends Document, Lean.Invite {
 }
 
 export const Invite = model<InviteDocument>('invite', new Schema({
-  _id: String,
+  _id: {
+    type: String,
+    default: generateSnowflake(),
+  },
   createdAt: {
     type: Date,
     required: [true, 'Created At is required'],

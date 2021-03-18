@@ -1,4 +1,6 @@
 import { Document, model, Schema } from 'mongoose';
+import { createdAtToDate } from '../../utils/utils';
+import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns, PermissionTypes } from '../types/entity-types';
 
 export function hasPermission(current: PermissionTypes.Permission, required: PermissionTypes.Permission) {
@@ -20,7 +22,10 @@ export interface RoleDocument extends Document, Lean.Role {
 }
 
 export const Role = model<RoleDocument>('role', new Schema({
-  _id: String,
+  _id: {
+    type: String,
+    default: generateSnowflake(),
+  },
   color: {
     type: String,
     validate: {
@@ -33,7 +38,7 @@ export const Role = model<RoleDocument>('role', new Schema({
   },
   createdAt: {
     type: Date,
-    required: [true, 'Created At is required'],
+    get: createdAtToDate,
   },
   guildId: {
     type: String,

@@ -33,7 +33,7 @@ use(should);
   // await import('./integration/voice-state-update.tests');
   await import('./integration/ws-guard.tests');*/
 
-  // await import('./unit/application.tests');
+  await import('./unit/application.tests');
   await import('./unit/channel.tests');
   await import('./unit/guild.tests');
   await import('./unit/guild-member.tests');

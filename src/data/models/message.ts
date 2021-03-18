@@ -1,4 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
+import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns } from '../types/entity-types';
 
 export interface MessageDocument extends Document, Lean.Message {
@@ -6,7 +7,10 @@ export interface MessageDocument extends Document, Lean.Message {
 }
 
 export const Message = model<MessageDocument>('message', new Schema({
-  _id: String,
+  _id: {
+    type: String,
+    default: generateSnowflake(),
+  },
   authorId: {
     type: String,
     required: [true, 'Author ID is required'],
