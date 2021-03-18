@@ -1,6 +1,6 @@
 import { Document, model, Schema } from 'mongoose';
-import { patterns } from '../../utils/utils';
-import { ChannelTypes, Lean } from '../types/entity-types';
+import { validators } from '../../utils/utils';
+import { ChannelTypes, Lean, patterns } from '../types/entity-types';
 
 export interface DMChannelDocument extends Document, ChannelTypes.DM {
   _id: string;
@@ -28,7 +28,7 @@ export const Channel = model<ChannelDocument>('channel', new Schema({
     type: [String],
     default: [],
     validate: {
-      validator: (val: string[]) => val.length <= 50,
+      validator: validators.maxLength(50),
       message: 'Channel member limit reached',
     }
   },
@@ -40,8 +40,9 @@ export const Channel = model<ChannelDocument>('channel', new Schema({
       validator: function(val: string) {
         const type = (this as any).type;
         const pattern = /^[A-Za-z\-\d]+$/;
-        return (type === 'TEXT' && pattern.test(val)
-          || type !== 'TEXT');
+        return type === 'TEXT'
+          && pattern.test(val)
+          || type !== 'TEXT';
       },
       message: 'Invalid name'
     }
@@ -54,5 +55,5 @@ export const Channel = model<ChannelDocument>('channel', new Schema({
     type: String,
     required: [true, 'Type is required'],
     validate: [/^TEXT$|^VOICE$|^DM$/, 'Invalid type'],
-  }
+  },
 }));

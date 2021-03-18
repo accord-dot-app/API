@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { generateSnowflake, snowflakeToDate } from '../../src/data/snowflake-entity';
-import { patterns } from '../../src/utils/utils';
+import { patterns } from '../../src/data/types/entity-types';
 
 describe('data/snowflake-entity', () => {
   it('get snowflake, 2 ids in same ms, snowflake is different', () => {
@@ -16,17 +16,13 @@ describe('data/snowflake-entity', () => {
   });
 
   it('lots of snowflakes generated, all are unique', () => {
-    const snowflakes = [...new Array(100)].map(generateSnowflake);
+    const oneIsUnique = (val, i, arr) => val !== arr[Math.min(0, i - 1)];
 
-    const result = () => {
-      let previousSnowflake = '';
-      for (const snowflake of snowflakes) {
-        if (snowflake === previousSnowflake)
-          throw new TypeError('Snowflake Should Be Unique');
-      }
-    }
-    
-    expect(result).to.not.throw();
+    const equal = new Array(100)
+      .map(generateSnowflake)
+      .every(oneIsUnique);
+
+    expect(equal).to.be.true;
   });
 
   it('snowflake id matches regex pattern', () => {

@@ -1,6 +1,8 @@
 import { Document, model, Schema } from 'mongoose';
 import passportLocalMongoose from 'passport-local-mongoose';
-import { Lean, UserTypes } from '../types/entity-types';
+import { validators } from '../../utils/utils';
+import { Lean, patterns, UserTypes } from '../types/entity-types';
+import uniqueValidator from 'mongoose-unique-validator';
 
 export interface UserDocument extends Document, Lean.User {
   _id: string;
@@ -8,35 +10,59 @@ export interface UserDocument extends Document, Lean.User {
 
 export const User = model<UserDocument>('user', new Schema({
   _id: String,
-  avatarURL: String,
-  badges: { type: Array, default: [] },
-  bot: Boolean,
-  createdAt: Date,
-  friendIds: [{
+  avatarURL: {
     type: String,
-    ref: 'user',
-  }],
-  friendRequestIds: {
-    type: Array, default: [],
-    // maxlength: 100,
-    validate: {
-      validator: (val: []) => val.length <= 100,
-      message: () => 'pending friend requests'
-    }
+    required: [true, 'Avatar URL is required'],
   },
-  guilds: [{ type: String, ref: 'guild' }],
-  status: String,
+  badges: {
+    type: [String],
+    default: [],
+  },
+  bot: Boolean,
+  createdAt: {
+    type: Date,
+    required: [true, 'Created At is required'],
+  },
+  friendIds: {
+    type: [String],
+    ref: 'user',
+    default: [],
+    validate: {
+      validator: validators.maxLength(100),
+      message: 'Clout limit reached',
+    },
+  },
+  friendRequestIds: {
+    type: [String],
+    default: [],
+    validate: {
+      validator: validators.maxLength(100),
+      message: 'Clout limit reached',
+    },
+  },
+  guilds: {
+    type: [String],
+    ref: 'guild',
+    validate: {
+      validator: validators.maxLength(100),
+      message: 'Guild limit reached',
+    },
+  },
+  status: {
+    type: String,
+    required: [true, 'Status is required'],
+    validate: [patterns.status, 'Invalid status'],
+  },
   username: {
     type: String,
+    required: [true, 'Username is required'],
+    unique: [true, 'Username is taken'],
     validate: {
-      validator: async (val: string) => {
-        const pattern = /(^(?! |^everyone$|^here$|^me$|^someone$|^discordtag$)[A-Za-z\d\-\_\! ]{2,32}(?<! )$)/;
-        const usernameTaken = await User.exists({ username: val });
-        
-        return pattern.test(val) && !usernameTaken;
-      },
-      message: () => `Username is invalid or taken`,
+      validator: patterns.username,
+      message: `Invalid username`,
     }
   },
   voice: { type: Object, default: new UserTypes.VoiceState() }
-}).plugin(passportLocalMongoose));
+})
+.plugin(passportLocalMongoose)
+.plugin(uniqueValidator));

@@ -1,6 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
-import { patterns } from '../../utils/utils';
-import { Lean, PermissionTypes } from '../types/entity-types';
+import { Lean, patterns, PermissionTypes } from '../types/entity-types';
 
 export function hasPermission(current: PermissionTypes.Permission, required: PermissionTypes.Permission) {
   return Boolean(current & required)

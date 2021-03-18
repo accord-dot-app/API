@@ -1,6 +1,6 @@
 import { Document, model, Schema } from 'mongoose';
-import { patterns } from '../../utils/utils';
-import { Lean } from '../types/entity-types';
+import { validators } from '../../utils/utils';
+import { Lean, patterns } from '../types/entity-types';
 
 export interface GuildDocument extends Document, Lean.Guild {
   _id: string;
@@ -29,8 +29,8 @@ export const Guild = model<GuildDocument>('guild', new Schema({
     type: [String],
     ref: 'channel',
     validate: {
-      validator: (val: string[]) => val.length <= 250,
-      message: 'Channel limit reached'
+      validator: validators.maxLength(250),
+      message: 'Channel limit reached',
     },
   },
   members: {
@@ -41,7 +41,7 @@ export const Guild = model<GuildDocument>('guild', new Schema({
     type: [String],
     ref: 'role',
     validate: {
-      validator: (val: string[]) => val.length > 0,
+      validator: validators.minLength(1),
       message: 'Guild must have at least one role'
     },
   },

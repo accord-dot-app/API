@@ -86,7 +86,7 @@ export namespace UserTypes {
     type: FriendRequestType
   }
   export type FriendRequestType = 'OUTGOING' | 'INCOMING';
-  export type StatusType = 'ONLINE' | 'DND' | 'IDLE' | 'OFFLINE';
+  export type StatusType = 'ONLINE' | 'BUSY' | 'AFK' | 'OFFLINE';
   export class VoiceState {
     channelId?: string;
     guildId?:  string;
@@ -163,4 +163,13 @@ export namespace PermissionTypes {
     ...Voice,
   }
   export type Permission = General | Text | Voice;
+}
+
+export const patterns = {
+  hexColor: /^#(?:[0-9a-fA-F]{3}){1,2}$/,
+  password: /(?=.*[a-zA-Z0-9!@#$%^&*])/,
+  snowflake: /^\d{18}$/,
+  status: /^ONLINE|^BUSY$|^AFK$|^OFFLINE$/,
+  textChannelName: /^[A-Za-z\-\d]+$/,
+  username: /(^(?! |^everyone$|^here$|^me$|^someone$|^discordtag$)[A-Za-z\d\-\_]{2,32}(?<! )$)/,
 }

@@ -26,6 +26,7 @@
     "metascraper-title": "^5.14.14",
     "metascraper-url": "^5.14.14",
     "mongoose": "^5.10.7",
+    "mongoose-unique-validator": "^2.0.3",
     "node-fetch": "^2.6.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",

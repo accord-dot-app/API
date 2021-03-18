@@ -17,7 +17,7 @@ export function generateInviteCode() {
   return result;
 }
 
-export const patterns = {
-  hexColor: /^#(?:[0-9a-fA-F]{3}){1,2}$/,
-  snowflake: /^\d{18}$/,
-}
+export const validators = {
+  minLength: (min: number) => (val: string | any[]) => val.length >= min,
+  maxLength: (max: number) => (val: string | any[]) => val.length <= max,
+};

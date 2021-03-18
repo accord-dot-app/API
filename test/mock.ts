@@ -78,7 +78,7 @@ export class Mock {
   public static async user(guildIds: string[] = []) {
     return await User.create({
       _id: generateSnowflake(),
-      avatarURL: '',
+      avatarURL: 'a',
       bot: false,
       badges: [],
       createdAt: new Date(),
@@ -86,8 +86,8 @@ export class Mock {
       friendRequestIds: [],
       guilds: guildIds,
       status: 'ONLINE',
-      username: `Mock User ${generateSnowflake()}`,
-      voice: new UserTypes.VoiceState()
+      username: `mock-user-${generateSnowflake()}`,
+      voice: new UserTypes.VoiceState(),
     });
   }
 
