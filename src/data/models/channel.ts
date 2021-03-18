@@ -1,5 +1,6 @@
 import { Document, model, Schema } from 'mongoose';
-import { ChannelTypes } from '../types/entity-types';
+import { patterns } from '../../utils/utils';
+import { ChannelTypes, Lean } from '../types/entity-types';
 
 export interface DMChannelDocument extends Document, ChannelTypes.DM {
   _id: string;
@@ -14,26 +15,44 @@ export type ChannelDocument = DMChannelDocument | TextChannelDocument | VoiceCha
 
 export const Channel = model<ChannelDocument>('channel', new Schema({
   _id: String,
-  createdAt: { type: Date, default: new Date() },
-  guildId: String,
+  createdAt: {
+    type: Date,
+    default: new Date(),
+    required: [true, 'Created At is required']
+  },
+  guildId: {
+    type: String,
+    validate: [patterns.snowflake, 'Invalid Snowflake ID'],
+  },
   memberIds: {
-    maxlength: 69,
-    type: Array,
+    type: [String],
     default: [],
+    validate: {
+      validator: (val: string[]) => val.length <= 50,
+      message: 'Channel member limit reached',
+    }
   },
   name: {
     type: String,
-    minlength: 1,
-    maxlength: 32,
+    required: [true, 'Name is required'],
+    maxlength: [32, 'Name too long'],
+    validate: {
+      validator: function(val: string) {
+        const type = (this as any).type;
+        const pattern = /^[A-Za-z\-\d]+$/;
+        return (type === 'TEXT' && pattern.test(val)
+          || type !== 'TEXT');
+      },
+      message: 'Invalid name'
+    }
   },
   summary: {
     type: String,
-    maxlength: 128,
+    maxlength: [128, 'Summary too long'],
   },
   type: {
     type: String,
-    validate: (val: string): val is ChannelTypes.Type => {
-      return val === 'TEXT' || val === 'VOICE' || val === 'DM';
-    }
+    required: [true, 'Type is required'],
+    validate: [/^TEXT$|^VOICE$|^DM$/, 'Invalid type'],
   }
 }));

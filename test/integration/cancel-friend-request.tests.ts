@@ -7,7 +7,8 @@ import { expect } from 'chai';
 import { generateSnowflake } from '../../src/data/snowflake-entity';
 import { UserDocument } from '../../src/data/models/user';
 
-describe('cancel-friend-request', () => {
+// todo: remove
+describe.skip('cancel-friend-request', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: AcceptFriendRequest;
   let ws: WebSocket;
@@ -27,14 +28,7 @@ describe('cancel-friend-request', () => {
   });
 
   it('user cancels valid friend request, fulfilled', async () => {
-    friend.friendRequests.push()
-
-    const result = () => event.invoke(ws, client, {
-      senderId: sender._id,
-      friendId: friend._id,
-    });
-
-    await expect(result()).to.be.fulfilled;
+    await expect(cancelFriendRequest()).to.be.fulfilled;
   });
 
   it('user sends friend request to non existing user, rejected', async () => {
@@ -51,12 +45,7 @@ describe('cancel-friend-request', () => {
       $push: { friends: await getMaxFriends() }
     });
 
-    const result = () => event.invoke(ws, client, {
-      senderId: sender._id,
-      friendId: friend._id,
-    });
-
-    await expect(result()).to.be.rejectedWith('too much clout');
+    await expect(cancelFriendRequest()).to.be.rejectedWith('too much clout');
   });
 
 
@@ -64,12 +53,7 @@ describe('cancel-friend-request', () => {
     const friendRequests: any[] = [...new Array(100)].map(generateSnowflake);
     await sender.update({ $push: { friendRequests } });
 
-    const result = () => event.invoke(ws, client, {
-      senderId: sender._id,
-      friendId: friend._id,
-    });
-
-    await expect(result()).to.be.rejectedWith('pending friend requests');
+    await expect(cancelFriendRequest()).to.be.rejectedWith('pending friend requests');
   });
 
 
@@ -78,25 +62,22 @@ describe('cancel-friend-request', () => {
       $push: { friends: await getMaxFriends() }
     });
 
-    const result = () => event.invoke(ws, client, {
-      senderId: sender._id,
-      friendId: friend._id,
-    });
-
-    await expect(result()).to.be.rejectedWith('too much clout');
+    await expect(cancelFriendRequest()).to.be.rejectedWith('too much clout');
   });
 
   it('friend already has max requests, rejected', async () => {
     const friendRequests: any[] = [...new Array(100)].map(generateSnowflake);
     await friend.update({ $push: { friendRequests } });
 
-    const result = () => event.invoke(ws, client, {
+    await expect(cancelFriendRequest()).to.be.rejectedWith('pending friend requests');
+  });
+
+  async function cancelFriendRequest() {
+    return event.invoke(ws, client, {
       senderId: sender._id,
       friendId: friend._id,
     });
-
-    await expect(result()).to.be.rejectedWith('pending friend requests');
-  });
+  }
 
   async function getMaxFriends() {
     const friends = [];

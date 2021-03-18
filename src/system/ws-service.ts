@@ -9,14 +9,14 @@ export class WSService {
     this.socket.on('message', (content: string) => console.log(content));
   }
 
-  public on<T extends keyof WSEventArgs>(name: T, callback: WSEventArgs[T]): this {
+  public on<K extends keyof WSEventArgs>(name: K, callback: WSEventArgs[K]): this {
     this.socket.on(name, () => Log.info(`RECEIVE ${name}`, 'ws'));
     this.socket.on(name, callback);
 
     return this;
   }
 
-  public emit<T extends keyof WSEventParams>(name: T, params: WSEventParams[T]) {
+  public emit<K extends keyof WSEventParams>(name: K, params: WSEventParams[K]) {
     Log.info(`SEND ${name}`, 'ws');
     this.socket.emit(name, params);
   }

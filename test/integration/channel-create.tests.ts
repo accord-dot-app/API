@@ -7,7 +7,7 @@ import { Mock } from '../mock';
 import { expect, spy } from 'chai';
 import { Guild, GuildDocument } from '../../src/data/models/guild';
 import { User, UserDocument } from '../../src/data/models/user';
-import { Channel } from '../../src/data/models/channel';
+import { Partial } from '../../src/data/types/ws-types';
 
 describe('channel-create', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;;
@@ -79,73 +79,14 @@ describe('channel-create', () => {
     });
   });
 
-  describe('validation', () => {
-    it('name, too short, rejected', async () => {  
-      await makeGuildOwner();
-
-      const result = () => event.invoke(ws, client, {
-        guildId: guild._id,
-        partialChannel: {
-          name: '',
-          type: 'TEXT',
-          summary: '',
-        },
-      });
-    
-      await expect(result()).to.be.rejectedWith('minimum');
-    });
-    it('name, too long, rejected', async () => {  
-      await makeGuildOwner();
-
-      const result = () => event.invoke(ws, client, {
-        guildId: guild._id,
-        partialChannel: {
-          name: new Array(34).join(' '),
-          type: 'TEXT',
-          summary: '',
-        },
-      });
-    
-      await expect(result()).to.be.rejectedWith('maximum');
-    });
-    it('summary, too long, rejected', async () => {
-      await makeGuildOwner();
-
-      const result = () => event.invoke(ws, client, {
-        guildId: guild._id,
-        partialChannel: {
-          name: '',
-          type: 'TEXT',
-          summary: new Array(129).join(' '),
-        },
-      });
-    
-      await expect(result()).to.be.rejectedWith('minimum');
-    });
-    it('type, incorrect, rejected', async () => {
-      await makeGuildOwner();
-
-      const result = () => event.invoke(ws, client, {
-        guildId: guild._id,
-        partialChannel: {
-          name: 'a',
-          type: 'asasas' as any,
-          summary: '',
-        },
-      });
-    
-      await expect(result()).to.be.rejectedWith('validation');
-    });
-  });
-
-  async function createChannel() {
+  async function createChannel(partialChannel?: Partial.Channel) {
     return event.invoke(ws, client, {
       guildId: guild._id,
-      partialChannel: {
+      partialChannel: partialChannel ?? {
         name: 'chat',
         type: 'TEXT',
         summary: '',
-      },
+      }
     });
   }
 

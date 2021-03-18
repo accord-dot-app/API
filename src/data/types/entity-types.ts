@@ -157,5 +157,10 @@ export namespace PermissionTypes {
     SPEAK = 32768 * 2,
     CONNECT = 32768
   }
+  export const All = {
+    ...General,
+    ...Text,
+    ...Voice,
+  }
   export type Permission = General | Text | Voice;
 }

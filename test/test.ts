@@ -21,7 +21,7 @@ use(should);
     useCreateIndex: true,
   }, (err) => console.log(err));
 
-  await import('./integration/accept-friend-request.tests');
+  /*await import('./integration/accept-friend-request.tests');
   await import('./integration/cancel-friend-request.tests');
   await import('./integration/channel-create.tests');
   await import('./integration/guild-member-add.tests');
@@ -31,7 +31,10 @@ use(should);
   await import('./integration/message-update.tests');
   await import('./integration/ready.tests');
   // await import('./integration/voice-state-update.tests');
-  await import('./integration/ws-guard.tests');
+  await import('./integration/ws-guard.tests');*/
 
-  await import('./unit/snowflake-entity.tests')
+  await import('./unit/channel.tests');
+  await import('./unit/guild.tests');
+  await import('./unit/role.tests');
+  await import('./unit/snowflake-entity.tests');
 })();

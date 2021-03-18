@@ -1,12 +1,10 @@
 import { expect } from 'chai';
 import { generateSnowflake, snowflakeToDate } from '../../src/data/snowflake-entity';
+import { patterns } from '../../src/utils/utils';
 
 describe('data/snowflake-entity', () => {
   it('get snowflake, 2 ids in same ms, snowflake is different', () => {
-    const snowflake1 = generateSnowflake();
-    const snowflake2 = generateSnowflake();    
-    
-    expect(snowflake1).to.not.equal(snowflake2);
+    expect(generateSnowflake()).to.not.equal(generateSnowflake());
   });
 
   it('snowflake to date, get date from snowflake, very similar time', () => {
@@ -29,5 +27,9 @@ describe('data/snowflake-entity', () => {
     }
     
     expect(result).to.not.throw();
+  });
+
+  it('snowflake id matches regex pattern', () => {
+    expect(generateSnowflake()).to.match(patterns.snowflake);
   });
 });

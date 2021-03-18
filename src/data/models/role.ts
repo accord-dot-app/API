@@ -1,4 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
+import { patterns } from '../../utils/utils';
 import { Lean, PermissionTypes } from '../types/entity-types';
 
 export function hasPermission(current: PermissionTypes.Permission, required: PermissionTypes.Permission) {
@@ -21,12 +22,46 @@ export interface RoleDocument extends Document, Lean.Role {
 
 export const Role = model<RoleDocument>('role', new Schema({
   _id: String,
-  color: String,
-  createdAt: Date,
-  guildId: String,
+  color: {
+    type: String,
+    validate: {
+      validator: function() {
+        const role = this as any as RoleDocument;
+        return role.name !== '@everyone';
+      },
+      message: 'Cannot change @everyone role color',
+    }
+  },
+  createdAt: {
+    type: Date,
+    required: [true, 'Created At is required'],
+  },
+  guildId: {
+    type: String,
+    required: [true, 'Owner ID is required'],
+    validate: [patterns.snowflake, 'Invalid Snowflake ID'],
+  },
   hoisted: Boolean,
   mentionable: Boolean,
-  name: String,
-  position: Number,
-  permissions: Number,
+  name: {
+    type: String,
+    required: [true, 'Name is required'],
+    maxlength: [32, 'Name too long'],
+  },
+  position: {
+    type: Number,
+    required: [true, 'Position is required'],
+    min: [0, 'Position must be greater than 0'],
+  },
+  permissions: {
+    type: Number,
+    default: defaultPermissions,
+    required: [true, 'Permissions is required'],
+    validate: {
+      validator: (val: number) => val === 0
+        || val === 1
+        || Boolean(parseInt(val.toString(), 2) - 1),
+      message: 'Invalid permissions integer',
+    },
+  }
 }));

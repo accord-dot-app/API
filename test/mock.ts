@@ -54,8 +54,8 @@ export class Mock {
 
   public static async guild() {
     const guildId = generateSnowflake();
-    const owner = await this.user([guildId]);
-    const memberUser = await this.user([guildId]);
+    const owner = await Mock.user([guildId]);
+    const memberUser = await Mock.user([guildId]);
 
     return await Guild.create({
       _id: guildId,
@@ -63,14 +63,14 @@ export class Mock {
       createdAt: new Date(),
       nameAcronym: 'MG',
       ownerId: owner.id,
-      roles: [ await this.everyoneRole(guildId) ], // must go above
+      roles: [ await Mock.everyoneRole(guildId) ], // must go above
       channels: [
-        await this.channel('TEXT', guildId),
-        await this.channel('VOICE', guildId),
+        await Mock.channel('TEXT', guildId),
+        await Mock.channel('VOICE', guildId),
       ],
       members: [
-        await this.guildMember(owner.id, guildId),
-        await this.guildMember(memberUser.id, guildId),
+        await Mock.guildMember(owner.id, guildId),
+        await Mock.guildMember(memberUser.id, guildId),
       ],
     });
   }
@@ -111,7 +111,7 @@ export class Mock {
       createdAt: new Date(),
       guildId,
       memberIds: [],
-      name: `Mock ${type} Channel`,
+      name: `mock-channel`,
       summary: '',
       type
     });

@@ -16,3 +16,8 @@ export function generateInviteCode() {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   return result;
 }
+
+export const patterns = {
+  hexColor: /^#(?:[0-9a-fA-F]{3}){1,2}$/,
+  snowflake: /^\d{18}$/,
+}

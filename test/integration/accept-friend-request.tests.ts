@@ -30,7 +30,7 @@ describe('accept-friend-request', () => {
     await expect(acceptFriendRequest()).to.be.fulfilled;
   });
 
-  it('user accepts friend request, creates dm channel', ()_);
+  // it('user accepts friend request, creates dm channel', ()_);
 
   it('user accepts friend request, friend request removed', async () => {
     await acceptFriendRequest();
@@ -79,7 +79,7 @@ describe('accept-friend-request', () => {
 
   it('friend already has max friends, rejected', async () => {
     await friend.update({
-      $push: { friends: await getMaxFriends() }
+      $push: { friends: getMaxFriends() }
     });
 
     await expect(acceptFriendRequest()).to.be.rejectedWith('too much clout');
@@ -99,7 +99,6 @@ describe('accept-friend-request', () => {
       friendId: friend._id,
     });
   }
-
   function getMaxFriends() {
     return [...new Array(100)].map(generateSnowflake);
   }

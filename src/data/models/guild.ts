@@ -1,4 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
+import { patterns } from '../../utils/utils';
 import { Lean } from '../types/entity-types';
 
 export interface GuildDocument extends Document, Lean.Guild {
@@ -9,14 +10,39 @@ export const Guild = model<GuildDocument>('guild', new Schema({
   _id: String,
   name: {
     type: String,
-    minlength: 1,
-    maxlength: 32,
+    required: [true, 'Name is required'],
+    maxlength: [32, 'Name is too long'],
   },
-  createdAt: { type: Date, default: new Date() },
+  createdAt: {
+    type: Date,
+    required: true,
+    default: new Date(),
+  },
   nameAcronym: String,
   iconURL: String,
-  ownerId: String, // owner -> ownerId
-  channels: [{ type: String, ref: 'channel' }],
-  members: [{ type: String, ref: 'guildMember' }],
-  roles: [{ type: String, ref: 'role' }],
+  ownerId: {
+    type: String,
+    required: true,
+    validate: [patterns.snowflake, 'Invalid Snowflake ID'],
+  },
+  channels: {
+    type: [String],
+    ref: 'channel',
+    validate: {
+      validator: (val: string[]) => val.length <= 250,
+      message: 'Channel limit reached'
+    },
+  },
+  members: {
+    type: [String],
+    ref: 'guildMember',
+  },
+  roles: {
+    type: [String],
+    ref: 'role',
+    validate: {
+      validator: (val: string[]) => val.length > 0,
+      message: 'Guild must have at least one role'
+    },
+  },
 }));
