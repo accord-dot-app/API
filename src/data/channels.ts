@@ -26,8 +26,9 @@ export default class Channels extends DBWrapper<string, ChannelDocument> {
 
   public createDM(senderId: string, friendId: string) {
     return Channel.create({
-      _id: generateSnowflake(),,
+      _id: generateSnowflake(),
       memberIds: [senderId, friendId],
+      name: 'DM Channel',
       type: 'DM',
     }) as Promise<DMChannelDocument>;
   }
@@ -35,7 +36,7 @@ export default class Channels extends DBWrapper<string, ChannelDocument> {
     return Channel.create({
       _id: generateSnowflake(),
       name: 'chat',
-      summary: '',,
+      summary: '',
       guildId,
       type: 'TEXT',
     }) as Promise<TextChannelDocument>;
@@ -43,7 +44,7 @@ export default class Channels extends DBWrapper<string, ChannelDocument> {
   public createVoice(guildId: string) {
     return Channel.create({
       _id: generateSnowflake(),
-      name: 'Talk',,
+      name: 'Talk',
       guildId,
       type: 'VOICE',
       memberIds: []

@@ -5,6 +5,7 @@ import { Lean, patterns } from '../types/entity-types';
 
 export interface MessageDocument extends Document, Lean.Message {
   _id: string;
+  createdAt: never;
 }
 
 export const Message = model<MessageDocument>('message', new Schema({

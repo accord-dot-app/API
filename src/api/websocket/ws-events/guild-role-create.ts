@@ -22,7 +22,7 @@ export default class implements WSEvent {
 
     const role = await Role.create({
       ...partialRole,
-      _id: generateSnowflake(),,
+      _id: generateSnowflake(),
       guildId
     });
     await Guild.updateOne(

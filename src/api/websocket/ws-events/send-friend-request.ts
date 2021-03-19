@@ -24,14 +24,14 @@ export default class implements WSEvent {
     const user = await User.findById(userId);
     if (!user) return;
 
-    const alreadyPending = user.friendRequestIds.some(r => r.userId === friendId);
+    const alreadyPending = user.friendRequests.some(r => r.userId === friendId);
     if (alreadyPending)
       return user;
 
-    user.friendRequestIds.push({ userId: friendId, type });
+    user.friendRequests.push({ userId: friendId, type });
 
     return user.update({
-      $set: { friendRequests: user.friendRequestIds }
+      $set: { friendRequests: user.friendRequests }
     });
   }
 }

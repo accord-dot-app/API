@@ -31,7 +31,7 @@ export default class implements WSEvent {
       authorId: this.guard.userId(client),
       channelId,
       content: partialMessage.content,
-      embed: await this.getEmbed(partialMessage),,
+      embed: await this.getEmbed(partialMessage),
     });
 
     ws.io

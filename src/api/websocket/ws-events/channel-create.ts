@@ -21,7 +21,7 @@ export default class implements WSEvent {
     const channel = await Channel.create({
       _id: generateSnowflake(),
       name: partialChannel.name,
-      summary: partialChannel.summary,,
+      summary: partialChannel.summary,
       guildId,
       type: partialChannel.type,
       memberIds: []

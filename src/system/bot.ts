@@ -3,13 +3,13 @@ import { UserDocument } from '../data/models/user';
 import { generateSnowflake } from '../data/snowflake-entity';
 import Log from '../utils/log';
 import { Invite } from '../data/models/invite';
-import { generateInviteCode } from '../utils/utils';
 import Deps from '../utils/deps';
 import Users from '../data/users';
 import { Args } from '../api/websocket/ws-events/ws-event';
 import { WSService } from './ws-service';
 import { Lean } from '../data/types/entity-types';
 import Channels from '../data/channels';
+import Invites from '../data/invites';
 
 export class SystemBot {
   private _self: UserDocument;
@@ -17,11 +17,13 @@ export class SystemBot {
 
   constructor(
     private channels = Deps.get<Channels>(Channels),
+    private invites = Deps.get<Invites>(Invites),
     private users = Deps.get<Users>(Users),
     private ws = Deps.get<WSService>(WSService),
   ) {}
 
   public async init() {
+    if (this.self) return;
     this._self = await this.users.getSystemUser();
 
     await this.readyUp();
@@ -60,21 +62,17 @@ export class SystemBot {
   async getDMChannel(user: UserDocument) {
     return await Channel.findOne({ memberIds: [user._id, this.self._id] })
       ?? await Channel.create({
-        _id: generateSnowflake(),,
+        _id: generateSnowflake(),
         type: 'DM',
-        memberIds: [user._id, this.self._id]
+        memberIds: [user._id, this.self._id],
       });
   }
 
   public async addToGuild(guildId: string) {
-    const invite = await Invite.create({
-      _id: generateInviteCode(),,
+    const invite = await this.invites.create({
       guildId,
-      inviterId: this.self._id,
-      options: {
-        maxUses: 1,
-      },
-      uses: 0
+      userId: this.self._id,
+      options: { maxUses: 1 },
     });
 
     this.ws.emit('GUILD_MEMBER_ADD', { inviteCode: invite.id });

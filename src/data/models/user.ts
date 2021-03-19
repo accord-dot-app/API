@@ -7,6 +7,7 @@ import { generateSnowflake } from '../snowflake-entity';
 
 export interface UserDocument extends Document, Lean.User {
   _id: string;
+  createdAt: never;
 }
 
 export const User = model<UserDocument>('user', new Schema({
@@ -66,7 +67,11 @@ export const User = model<UserDocument>('user', new Schema({
       message: `Invalid username`,
     }
   },
-  voice: { type: Object, default: new UserTypes.VoiceState() }
+  voice: {
+    type: Object,
+    required: [true, 'Voice State is required'],
+    default: new UserTypes.VoiceState(),
+  }
 })
 .plugin(passportLocalMongoose)
 .plugin(uniqueValidator));

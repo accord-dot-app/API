@@ -1,23 +1,21 @@
 import { Socket } from 'socket.io';
-import { Invite } from '../../../data/models/invite';
-import { generateInviteCode } from '../../../utils/utils';
+import Invites from '../../../data/invites';
+import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
 import WSEvent, { Args, Params, WSEventParams } from './ws-event';
 
 export default class implements WSEvent {
   on: keyof WSEventParams = 'INVITE_CREATE';
 
-  async invoke(ws: WebSocket, client: Socket, { guildId, userId, options }: Params.InviteCreate) {
+  constructor(
+    private invites = Deps.get<Invites>(Invites),
+  ) {}
+
+  async invoke(ws: WebSocket, client: Socket, params: Params.InviteCreate) {
     ws.io
-      .to(guildId)
+      .to(params.guildId)
       .emit('INVITE_CREATE', {
-        invite: await Invite.create({
-          _id: generateInviteCode(),,
-          guildId: guildId,
-          inviterId: userId,
-          options,
-          uses: 0,
-        })
+        invite: await this.invites.create(params),
       } as Args.InviteCreate);
   }
 }

@@ -2,10 +2,10 @@ import AcceptFriendRequest from '../../src/api/websocket/ws-events/accept-friend
 import { WebSocket } from '../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import { Mock } from '../mock';
-import { GuildDocument } from '../../src/data/models/guild';
 import { expect } from 'chai';
 import { generateSnowflake } from '../../src/data/snowflake-entity';
 import { User, UserDocument } from '../../src/data/models/user';
+import { Channel } from '../../src/data/models/channel';
 
 describe('accept-friend-request', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
@@ -33,8 +33,8 @@ describe('accept-friend-request', () => {
   it('user accepts friend request, creates dm channel', async () => {
     await acceptFriendRequest();
 
-    const dmChannel = await User.findById(); 
-    await expect().to.exist;
+    const exists = await Channel.exists({ memberIds: sender.id }); 
+    await expect(exists).to.be.true;
   });
 
   it('user accepts friend request, friend request removed', async () => {
@@ -69,8 +69,5 @@ describe('accept-friend-request', () => {
       senderId: sender._id,
       friendId: friend._id,
     });
-  }
-  function getMaxFriends() {
-    return [...new Array(100)].map(generateSnowflake);
   }
 });

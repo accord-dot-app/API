@@ -1,16 +1,19 @@
 import { Document, model, Schema } from 'mongoose';
 import { createdAtToDate, validators } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
-import { ChannelTypes, Lean, patterns } from '../types/entity-types';
+import { ChannelTypes, patterns } from '../types/entity-types';
 
 export interface DMChannelDocument extends Document, ChannelTypes.DM {
   _id: string;
+  createdAt: never;
 }
 export interface TextChannelDocument extends Document, ChannelTypes.Text {
   _id: string;
+  createdAt: never;
 }
 export interface VoiceChannelDocument extends Document, ChannelTypes.Voice {
   _id: string;
+  createdAt: never;
 }
 export type ChannelDocument = DMChannelDocument | TextChannelDocument | VoiceChannelDocument;
 

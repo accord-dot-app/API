@@ -31,10 +31,10 @@ export default class Users extends DBWrapper<string, UserDocument> {
         { _id: userId },
         { _id: this.systemUser._id },
         { friendIds: userId as any },
-        { friendRequestIds: { userId, type: 'INCOMING' } },
-        { friendRequestIds: { userId, type: 'OUTGOING' } }
+        { friendRequests: { userId, type: 'INCOMING' } },
+        { friendRequests: { userId, type: 'OUTGOING' } }
       ]
-    });
+    }) as UserDocument[];
   }
 
   public async getGuilds(userId: string) {
@@ -86,11 +86,11 @@ export default class Users extends DBWrapper<string, UserDocument> {
         _id: generateSnowflake(),
         avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/bot.png`,
         badges: [],
-        bot: true,,
+        bot: true,
         status: 'ONLINE',
         username: '2PG',
         friendIds: [],
-        friendRequestIds: [],
+        friendRequests: [],
         guilds: [],
         voice: new UserTypes.VoiceState,
       });
@@ -107,7 +107,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
       username,
       avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/${randomAvatar}`,
       badges: [],
-      bot: false,,
+      bot: false,
       friends: [],
       status: 'ONLINE',
       voice: new UserTypes.VoiceState()

@@ -19,6 +19,7 @@ export const defaultPermissions =
 
 export interface RoleDocument extends Document, Lean.Role {
   _id: string;
+  createdAt: never;
 }
 
 export const Role = model<RoleDocument>('role', new Schema({

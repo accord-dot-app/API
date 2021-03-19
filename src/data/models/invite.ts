@@ -5,6 +5,7 @@ import { Lean, InviteTypes, patterns } from '../types/entity-types';
 
 export interface InviteDocument extends Document, Lean.Invite {
   _id: string;
+  createdAt: never;
 }
 
 export const Invite = model<InviteDocument>('invite', new Schema({

@@ -6,6 +6,7 @@ import { createdAtToDate } from '../../utils/utils';
 
 export interface ApplicationDocument extends Document, Lean.Application {
   _id: string;
+  createdAt: never;
 }
 
 export const Application = model<ApplicationDocument>('application', new Schema({

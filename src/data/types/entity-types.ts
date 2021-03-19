@@ -71,7 +71,7 @@ export namespace Lean {
     bot: boolean;
     createdAt: Date;
     friendIds: string[];
-    friendRequestIds: string[];
+    friendRequests: UserTypes.FriendRequest[];
     guilds: string[] | Guild[];
     status: UserTypes.StatusType;
     username: string;
