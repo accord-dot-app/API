@@ -1,5 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
-import { validators } from '../../utils/utils';
+import { createdAtToDate, validators } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { ChannelTypes, Lean, patterns } from '../types/entity-types';
 
@@ -21,8 +21,7 @@ export const Channel = model<ChannelDocument>('channel', new Schema({
   },
   createdAt: {
     type: Date,
-    default: new Date(),
-    required: [true, 'Created At is required']
+    get: createdAtToDate,
   },
   guildId: {
     type: String,

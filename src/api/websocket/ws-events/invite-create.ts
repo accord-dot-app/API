@@ -12,8 +12,7 @@ export default class implements WSEvent {
       .to(guildId)
       .emit('INVITE_CREATE', {
         invite: await Invite.create({
-          _id: generateInviteCode(),
-          createdAt: new Date(),
+          _id: generateInviteCode(),,
           guildId: guildId,
           inviterId: userId,
           options,

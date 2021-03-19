@@ -32,8 +32,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
     return await Guild.create({
       _id: guildId,
       name,
-      nameAcronym: getNameAcronym(name),
-      createdAt: new Date(),
+      nameAcronym: getNameAcronym(name),,
       ownerId,
       members: [
         await GuildMember.create({

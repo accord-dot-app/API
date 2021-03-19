@@ -1,5 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
-import { generateSnowflake, snowflakeToDate } from '../snowflake-entity';
+import { generateSnowflake } from '../snowflake-entity';
 import faker from 'faker';
 import { Lean, patterns } from '../types/entity-types';
 import { createdAtToDate } from '../../utils/utils';
@@ -20,18 +20,19 @@ export const Application = model<ApplicationDocument>('application', new Schema(
   description: {
     default: 'A new bot, that can do cool things.',
     type: String,
-    required: true,
+    required: [true, 'Description is required'],
     maxlength: [1000, 'Description too long'],
   },
   name: {
     type: String,
     default: `${faker.hacker.adjective()} ${faker.hacker.noun()}`,
-    required: true,
-    maxlength: 48,
+    required: [true, 'Name is required'],
+    maxlength: [32, 'Name is too long'],
   },
   owner: {
     type: String,
     ref: 'user',
+    required: [true, 'Owner is required'],
     validate: [patterns.snowflake, 'Invalid Snowflake ID'],
   }
 }));

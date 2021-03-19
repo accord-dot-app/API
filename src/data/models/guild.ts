@@ -1,5 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
-import { validators } from '../../utils/utils';
+import { createdAtToDate, validators } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns } from '../types/entity-types';
 
@@ -19,8 +19,7 @@ export const Guild = model<GuildDocument>('guild', new Schema({
   },
   createdAt: {
     type: Date,
-    required: true,
-    default: new Date(),
+    get: createdAtToDate,
   },
   nameAcronym: String,
   iconURL: String,

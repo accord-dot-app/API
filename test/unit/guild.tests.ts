@@ -20,7 +20,6 @@ function createGuild(guild: any) {
   const error = new Guild({
     _id: generateSnowflake(),
     name: 'Mock Guild',
-    createdAt: new Date(),
     nameAcronym: 'MG',
     ownerId: generateSnowflake(),
     roles: [generateSnowflake()],

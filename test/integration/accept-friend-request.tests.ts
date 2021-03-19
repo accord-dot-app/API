@@ -30,7 +30,12 @@ describe('accept-friend-request', () => {
     await expect(acceptFriendRequest()).to.be.fulfilled;
   });
 
-  // it('user accepts friend request, creates dm channel', ()_);
+  it('user accepts friend request, creates dm channel', async () => {
+    await acceptFriendRequest();
+
+    const dmChannel = await User.findById(); 
+    await expect().to.exist;
+  });
 
   it('user accepts friend request, friend request removed', async () => {
     await acceptFriendRequest();
@@ -57,40 +62,6 @@ describe('accept-friend-request', () => {
     });
 
     await expect(result()).to.be.rejectedWith('User Not Found');
-  });
-
-  it('sender already has max friends, rejected', async () => {
-    await sender.update({
-      $push: { friendIds: getMaxFriends() }
-    });
-
-    await expect(acceptFriendRequest()).to.be.rejectedWith('too much clout');
-  });
-
-
-  it('sender already has max requests, rejected', async () => {
-    await sender.update({
-      $push: { friendRequests: getMaxFriends() }
-    });
-
-    await expect(acceptFriendRequest()).to.be.rejectedWith('pending friend requests');
-  });
-
-
-  it('friend already has max friends, rejected', async () => {
-    await friend.update({
-      $push: { friends: getMaxFriends() }
-    });
-
-    await expect(acceptFriendRequest()).to.be.rejectedWith('too much clout');
-  });
-
-  it('friend already has max requests, rejected', async () => {
-    await friend.update({
-      $push: { friendRequests: getMaxFriends() }
-    });
-
-    await expect(acceptFriendRequest()).to.be.rejectedWith('pending friend requests');
   });
 
   async function acceptFriendRequest() {

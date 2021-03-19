@@ -5,8 +5,6 @@ import { Invite } from '../../src/data/models/invite';
 
 test(createInvite, () => {
   given().expect(true);
-  given({ createdAt: null }).expect('Created At is required');
-  given({ createdAt: new Date() }).expect(true);
   given({ guildId: '' }).expect('Guild ID is required');
   given({ guildId: '123' }).expect('Invalid Snowflake ID');
   given({ guildId: generateSnowflake() }).expect(true);
@@ -25,7 +23,6 @@ function createInvite(invite: any) {
     inviterId: generateSnowflake(),
     guildId: generateSnowflake(),
     content: 'hi',
-    createdAt: new Date(),
     ...invite,
   }).validateSync();
 

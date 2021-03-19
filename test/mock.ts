@@ -47,8 +47,7 @@ export class Mock {
       _id: generateSnowflake(),
       authorId: author._id,
       channelId,
-      content: 'hi',
-      createdAt: new Date(),
+      content: 'hi',,
     });
   }
 
@@ -59,8 +58,7 @@ export class Mock {
 
     return await Guild.create({
       _id: guildId,
-      name: 'Mock Guild',
-      createdAt: new Date(),
+      name: 'Mock Guild',,
       nameAcronym: 'MG',
       ownerId: owner.id,
       roles: [ await Mock.everyoneRole(guildId) ], // must go above
@@ -80,8 +78,7 @@ export class Mock {
       _id: generateSnowflake(),
       avatarURL: 'a',
       bot: false,
-      badges: [],
-      createdAt: new Date(),
+      badges: [],,
       friendIds: [],
       friendRequestIds: [],
       guilds: guildIds,
@@ -107,8 +104,7 @@ export class Mock {
 
   public static async channel(type: ChannelTypes.Type, guildId?: string) {
     return await Channel.create({
-      _id: generateSnowflake(),
-      createdAt: new Date(),
+      _id: generateSnowflake(),,
       guildId,
       memberIds: [],
       name: `mock-channel`,
@@ -120,8 +116,7 @@ export class Mock {
   public static async role(guildId: string, permissions = defaultPermissions) {
     return await Role.create({
       _id: generateSnowflake(),
-      color: '#FFFFFF',
-      createdAt: new Date(),
+      color: '#FFFFFF',,
       guildId,
       hoisted: false,
       mentionable: true,
@@ -134,8 +129,7 @@ export class Mock {
   public static async everyoneRole(guildId: string, permissions = defaultPermissions) {
     return await Role.create({
       _id: generateSnowflake(),
-      color: '#FFFFFF',
-      createdAt: new Date(),
+      color: '#FFFFFF',,
       guildId,
       hoisted: false,
       mentionable: true,
@@ -147,8 +141,7 @@ export class Mock {
 
   public static async invite(guildId: string, options?: InviteTypes.Options) {
     return await Invite.create({
-      _id: generateSnowflake(),
-      createdAt: new Date(),
+      _id: generateSnowflake(),,
       inviterId: generateSnowflake(),
       options,
       guildId,

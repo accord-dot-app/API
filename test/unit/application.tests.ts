@@ -6,28 +6,23 @@ import { Application } from '../../src/data/models/application';
 test(createApplication, () => {
   given().expect(true);
   given({ _id: null }).expect(true);
-  given({ createdAt: null }).expect('Created At is required');
-  given({ createdAt: new Date() }).expect(true);
   given({ description: '' }).expect('Description is required');
   given({ description: longString(1001) }).expect('Description too long');
-  given({ owner: '' }).expect('Invalid Snowflake ID');
+  given({ description: 'Very epic' }).expect(true);
+  given({ name: '' }).expect('Name is required');
+  given({ name: longString(33) }).expect('Name is too long');
+  given({ name: 'Epic Bot' }).expect(true);
+  given({ owner: '' }).expect('Owner is required');
   given({ owner: '123' }).expect('Invalid Snowflake ID');
   given({ owner: generateSnowflake() }).expect(true);
-  // given({ channelId: '' }).expect('Channel ID is required');
-  // given({ channelId: '123' }).expect('Invalid Snowflake ID');
-  // given({ channelId: generateSnowflake() }).expect(true);
-  // given({ content: '' }).expect('Content too short');
-  // given({ content: longString(3001) }).expect('Content too long');
-  // given({ content: 'hi' }).expect(true);
 });
 
 function createApplication(message: any) {
   const error = new Application({
     _id: generateSnowflake(),
-    authorId: generateSnowflake(),
-    channelId: generateSnowflake(),
-    content: 'hi',
-    createdAt: new Date(),
+    owner: generateSnowflake(),
+    name: 'Epic Bot',
+    description: 'Very epic',
     ...message,
   }).validateSync();
 

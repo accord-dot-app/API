@@ -18,8 +18,6 @@ export default class implements WSEvent {
     const sender = await this.users.get(senderId);
     const friend = await this.users.get(friendId);
 
-    this.validateCanAccept(sender, friend);
-
     ws.io
       .to(senderId)
       .to(friendId)
@@ -28,18 +26,6 @@ export default class implements WSEvent {
         friend: await this.acceptFriend(friend, sender),
         dmChannel: await this.channels.createDM(senderId, friendId)
       } as Args.AcceptFriendRequest);
-  }
-
-  private validateCanAccept(sender: UserDocument, friend: UserDocument) {
-    const maxLength = 100;    
-    if (sender.friendIds.length >= maxLength)
-      throw new TypeError('User has too much clout');
-    // if (sender.friendRequests.length >= maxLength)
-    //   throw new TypeError('User has too many pending friend requests');
-    if (friend.friendIds.length >= maxLength)
-      throw new TypeError('You have too much clout');
-    // if (friend.friendRequests.length >= maxLength)
-    //   throw new TypeError('You have too many pending friend requests');
   }
 
   async acceptFriend(user: UserDocument, friend: UserDocument) {

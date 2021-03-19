@@ -10,8 +10,6 @@ test(createUser, () => {
   given().expect(true);
   given({ avatarURL: '' }).expect('Avatar URL is required');
   given({ avatarURL: 'a' }).expect(true);
-  given({ createdAt: null }).expect('Created At is required');
-  given({ createdAt: new Date() }).expect(true);
   given({ friendIds: longArray(101) }).expect('Clout limit reached');
   given({ friendIds: [] }).expect(true);
   given({ friendRequestIds: longArray(101) }).expect('Clout limit reached');
@@ -48,7 +46,6 @@ function createUser(user: any) {
     avatarURL: 'a',
     bot: false,
     badges: [],
-    createdAt: new Date(),
     friendIds: [],
     friendRequestIds: [],
     guilds: [generateSnowflake()],

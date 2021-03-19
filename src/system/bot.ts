@@ -60,8 +60,7 @@ export class SystemBot {
   async getDMChannel(user: UserDocument) {
     return await Channel.findOne({ memberIds: [user._id, this.self._id] })
       ?? await Channel.create({
-        _id: generateSnowflake(),
-        createdAt: new Date(),
+        _id: generateSnowflake(),,
         type: 'DM',
         memberIds: [user._id, this.self._id]
       });
@@ -69,8 +68,7 @@ export class SystemBot {
 
   public async addToGuild(guildId: string) {
     const invite = await Invite.create({
-      _id: generateInviteCode(),
-      createdAt: new Date(),
+      _id: generateInviteCode(),,
       guildId,
       inviterId: this.self._id,
       options: {

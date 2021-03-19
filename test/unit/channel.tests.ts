@@ -5,8 +5,6 @@ import { longArray, longString, mongooseError } from '../test-utils';
 
 test(createChannel, () => {
   given().expect(true);
-  given({ createdAt: null }).expect('Created At is required');
-  given({ createdAt: new Date() }).expect(true);
   given({ guildId: '123' }).expect('Invalid Snowflake ID');
   given({ guildId: generateSnowflake() }).expect(true);
   given({ memberIds: longArray(51) }).expect('Channel member limit reached');
@@ -28,7 +26,6 @@ test(createChannel, () => {
 function createChannel(channel: any) {
   const error = new Channel({
     _id: generateSnowflake(),
-    createdAt: new Date(),
     name: `mock-channel`,
     summary: 'Cool channel, I guess...',
     type: 'TEXT',

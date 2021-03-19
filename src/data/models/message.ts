@@ -1,4 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
+import { createdAtToDate } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns } from '../types/entity-types';
 
@@ -28,9 +29,8 @@ export const Message = model<MessageDocument>('message', new Schema({
   },
   createdAt: {
     type: Date,
-    default: new Date(),
-    required: [true, 'Created At is required'],
+    get: createdAtToDate,
   },
-  embed: Object, // TODO: make schema
+  embed: Object, // TODO: make, and unit test embed schema
   updatedAt: Date,
 }));

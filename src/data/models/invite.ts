@@ -1,4 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
+import { createdAtToDate } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, InviteTypes, patterns } from '../types/entity-types';
 
@@ -13,7 +14,7 @@ export const Invite = model<InviteDocument>('invite', new Schema({
   },
   createdAt: {
     type: Date,
-    required: [true, 'Created At is required'],
+    get: createdAtToDate,
   },
   options: new Schema<InviteTypes.Options>({
     expiresAt: Date,

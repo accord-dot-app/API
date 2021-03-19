@@ -21,8 +21,7 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
   public createEveryone(guildId: string, roleId: string) {
     return Role.create({
       _id: roleId,
-      color: '#A2B6AD',
-      createdAt: new Date(),
+      color: '#A2B6AD',,
       guildId,
       mentionable: false,
       hoisted: false,

@@ -24,7 +24,6 @@ function createMessage(message: any) {
     authorId: generateSnowflake(),
     channelId: generateSnowflake(),
     content: 'hi',
-    createdAt: new Date(),
     ...message,
   }).validateSync();
 
