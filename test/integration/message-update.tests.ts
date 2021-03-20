@@ -33,11 +33,8 @@ describe('message-update', () => {
     ws.sessions.set(client.id, user.id);
   });
 
-  afterEach(() => ws.sessions.clear());
-  after(async () => {
-    client.disconnect();
-    await Mock.cleanDB();
-  });
+  afterEach(async () => await Mock.afterEach(ws));
+  after(async () => await Mock.after(client));
 
   it('user not author, rejected', async () => {
     const message = await Mock.message(user, channelId);

@@ -28,7 +28,10 @@ export const Channel = model<ChannelDocument>('channel', new Schema({
   },
   guildId: {
     type: String,
-    validate: [patterns.snowflake, 'Invalid Snowflake ID'],
+    validate: {
+      validator: validators.optionalSnowflake,
+      message: 'Invalid Snowflake ID',
+    },
   },
   memberIds: {
     type: [String],

@@ -35,6 +35,7 @@ router.post('/', updateUser, validateUser, async (req, res) => {
     await User.updateOne(
       { _id: res.locals.user._id },
       { $push: { guilds: guild } },
+      { runValidators: true },
     );
 
     res.status(201).json(guild);

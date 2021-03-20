@@ -20,6 +20,7 @@ export interface WSEventArgs {
   'MESSAGE_DELETE': (args: Args.MessageDelete) => any;
   'MESSAGE_UPDATE': (args: Args.MessageUpdate) => any;
   'PRESENCE_UPDATE': (params: Args.PresenceUpdate) => any;
+  'READY': () => any;
   'REMOVE_FRIEND': (args: Args.RemoveFriend) => any;
   'SEND_FRIEND_REQUEST': (args: Args.SendFriendRequest) => any;
   'TYPING_START': (args: Args.TypingStart) => any;
@@ -212,6 +213,7 @@ export namespace Args {
     userId: string;
     status: UserTypes.StatusType;
   }
+  export interface Ready {}
   export interface RemoveFriend extends CancelFriendRequest {}
   export interface SendFriendRequest extends CancelFriendRequest {
     friend: Lean.User;

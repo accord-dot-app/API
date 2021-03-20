@@ -28,10 +28,11 @@ export default class implements WSEvent<'REMOVE_FRIEND'> {
 
   async removeFriend(user: UserDocument, friend: UserDocument) {
     const friendExists = user.friendIds.includes(friend._id);
-    if (friendExists)
-      await user.update({
-        $pull: { friends: friend }
-      }, { runValidators: true });
-    return user;
+    return (friendExists)
+      ? await user.update(
+          { $pull: { friends: friend } },
+          { runValidators: true },
+        )
+      : user;
   }
 }

@@ -31,11 +31,8 @@ describe('channel-create', () => {
     ws.sessions.set(client.id, user._id);
   });
 
-  afterEach(() => ws.sessions.clear());
-  after(async () => {
-    client.disconnect();
-    await Mock.cleanDB();
-  });
+  afterEach(async () => await Mock.afterEach(ws));
+  after(async () => await Mock.after(client));
 
   it('owner creates channel, default perms, fulfilled', async () => {
     await Mock.clearRolePerms(guild);
@@ -66,17 +63,15 @@ describe('channel-create', () => {
     expect(guild.channels.length).to.be.greaterThan(oldLength);
   });
 
-  describe('client', () => {
-    it('member successfully creates channel, client joins channel room', async () => {
-      const join = spy.on(client, 'join');
-      
-      await makeGuildOwner();
-      await createChannel();
+  it('member successfully creates channel, client joins channel room', async () => {
+    const join = spy.on(client, 'join');
+    
+    await makeGuildOwner();
+    await createChannel();
 
-      guild = await Guild.findById(guild.id);
+    guild = await Guild.findById(guild.id);
 
-      expect(join).to.be.called.with(guild.channels[2]);
-    });
+    expect(join).to.be.called();
   });
 
   async function createChannel(partialChannel?: Partial.Channel) {

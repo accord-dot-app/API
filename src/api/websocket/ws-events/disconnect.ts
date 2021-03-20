@@ -27,7 +27,7 @@ export default class implements WSEvent<'disconnect'> {
       await this.disconnectFromVC(user, ws, client);
     await this.setOfflineStatus(ws, user);
 
-    for (const id in client.adapter.rooms) {
+    for (const id in client.rooms) {
       ws.io
         .to(id)
         .emit('PRESENCE_UPDATE', {
@@ -37,7 +37,7 @@ export default class implements WSEvent<'disconnect'> {
     }
 
     ws.sessions.delete(client.id);
-    client.leaveAll();
+    client.rooms.clear();
   }
 
   public async disconnectFromVC(user: Lean.User, ws: WebSocket, client: Socket) {
@@ -46,7 +46,8 @@ export default class implements WSEvent<'disconnect'> {
 
     await Channel.updateOne(
       { _id: channelId },
-      { $pull: { members: user._id } }
+      { $pull: { members: user._id } },
+      { runValidators: true },
     );
     
     await this.voiceState.invoke(ws, client, {

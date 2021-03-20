@@ -20,11 +20,8 @@ describe('accept-friend-request', () => {
     friend = await Mock.user();
   });
 
-  afterEach(() => ws.sessions.clear());
-  after(async () => {
-    client.disconnect();
-    await Mock.cleanDB();
-  });
+  afterEach(async () => await Mock.afterEach(ws));
+  after(async () => await Mock.after(client));
 
   it('user accepts friend request, fulfilled', async () => {
     await expect(acceptFriendRequest()).to.be.fulfilled;
@@ -34,14 +31,15 @@ describe('accept-friend-request', () => {
     await acceptFriendRequest();
 
     const exists = await Channel.exists({ memberIds: sender.id }); 
-    await expect(exists).to.be.true;
+    expect(exists).to.be.true;
   });
 
   it('user accepts friend request, friend request removed', async () => {
     await acceptFriendRequest();
 
     friend = await User.findById(friend.id);
-    sender = await User.findById(sender.id);
+    sender = await User.findById(sender.id);    
+
     expect(friend.friendRequests).to.be.empty;
     expect(sender.friendRequests).to.be.empty;
   });
@@ -51,8 +49,9 @@ describe('accept-friend-request', () => {
 
     friend = await User.findById(friend.id);
     sender = await User.findById(sender.id);
-    expect(friend.friendIds).to.equal(1);
-    expect(sender.friendIds).to.equal(1);
+
+    expect(friend.friendIds.length).to.equal(1);
+    expect(sender.friendIds.length).to.equal(1);
   });
 
   it('user accepts friend request, non existing friend, rejected', async () => {

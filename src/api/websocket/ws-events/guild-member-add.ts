@@ -3,7 +3,6 @@ import GuildMembers from '../../../data/guild-members';
 import Guilds from '../../../data/guilds';
 import Invites from '../../../data/invites';
 import { GuildDocument } from '../../../data/models/guild';
-import { GuildMember } from '../../../data/models/guild-member';
 import { InviteDocument } from '../../../data/models/invite';
 import { User } from '../../../data/models/user';
 import Deps from '../../../utils/deps';
@@ -30,13 +29,14 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
 
     await User.updateOne(
       { _id: userId },
-      { $push: { guilds: guild.id } as any }
+      { $push: { guilds: guild.id } as any },
+      { runValidators: true },
     );
     const member = await this.guildMembers.create(guild.id, userId);
     guild.members.push(member);
-    await guild.updateOne(guild, { runValidators: true });
+    await guild.update(guild, { runValidators: true });
 
-    this.joinGuildRooms(client, guild);
+    await this.joinGuildRooms(client, guild);
 
     ws.io
       .to(guild._id)
@@ -58,9 +58,9 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
       : await invite.save();
   }
 
-  public joinGuildRooms(client: Socket, guild: GuildDocument) {
-    client.join(guild.id);
+  public async joinGuildRooms(client: Socket, guild: GuildDocument) {
+    await client.join(guild.id);
     for (const channel of guild.channels)
-      client.join(channel._id);
+      await client.join(channel._id);
   }
 }

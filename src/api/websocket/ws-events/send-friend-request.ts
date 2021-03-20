@@ -28,10 +28,10 @@ export default class implements WSEvent<'SEND_FRIEND_REQUEST'> {
     if (alreadyPending)
       return user;
 
-    user.friendRequests.push({ userId: friendId, type });
-
-    return user.update({
-      $set: { friendRequests: user.friendRequests }
-    });
+    const friendRequest: UserTypes.FriendRequest = { userId: friendId, type };
+    return user.update(
+      { $push: { friendRequests: friendRequest } },
+      { runValidators: true },
+    );
   }
 }

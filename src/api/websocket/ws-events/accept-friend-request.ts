@@ -30,11 +30,11 @@ export default class implements WSEvent<'ACCEPT_FRIEND_REQUEST'> {
 
   async acceptFriend(user: UserDocument, friend: UserDocument) {
     const friendExists = user.friendIds.includes(friend._id);
-    if (friendExists)
-      await user.update({
-        $pull: { friendRequests: { userId: friend } },
-        $push: { friends: friend }
-      }, { runValidators: true });
-    return user;
+    return (!friendExists)
+      ? user.update({
+          $pull: { friendRequests: { userId: friend } },
+          $push: { friendIds: friend._id },
+        }, { runValidators: true })
+      : user;
   }
 }

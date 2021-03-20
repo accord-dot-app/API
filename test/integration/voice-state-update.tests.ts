@@ -37,11 +37,8 @@ describe('voice-state-update', () => {
     ws.sessions.set(client.id, user.id);
   });
 
-  afterEach(() => ws.sessions.clear());
-  after(async () => {
-    client.disconnect();
-    await Mock.cleanDB();
-  });
+  afterEach(async () => await Mock.afterEach(ws));
+  after(async () => await Mock.after(client));
 
   it('spoofed user, throws error', async () => {
     const result = () => event.invoke(ws, client, {

@@ -4,7 +4,7 @@ import { Guild } from '../../../data/models/guild';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import { WSEvent, Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params } from './ws-event';
 import { getNameAcronym } from '../../../utils/utils';
 
 export default class implements WSEvent<'GUILD_UPDATE'> {
@@ -20,10 +20,11 @@ export default class implements WSEvent<'GUILD_UPDATE'> {
     await Guild.updateOne(
       { _id: guildId },
       {
-        ...partialGuild,
-        nameAcronym: getNameAcronym(partialGuild.name)
+        name: partialGuild.name,
+        iconURL: partialGuild.iconURL,
+        nameAcronym: getNameAcronym(partialGuild.name),
       },
-      { runValidators: true }
+      { runValidators: true },
     );
 
     ws.io

@@ -30,10 +30,10 @@ export default class implements WSEvent<'CHANNEL_CREATE'> {
     await Guild.updateOne(
       { _id: guildId },
       { $push: { channels: channel } },
-      { runValidators: true }
+      { runValidators: true },
     ).lean();
 
-    client.join(channel.id);
+    await client.join(channel.id);
 
     ws.io
       .to(guildId)

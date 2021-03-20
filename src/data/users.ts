@@ -81,14 +81,15 @@ export default class Users extends DBWrapper<string, UserDocument> {
   }
 
   public async getSystemUser() {
-    return this.systemUser = await User.findOne({ username: 'DClone' })
+    const username = '2PG';
+    return this.systemUser = await User.findOne({ username })
       ?? await User.create({
         _id: generateSnowflake(),
         avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/bot.png`,
         badges: [],
         bot: true,
         status: 'ONLINE',
-        username: '2PG',
+        username,
         friendIds: [],
         friendRequests: [],
         guilds: [],
@@ -98,6 +99,10 @@ export default class Users extends DBWrapper<string, UserDocument> {
 
   public createToken(userId: string) {
     return jwt.sign({ _id: userId }, 'secret' , { expiresIn : '7d' })
+  }
+  
+  public createBotToken(userId: string) {
+    return jwt.sign({ _id: userId }, 'secret')
   }
 
   public createUser(username: string, password: any): Promise<UserDocument> {

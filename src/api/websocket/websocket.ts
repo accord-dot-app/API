@@ -1,5 +1,5 @@
 import { Server } from 'http';
-import { listen, Server as SocketServer } from 'socket.io';
+import { Server as SocketServer } from 'socket.io';
 import Log from '../../utils/log';
 import { WSEvent, WSEventParams } from './ws-events/ws-event';
 import { resolve } from 'path';
@@ -16,7 +16,7 @@ export class WebSocket {
   }
 
   init(server: Server) {
-    this.io = listen(server);
+    this.io = new SocketServer(server);
 
     const dir = resolve(`${__dirname}/ws-events`);
     const files = readdirSync(dir);

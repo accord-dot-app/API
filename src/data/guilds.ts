@@ -22,7 +22,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
       .populate('channels')
       .exec();
     if (!guild)
-      throw new TypeError('User Not Found');
+      throw new TypeError('Guild Not Found');
     return guild;
   }
 

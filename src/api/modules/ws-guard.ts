@@ -33,19 +33,25 @@ export class WSGuard {
       throw new TypeError('Only Guild Owner Can Do This');
   }
 
-  public async canAccessChannel(client: Socket, channelId?: string) {
+  public async canAccessChannel(client: Socket, channelId?: string, withUse = false) {
     const channel = await this.channels.get(channelId);
-    await this.canAccess(channel, client);
-  }  
-  private async canAccess(channel: Lean.Channel, client: Socket) {    
+    await this.canAccess(channel, client, withUse);
+  }
+  private async canAccess(channel: Lean.Channel, client: Socket, withUse = false) {
     const userId = this.userId(client);
     if (channel.type === 'TEXT') {
-      await this.can(client, channel.guildId, PermissionTypes.Text.SEND_MESSAGES);
+      const perms = (!withUse)
+        ? PermissionTypes.Text.READ_MESSAGES 
+        : PermissionTypes.Text.READ_MESSAGES | PermissionTypes.Text.SEND_MESSAGES;
+      await this.can(client, channel.guildId, perms);
       return;
     } else if (channel.type === 'VOICE') {
+      const perms = (!withUse)
+        ? PermissionTypes.Voice.CONNECT 
+        : PermissionTypes.Voice.CONNECT | PermissionTypes.Voice.SPEAK;
       await this.can(client, channel.guildId, PermissionTypes.Voice.CONNECT);
       return;
-    }    
+    }
     const inGroup = channel.memberIds?.includes(userId);
     if (!inGroup)
       throw new TypeError('Not DM Member');

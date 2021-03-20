@@ -8,6 +8,8 @@ import { Mock } from '../mock';
 import { WebSocket } from '../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import { SystemBot } from '../../src/system/bot';
+import { Lean } from '../../src/data/types/entity-types';
+import { GuildDocument } from '../../src/data/models/guild';
 
 describe('ready', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
@@ -16,52 +18,36 @@ describe('ready', () => {
   let users: Users;
   let key: string;
   let user: UserDocument;
+  let guild: GuildDocument;
   let ws: WebSocket;
 
   beforeEach(async () => {
-    Deps.get<API>(API);
+    ({ event, user, ws, guild } = await Mock.defaultSetup(client, ChannelCreate));
 
-    event = new ChannelCreate();
     users = new Users();
-
-    ws = Deps.get<WebSocket>(WebSocket);
-    user = await Mock.user();
     key = users.createToken(user.id);
-
-    Mock.ioClient(client);
-
-    ws.sessions.set(client.id, user.id);
   });
 
-  afterEach(() => ws.sessions.clear());
-  after(async () => {
-    client.disconnect();
-    await Mock.cleanDB();
-  });
+  afterEach(async () => await Mock.afterEach(ws));
+  after(async () => await Mock.after(client));
 
   it('user already logged in, fulfilled', async () => {
-    await event.invoke(ws, client, { key });
-
-    const invoke = () => event.invoke(ws, client, { key });
-
-    await expect(invoke()).to.be.fulfilled;
+    await ready();
+    await expect(ready()).to.be.fulfilled;
   });
 
   it('joins self user room', async () => {
-    await event.invoke(ws, client, { key });
-    
-    const rooms = Array.from(client.adapter.rooms.values())[0];
-    expect(rooms).to.include(user._id);
+    await ready();    
+    expect(rooms()).to.include(user._id);
   });
 
   it('joins system bot room', async () => {
     const systemBot = Deps.get<SystemBot>(SystemBot);
     await systemBot.init();
 
-    await event.invoke(ws, client, { key });
+    await ready();
     
-    const rooms = Array.from(client.adapter.rooms.values())[0];
-    expect(rooms).to.include(systemBot.self._id);
+    expect(rooms()).to.include(systemBot.self._id);
   });
 
   it('joins dm channel room', async () => {
@@ -69,22 +55,27 @@ describe('ready', () => {
     dm.memberIds.push(user.id);
     await dm.update(dm);
 
-    await event.invoke(ws, client, { key });    
+    await ready();    
 
-    const rooms = Array.from(client.adapter.rooms.values())[0];
-    expect(rooms).to.include(dm._id);
+    expect(rooms()).to.include(dm._id);
   });
 
   it('joins guild room', async () => {
-    const guild = await Mock.guild();
+    await makeOwner(guild);
+    await ready();
 
+    expect(rooms()).to.include(guild._id);
+  });
+
+  function ready() {
+    return event.invoke(ws, client, { key });
+  }
+  function rooms() {
+    return Array.from(client.rooms.values())[0];
+  }
+  async function makeOwner(guild: Lean.Guild) {
     user = await User.findById(guild.ownerId);
     ws.sessions.set(client.id, user.id);
     key = users.createToken(user.id);
-
-    await event.invoke(ws, client, { key });
-
-    const rooms = Array.from(client.adapter.rooms.values())[0];
-    expect(rooms).to.include(guild._id);
-  });
+  }
 });

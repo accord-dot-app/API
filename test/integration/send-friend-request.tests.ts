@@ -1,37 +1,25 @@
-import GuildMemberAdd from '../../src/api/websocket/ws-events/guild-member-add';
+import SendFriendRequest from '../../src/api/websocket/ws-events/send-friend-request';
 import { WebSocket } from '../../src/api/websocket/websocket';
-import Deps from '../../src/utils/deps';
 import io from 'socket.io-client';
 import { Mock } from '../mock';
-import { API } from '../../src/api/server';
-import { User, UserDocument } from '../../src/data/models/user';
-import { Guild, GuildDocument } from '../../src/data/models/guild';
+import { UserDocument } from '../../src/data/models/user';
+import { GuildDocument } from '../../src/data/models/guild';
+import { expect } from 'chai';
 
-describe(addeventnamehere, () => {
+describe('send-friend-request', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;;
-  let event: GuildMemberAdd;
+  let event: SendFriendRequest;
   let ws: WebSocket;
 
   let user: UserDocument;
   let guild: GuildDocument;
 
   beforeEach(async () => {
-    Deps.get<API>(API);
-
-    event = new GuildMemberAdd();
-    ws = Deps.get<WebSocket>(WebSocket);
-
-    guild = await Mock.guild(); 
-    user = await User.findById(guild.members[1].userId);
-    
-    ws.sessions.set(client.id, user._id);
+    ({ event, ws, guild, user } = await Mock.defaultSetup(client, SendFriendRequest));
   });
 
-  afterEach(() => ws.sessions.clear());
-  after(async () => {
-    client.disconnect();
-    await Mock.cleanDB();
-  });
+  afterEach(async () => await Mock.afterEach(ws));
+  after(async () => await Mock.after(client));
 
   it('fulfilled', async () => {
     const result = () => event.invoke(ws, client, {

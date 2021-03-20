@@ -37,7 +37,7 @@ export const User = model<UserDocument>('user', new Schema({
       message: 'Clout limit reached',
     },
   },
-  friendRequestIds: {
+  friendRequests: {
     type: [String],
     default: [],
     validate: {

@@ -24,7 +24,7 @@ export default class implements WSEvent<'MESSAGE_CREATE'> {
   ) {}
 
   async invoke(ws: WebSocket, client: Socket, { channelId, partialMessage }: Params.MessageCreate) {
-    await this.guard.canAccessChannel(client, channelId);
+    await this.guard.canAccessChannel(client, channelId, true);
 
     const message = await Message.create({
       _id: generateSnowflake(),

@@ -27,8 +27,9 @@ export default class implements WSEvent<'GUILD_ROLE_CREATE'> {
     });
     await Guild.updateOne(
       { _id: guildId },
-      { $push: { roles: role },
-    });
+      { $push: { roles: role } },
+      { runValidators: true },
+    );
 
     ws.io
       .to(guildId)

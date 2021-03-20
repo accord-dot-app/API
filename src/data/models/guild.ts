@@ -30,20 +30,24 @@ export const Guild = model<GuildDocument>('guild', new Schema({
     validate: [patterns.snowflake, 'Invalid Snowflake ID'],
   },
   channels: {
-    type: Array,
-    ref: 'channel',
+    type: [{
+      type: String,
+      ref: 'channel',
+    }],
     validate: {
       validator: validators.maxLength(250),
       message: 'Channel limit reached',
     },
   },
-  members: {
-    type: Array,
+  members: [{
+    type: String,
     ref: 'guildMember',
-  },
+  }],
   roles: {
-    type: Array,
-    ref: 'role',
+    type: [{
+      type: String,
+      ref: 'role',
+    }],
     validate: {
       validator: validators.minLength(1),
       message: 'Guild must have at least one role',

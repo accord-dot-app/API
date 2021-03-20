@@ -9,7 +9,6 @@ import { ChannelTypes, InviteTypes, Lean, PermissionTypes, UserTypes } from '../
 import { Message } from '../src/data/models/message';
 import { Invite } from '../src/data/models/invite';
 import { Application } from '../src/data/models/application';
-import WSEvent from '../src/api/websocket/ws-events/ws-event';
 import { API } from '../src/api/server';
 import { WebSocket } from '../src/api/websocket/websocket';
 import Deps from '../src/utils/deps';
@@ -20,25 +19,35 @@ export class Mock {
   private static guilds = Deps.get<Guilds>(Guilds);
   private static guildMembers = Deps.get<GuildMembers>(GuildMembers);
 
-  public static async defaultSetup<T extends WSEvent>(client: any, eventType: any) {
+  public static async defaultSetup(client: any, eventType: any) {
     Deps.get<API>(API);
 
-    const event = new eventType();
+    const event = new (eventType as any)();
     const ws = Deps.get<WebSocket>(WebSocket);
 
     const guild = await Mock.guild();
-    const user = await User.findById(guild.members[1].userId);
+    const member = await GuildMember.findById(guild.members[1]._id);
+    const user = await User.findById(member.userId);
+
+    Mock.ioClient(client);
     
     ws.sessions.set(client.id, user._id);
 
-    return { event, guild, user, ws };
+    return { event, guild, user, member, ws };
+  }
+  public static async afterEach(ws) {
+    ws.sessions.clear();    
+  }
+  public static async after(client) {
+    client.disconnect();
+    await Mock.cleanDB();
   }
 
   public static ioClient(client: any) {
-    client.adapter = { rooms: new Map() }
-    client.join = (...args) => {
+    client.rooms = new Map();
+    client.join = async (...args) => {
       for (const arg of args)
-        client.adapter.rooms.set(arg, arg);
+        client.rooms.set(arg, arg);
     };
   }
 
@@ -54,10 +63,11 @@ export class Mock {
   public static async guild() {
     const owner = await Mock.user();
     const memberUser = await Mock.user();
-
+    
     const guild = await this.guilds.create('Mock Guild', owner.id);
-
     await owner.update({ $push: { guilds: guild } });
+    await memberUser.update({ $push: { guilds: guild } });
+
     const member = await Mock.guildMember(memberUser.id, guild.id);
     guild.members.push(member);
     return guild.save();
@@ -93,14 +103,14 @@ export class Mock {
     });
   }
 
-  public static async role(guildId: string, permissions = defaultPermissions) {
+  public static async role(guildId: string, permissions?: number) {
     return await Role.create({
       _id: generateSnowflake(),
       guildId,
       hoisted: false,
       mentionable: true,
       name: 'Mock Role',
-      permissions,
+      permissions: permissions ?? defaultPermissions,
       position: 0,
     });
   }

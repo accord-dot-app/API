@@ -12,8 +12,8 @@ test(createUser, () => {
   given({ avatarURL: 'a' }).expect(true);
   given({ friendIds: longArray(101) }).expect('Clout limit reached');
   given({ friendIds: [] }).expect(true);
-  given({ friendRequestIds: longArray(101) }).expect('Clout limit reached');
-  given({ friendRequestIds: [] }).expect(true);
+  given({ friendRequests: longArray(101) }).expect('Clout limit reached');
+  given({ friendRequests: [] }).expect(true);
   given({ status: '' }).expect('Status is required');
   given({ status: 'A' }).expect('Invalid status');
   given({ status: 'ONLINE' }).expect(true);
@@ -49,7 +49,7 @@ function createUser(user: any) {
     bot: false,
     badges: [],
     friendIds: [],
-    friendRequestIds: [],
+    friendRequests: [],
     guilds: [generateSnowflake()],
     status: 'ONLINE',
     username: `mock-user-${generateSnowflake()}`,

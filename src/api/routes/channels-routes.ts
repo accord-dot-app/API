@@ -4,13 +4,15 @@ import Messages from '../../data/messages';
 import { Message } from '../../data/models/message';
 import Deps from '../../utils/deps';
 import { updateUser, validateUser } from '../modules/middleware';
+import { WSGuard } from '../modules/ws-guard';
 
 export const router = Router();
 
 const channels = Deps.get<Channels>(Channels);
+const guard = Deps.get<WSGuard>(WSGuard);
 const messages = Deps.get<Messages>(Messages);
 
-router.get('/@me/:channelId', updateUser, validateUser, async (req, res) => {
+router.get('/@me/:channelId/messages', updateUser, validateUser, async (req, res) => {
   try {
     const start = +(req.query.start || 0);
     const end = +(req.query.end || 25);
@@ -31,7 +33,7 @@ router.get('/@me/:channelId', updateUser, validateUser, async (req, res) => {
   }
 });
 
-router.get('/:guildId/:channelId', updateUser, validateUser, async (req, res) => {
+router.get('/:guildId/:channelId/messages', updateUser, validateUser, async (req, res) => {
   try {
     const start = +(req.query.start || 0);
     const end = +(req.query.end || 25);
@@ -47,3 +49,13 @@ router.get('/:guildId/:channelId', updateUser, validateUser, async (req, res) =>
     res.json({ code: 400, message: err?.message });
   }
 });
+
+router.get('/:channelId', updateUser, validateUser, async (req, res) => {
+  try {
+    const channel = await channels.get(req.params.id);
+    res.json(channel);
+  } catch (err) {    
+    res.json({ code: 400, message: err?.message });
+  }
+});
+

@@ -19,7 +19,9 @@ export function validateUser(req, res, next) {
 // FIXME: not sure how easy this is to spoof -> discord.io/adamjr
 export async function updateUser(req, res, next) {
   try {
-    const key = req.get('Authorization');
+    const key = req
+      .get('Authorization')
+      ?.slice('Bearer '.length);
     const id = (jwt.decode(key) as any)?._id;
     res.locals.user = await users.get(id);
   } finally {

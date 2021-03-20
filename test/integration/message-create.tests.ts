@@ -29,63 +29,58 @@ describe('message-create', () => {
     ws.sessions.set(client.id, user.id);
   });
 
-  afterEach(() => ws.sessions.clear());
-  after(async () => {
-    client.disconnect();
-    await Mock.cleanDB();
+  afterEach(async () => await Mock.afterEach(ws));
+  after(async () => await Mock.after(client));
+
+  it('not a guild member, rejected', async () => {
+    const user = await Mock.user();
+    ws.sessions.set(client.id, user.id);
+
+    const result = () => event.invoke(ws, client, {
+      channelId: channel._id,
+      partialMessage: {
+        content: 'a'
+      },
+    });
+
+    await expect(result()).to.be.rejectedWith('Member Not Found');
   });
 
-  describe('invoke', () => {
-    it('not a guild member, rejected', async () => {
-      const user = await Mock.user();
-      ws.sessions.set(client.id, user.id);
-
-      const result = () => event.invoke(ws, client, {
-        channelId: channel._id,
-        partialMessage: {
-          content: 'a'
-        },
-      });
-
-      await expect(result()).to.be.rejectedWith('Member Not Found');
+  it('user is guild member with send message perms, fulfilled', async () => {
+    const result = () => event.invoke(ws, client, {
+      channelId: guild.channels[0]._id,
+      partialMessage: {
+        content: 'hi'
+      },
     });
 
-    it('user is guild member with send message perms, fulfilled', async () => {
-      const result = () => event.invoke(ws, client, {
-        channelId: guild.channels[0]._id,
-        partialMessage: {
-          content: 'hi'
-        },
-      });
+    await expect(result()).to.be.fulfilled;
+  });
+  
+  it('user is guild member without chat perms, rejected', async () => {
+    await Mock.clearRolePerms(guild);
 
-      await expect(result()).to.be.fulfilled;
+    const result = () => event.invoke(ws, client, {
+      channelId: guild.channels[0]._id,
+      partialMessage: {
+        content: 'hi'
+      },
     });
-    
-    it('user is guild member without chat perms, rejected', async () => {
-      await Mock.clearRolePerms(guild);
 
-      const result = () => event.invoke(ws, client, {
-        channelId: guild.channels[0]._id,
-        partialMessage: {
-          content: 'hi'
-        },
-      });
+    await expect(result()).to.be.rejectedWith('Missing Permissions');
+  });
+  
+  it('user is guild owner, fulfilled', async () => {
+    const guild = await Mock.guild();
+    ws.sessions.set(client.id, guild.ownerId);
 
-      await expect(result()).to.be.rejectedWith('Missing Permissions');
+    const result = () => event.invoke(ws, client, {
+      channelId: guild.channels[0]._id,
+      partialMessage: {
+        content: 'hi'
+      },
     });
-    
-    it('user is guild owner, fulfilled', async () => {
-      const guild = await Mock.guild();
-      ws.sessions.set(client.id, guild.ownerId);
 
-      const result = () => event.invoke(ws, client, {
-        channelId: guild.channels[0]._id,
-        partialMessage: {
-          content: 'hi'
-        },
-      });
-
-      await expect(result()).to.be.fulfilled;
-    });
+    await expect(result()).to.be.fulfilled;
   });
 });

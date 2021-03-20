@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io';
+import { Channel } from '../../../data/models/channel';
 import { User } from '../../../data/models/user';
 import { Lean } from '../../../data/types/entity-types';
 import Users from '../../../data/users';
@@ -29,6 +30,10 @@ export default class implements WSEvent<'READY'> {
       await User.updateOne({ _id: userId }, { status: 'ONLINE' });
     await this.joinRooms(client, user);
 
+    ws.io
+      .to(client.id)
+      .emit('READY');
+
     const knownUsers = this.getKnownUsers(user);
     for (const id of knownUsers) {      
       ws.io
@@ -41,28 +46,34 @@ export default class implements WSEvent<'READY'> {
   }
 
   private async joinRooms(client: Socket, user: Lean.User) {
-    const alreadyJoinedRooms = Object.keys(client.rooms ?? []).length > 1;
+    const alreadyJoinedRooms = client.rooms.size > 1;
     if (alreadyJoinedRooms) return;
 
-    const rooms = await this.getRoomIds(user);
-    client.join(rooms);
-  }
-
-  private async getRoomIds(user: Lean.User) {
-    const roomIds: string[] = this.getKnownUsers(user);
+    await client.join(this.getKnownUsers(user));
 
     const guilds = await this.users.getGuilds(user._id);
     if (guilds) {
-      const channelIds = guilds.flatMap(g => g.channels.map(c => c._id));
       const guildIds = guilds.map(g => g._id);
-      roomIds.push(...channelIds, ...guildIds);
-    }
-    const dms = await this.users.getDMChannels(user._id);
+      await client.join(await this.getChannels(client, guilds));
+      await client.join(guildIds);
+    }    
+    const dms = await this.users.getDMChannels(user._id)               
     if (dms) {
-      const ids = dms.map(c => c._id);
-      roomIds.push(...ids);
+      const ids = dms.map(c => c._id);      
+      await client.join(ids);
     }
-    return roomIds;
+  }
+
+  private async getChannels(client: Socket, guilds: Lean.Guild[]) {
+    const ids: string[] = [];
+    const channelIds = guilds.flatMap(g => g.channels.map(c => c._id));
+
+    for (const id of channelIds)
+      try {
+        await this.guard.canAccessChannel(client, id);
+        ids.push(id);
+      } catch {}
+    return ids;
   }
 
   private getKnownUsers(user: Lean.User) {

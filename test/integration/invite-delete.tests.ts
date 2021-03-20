@@ -31,11 +31,8 @@ describe('invite-delete', () => {
     ws.sessions.set(client.id, user._id);
   });
 
-  afterEach(() => ws.sessions.clear());
-  after(async () => {
-    client.disconnect();
-    await Mock.cleanDB();
-  });
+  afterEach(async () => await Mock.afterEach(ws));
+  after(async () => await Mock.after(client));
 
   it('guild member deletes invite, default perms, fulfilled', async () => {
     const invite = await Mock.invite(guild.id);

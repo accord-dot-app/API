@@ -12,7 +12,7 @@ export const defaultPermissions =
   PermissionTypes.General.VIEW_CHANNELS
   | PermissionTypes.General.CREATE_INVITE
   | PermissionTypes.Text.SEND_MESSAGES
-  | PermissionTypes.Text.READ_MESSAGE_HISTORY
+  | PermissionTypes.Text.READ_MESSAGES
   | PermissionTypes.Text.ADD_REACTIONS
   | PermissionTypes.Voice.CONNECT
   | PermissionTypes.Voice.SPEAK;
@@ -64,9 +64,7 @@ export const Role = model<RoleDocument>('role', new Schema({
     default: defaultPermissions,
     required: [true, 'Permissions is required'],
     validate: {
-      validator: (val: number) => val === 0
-        || val === 1
-        || Boolean(parseInt(val.toString(), 2) - 1),
+      validator: (val: number) => Number.isInteger(val) && val >= 0,
       message: 'Invalid permissions integer',
     },
   }

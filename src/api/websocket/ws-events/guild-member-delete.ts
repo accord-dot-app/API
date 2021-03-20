@@ -27,7 +27,8 @@ export default class implements WSEvent<'GUILD_MEMBER_DELETE'> {
     await GuildMember.deleteOne({ userId });
     await User.updateOne(
       { _id: userId },
-      { guilds: { $pull: guildId } as any }
+      { guilds: { $pull: guildId } as any },
+      { runValidators: true },
     );
     this.leaveGuildRooms(client, guild);
 

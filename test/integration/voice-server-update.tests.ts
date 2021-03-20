@@ -21,14 +21,8 @@ describe('voice-server-update', () => {
     ws.sessions.set(client.id, 'user_1');
   });
 
-  afterEach(() => ws.sessions.clear());
-  after(async () => {
-    client.disconnect();
-    await Mock.cleanDB();
-  });
-
-  describe('invoke', () => {
-  });
+  afterEach(async () => await Mock.afterEach(ws));
+  after(async () => await Mock.after(client));
 
   after(async () => {
     client.disconnect();

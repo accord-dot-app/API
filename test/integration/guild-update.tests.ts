@@ -9,6 +9,8 @@ import { Mock } from '../mock';
 import { expect } from 'chai';
 import { PermissionTypes } from '../../src/data/types/entity-types';
 import { GuildMember, GuildMemberDocument } from '../../src/data/models/guild-member';
+import { Partial } from '../../src/data/types/ws-types';
+import { generateSnowflake } from '../../src/data/snowflake-entity';
 
 describe('guild-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
@@ -20,110 +22,53 @@ describe('guild-update', () => {
   let member: GuildMemberDocument;
 
   beforeEach(async () => {
-    Deps.get<API>(API);
-
-    ws = Deps.get<WebSocket>(WebSocket);
-    event = new GuildUpdate();
-
-    guild = await Mock.guild();
-    member = await GuildMember.findById(guild.members[1]);
-    user = await User.findById(member.userId);
-    
-    ws.sessions.set(client.id, user.id);
+    ({ ws, event, guild, member, user } = await Mock.defaultSetup(client, GuildUpdate));
   });
 
-  afterEach(() => ws.sessions.clear());
-  after(async () => {
-    client.disconnect();
-    await Mock.cleanDB();
-  });
+  afterEach(async () => Mock.afterEach(ws));
+  after(async () => await Mock.after(client));
 
   it('spoofed user, rejected', async () => {
-    const invoke = () => event.invoke(ws, client, {
-      guildId: guild.id,
-      partialGuild: guild,
-    });
+    ws.sessions.set(client.id, generateSnowflake());
 
-    await expect(invoke()).to.be.rejectedWith('Missing Permissions');
+    await expect(guildUpdate(guild)).to.be.rejectedWith('Member Not Found');
   });
 
   it('member has insufficient perms, rejected', async () => {
     await Mock.clearRolePerms(guild.id);
 
-    const invoke = () => event.invoke(ws, client, {
-      guildId: guild.id,
-      partialGuild: guild,
-    });
-
-    await expect(invoke()).to.be.rejectedWith('Missing Permissions');
+    await expect(guildUpdate(guild)).to.be.rejectedWith('Missing Permissions');
   });
 
   it('user has MANAGE_GUILD perms, fulfilled', async () => {
     const role = await Mock.role(guild.id, PermissionTypes.General.MANAGE_GUILD);
-    member.roleIds.push(role.id);
-    await member.update(member);
-
-    const invoke = () => event.invoke(ws, client, {
-      guildId: guild.id,
-      partialGuild: {
-        name: guild.name,
-      },
+    await member.update({
+      $push: { roleIds: role._id },
     });
 
-    await expect(invoke()).to.be.fulfilled;
+    await expect(guildUpdate(guild)).to.be.fulfilled;
   });
 
   it('user is owner, fulfilled', async () => {
     ws.sessions.set(client.id, guild.ownerId);
 
-    const invoke = () => event.invoke(ws, client, {
-      guildId: guild.id,
-      partialGuild: {
-        name: guild.name,
-      },
-    });
-
-    await expect(invoke()).to.be.fulfilled;
-  });
-
-  it('guild name too short, rejected', async () => {
-    ws.sessions.set(client.id, guild.ownerId);
-
-    const invoke = () => event.invoke(ws, client, {
-      guildId: guild.id,
-      partialGuild: {
-        name: ''
-      },
-    });
-
-    await expect(invoke()).to.be.rejectedWith('minimum');
-  });
-
-  it('guild name too long, rejected', async () => {
-    ws.sessions.set(client.id, guild.ownerId);
-
-    const invoke = () => event.invoke(ws, client, {
-      guildId: guild.id,
-      partialGuild: {
-        name: new Array(64).join('a')
-      },
-    });
-
-    await expect(invoke()).to.be.rejectedWith('maximum');
+    await expect(guildUpdate(guild)).to.be.fulfilled;
   });
 
   it('name acronym updated', async () => {
     ws.sessions.set(client.id, guild.ownerId);
 
-    await event.invoke(ws, client, {
-      guildId: guild.id,
-      partialGuild: {
-        name: 'K E K K'
-      },
-    });
+    await guildUpdate({ name: 'K E K K' });
 
     guild = await Guild.findById(guild.id);
 
     expect(guild.nameAcronym).to.equal('KEK');
   });
+
+  function guildUpdate(partialGuild: Partial.Guild) {
+    return event.invoke(ws, client, {
+      guildId: guild.id,
+      partialGuild,
+    });
+  }
 });

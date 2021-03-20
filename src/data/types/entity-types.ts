@@ -147,7 +147,7 @@ export namespace PermissionTypes {
   export enum Text {
     ADD_REACTIONS = 2048 * 16,
     MENTION_EVERYONE = 2048 * 8,
-    READ_MESSAGE_HISTORY = 2048 * 4,
+    READ_MESSAGES = 2048 * 4,
     MANAGE_MESSAGES = 2048 * 2,
     SEND_MESSAGES = 2048
   }
