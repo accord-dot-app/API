@@ -5,10 +5,10 @@ import { PermissionTypes } from '../../../data/types/entity-types';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params, WSEventParams } from './ws-event';
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'INVITE_DELETE';
+export default class implements WSEvent<'INVITE_DELETE'> {
+  on = 'INVITE_DELETE' as const;
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),

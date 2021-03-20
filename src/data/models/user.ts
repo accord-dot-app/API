@@ -29,7 +29,7 @@ export const User = model<UserDocument>('user', new Schema({
     get: createdAtToDate
   },
   friendIds: {
-    type: [String],
+    type: Array,
     ref: 'user',
     default: [],
     validate: {
@@ -46,7 +46,7 @@ export const User = model<UserDocument>('user', new Schema({
     },
   },
   guilds: {
-    type: [String],
+    type: Array,
     ref: 'guild',
     validate: {
       validator: validators.maxLength(100),

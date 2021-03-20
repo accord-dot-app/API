@@ -17,7 +17,7 @@ export default class Invites extends DBWrapper<string, InviteDocument> {
       inviterId: userId,
       options,
       uses: 0,
-    })
+    });
   }
 
   private generateInviteCode() {

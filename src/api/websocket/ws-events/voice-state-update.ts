@@ -4,11 +4,11 @@ import { Channel, VoiceChannelDocument } from '../../../data/models/channel';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params, WSEventParams } from './ws-event';
 import Users from '../../../data/users';
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'VOICE_STATE_UPDATE';
+export default class implements WSEvent<'VOICE_STATE_UPDATE'> {
+  on = 'VOICE_STATE_UPDATE' as const;
 
   constructor(
     private users = Deps.get<Users>(Users),

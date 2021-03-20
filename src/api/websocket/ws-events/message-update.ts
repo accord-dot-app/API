@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 import { Message, MessageDocument } from '../../../data/models/message';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params, WSEventParams } from './ws-event';
 import got from 'got';
 import { MessageTypes } from '../../../data/types/entity-types';
 import Deps from '../../../utils/deps';
@@ -15,8 +15,8 @@ const metascraper = require('metascraper')([
   require('metascraper-url')()
 ]);
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'MESSAGE_UPDATE';
+export default class implements WSEvent<'MESSAGE_UPDATE'> {
+  on = 'MESSAGE_UPDATE' as const;
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),

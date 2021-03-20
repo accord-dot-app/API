@@ -1,39 +1,37 @@
 import { Socket } from 'socket.io';
 import { User, UserDocument } from '../../../data/models/user';
+import { Params, WSEventParams } from '../../../data/types/ws-types';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args } from './ws-event';
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'REMOVE_FRIEND';
+export default class implements WSEvent<'REMOVE_FRIEND'> {
+  on = 'REMOVE_FRIEND' as const;
 
-  constructor(private users = Deps.get<Users>(Users)) {}
+  constructor(
+    private users = Deps.get<Users>(Users),
+  ) {}
 
   async invoke(ws: WebSocket, client: Socket, { senderId, friendId }: Params.RemoveFriend) {
-    if (!friendId) return;
+    const sender = await this.users.get(senderId);
+    const friend = await this.users.get(friendId);
 
     ws.io
       .to(senderId)
       .to(friendId)
       .emit('REMOVE_FRIEND', {
-        sender: await this.removeFriendAndUpdate(senderId, friendId),
-        friend: await this.removeFriendAndUpdate(friendId, senderId)
+        sender: await this.removeFriend(sender, friend),
+        friend: await this.removeFriend(friend, sender),
       } as Args.RemoveFriend);
   }
 
-  async removeFriendAndUpdate(userId: string, friendId: string) {
-    const user = await this.users.get(userId);
-    if (!user) return;
-
-    this.removeFriend(user, friendId);
-
-    await user.updateOne({ $set: { friends: user.friendIds } });
+  async removeFriend(user: UserDocument, friend: UserDocument) {
+    const friendExists = user.friendIds.includes(friend._id);
+    if (friendExists)
+      await user.update({
+        $pull: { friends: friend }
+      }, { runValidators: true });
     return user;
-  }
-
-  private removeFriend(user: UserDocument, friendId: string) {
-    const index = user.friendIds.findIndex((user: any) => user._id === friendId);
-    user.friendIds.splice(index, 1);
   }
 }

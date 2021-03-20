@@ -13,25 +13,25 @@ import WSEvent from '../src/api/websocket/ws-events/ws-event';
 import { API } from '../src/api/server';
 import { WebSocket } from '../src/api/websocket/websocket';
 import Deps from '../src/utils/deps';
+import Guilds from '../src/data/guilds';
+import GuildMembers from '../src/data/guild-members';
 
 export class Mock {
+  private static guilds = Deps.get<Guilds>(Guilds);
+  private static guildMembers = Deps.get<GuildMembers>(GuildMembers);
+
   public static async defaultSetup<T extends WSEvent>(client: any, eventType: any) {
     Deps.get<API>(API);
 
     const event = new eventType();
     const ws = Deps.get<WebSocket>(WebSocket);
 
-    const guild = await Mock.guild(); 
+    const guild = await Mock.guild();
     const user = await User.findById(guild.members[1].userId);
     
     ws.sessions.set(client.id, user._id);
 
-    return {
-      event,
-      guild,
-      user,
-      ws,
-    };
+    return { event, guild, user, ws };
   }
 
   public static ioClient(client: any) {
@@ -52,25 +52,15 @@ export class Mock {
   }
 
   public static async guild() {
-    const guildId = generateSnowflake();
-    const owner = await Mock.user([guildId]);
-    const memberUser = await Mock.user([guildId]);
+    const owner = await Mock.user();
+    const memberUser = await Mock.user();
 
-    return await Guild.create({
-      _id: guildId,
-      name: 'Mock Guild',
-      nameAcronym: 'MG',
-      ownerId: owner.id,
-      roles: [ await Mock.everyoneRole(guildId) ], // must go above
-      channels: [
-        await Mock.channel('TEXT', guildId),
-        await Mock.channel('VOICE', guildId),
-      ],
-      members: [
-        await Mock.guildMember(owner.id, guildId),
-        await Mock.guildMember(memberUser.id, guildId),
-      ],
-    });
+    const guild = await this.guilds.create('Mock Guild', owner.id);
+
+    await owner.update({ $push: { guilds: guild } });
+    const member = await Mock.guildMember(memberUser.id, guild.id);
+    guild.members.push(member);
+    return guild.save();
   }
 
   public static async user(guildIds: string[] = []) {
@@ -80,7 +70,7 @@ export class Mock {
       bot: false,
       badges: [],
       friendIds: [],
-      friendRequestIds: [],
+      friendRequests: [],
       guilds: guildIds,
       status: 'ONLINE',
       username: `mock-user-${generateSnowflake()}`,
@@ -88,18 +78,8 @@ export class Mock {
     });
   }
 
-  public static async guildMember(userId: string, guildId: string, extraRoles: Lean.Role[] = []) {
-    const everyoneRole = await Role.findOne({ guildId, name: '@everyone' });
-    
-    return await GuildMember.create({
-      _id: new Types.ObjectId(),
-      userId: userId,
-      guildId: guildId,
-      roleIds: [everyoneRole as Lean.Role]
-        .concat(extraRoles)
-        .filter(r => r)
-        .map(r => r._id)
-    });
+  public static async guildMember(userId: string, guildId: string) {
+    return this.guildMembers.create(guildId, userId);
   }
 
   public static async channel(type: ChannelTypes.Type, guildId?: string) {
@@ -109,27 +89,25 @@ export class Mock {
       memberIds: [],
       name: `mock-channel`,
       summary: '',
-      type
+      type,
     });
   }
 
   public static async role(guildId: string, permissions = defaultPermissions) {
     return await Role.create({
       _id: generateSnowflake(),
-      color: '#FFFFFF',
       guildId,
       hoisted: false,
       mentionable: true,
       name: 'Mock Role',
       permissions,
-      position: 0
+      position: 0,
     });
   }
 
   public static async everyoneRole(guildId: string, permissions = defaultPermissions) {
     return await Role.create({
       _id: generateSnowflake(),
-      color: '#FFFFFF',
       guildId,
       hoisted: false,
       mentionable: true,

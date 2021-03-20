@@ -5,8 +5,9 @@ import { defaultPermissions, Role } from '../../src/data/models/role';
 
 test(createRole, () => {
   given().expect(true);
-  given({ color: 'Mock Role', name: '@everyone' }).expect('Cannot change @everyone role color');
-  given({ color: 'Mock Role' }).expect(true);
+  given({ color: '#FFFFFF', name: '@everyone' }).expect('Cannot change @everyone role color');
+  given({ color: '#FFFFFF' }).expect(true);
+  given({ color: '' }).expect(true);
   given({ name: '' }).expect('Name is required');
   given({ name: longString(33) }).expect('Name too long');
   given({ name: 'Mock Role' }).expect(true);

@@ -6,10 +6,10 @@ import { generateSnowflake } from '../../../data/snowflake-entity';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params, WSEventParams } from './ws-event';
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'GUILD_ROLE_CREATE';
+export default class implements WSEvent<'GUILD_ROLE_CREATE'> {
+  on = 'GUILD_ROLE_CREATE' as const;
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard)

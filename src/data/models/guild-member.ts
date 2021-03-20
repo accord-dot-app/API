@@ -1,6 +1,7 @@
 import { Document, model, Schema, Types } from 'mongoose';
 import { validators } from '../../utils/utils';
 import { Lean, patterns } from '../types/entity-types';
+import { Role, RoleDocument } from './role';
 
 export interface GuildMemberDocument extends Document, Lean.GuildMember {
   _id: Types.ObjectId;
@@ -26,5 +27,5 @@ export const GuildMember = model<GuildMemberDocument>('guildMember', new Schema(
       validator: validators.minLength(1),
       message: 'At least 1 role is required',
     }
-  }
+  },
 }));

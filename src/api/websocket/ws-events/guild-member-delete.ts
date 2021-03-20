@@ -7,10 +7,10 @@ import { User } from '../../../data/models/user';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params, WSEventParams } from './ws-event';
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'GUILD_MEMBER_DELETE';
+export default class implements WSEvent<'GUILD_MEMBER_DELETE'> {
+  on = 'GUILD_MEMBER_DELETE' as const;
 
   constructor(
     private guilds = Deps.get<Guilds>(Guilds),

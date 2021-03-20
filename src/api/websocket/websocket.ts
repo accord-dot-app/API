@@ -1,12 +1,12 @@
 import { Server } from 'http';
 import { listen, Server as SocketServer } from 'socket.io';
 import Log from '../../utils/log';
-import WSEvent from './ws-events/ws-event';
+import { WSEvent, WSEventParams } from './ws-events/ws-event';
 import { resolve } from 'path';
 import { readdirSync } from 'fs';
 
 export class WebSocket {
-  events: WSEvent[] = [];
+  events: WSEvent<keyof WSEventParams>[] = [];
   io: SocketServer;
   
   sessions = new SessionManager();

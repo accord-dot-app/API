@@ -6,10 +6,10 @@ import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent, { Params, WSEventParams } from './ws-event';
+import { WSEvent, Params, WSEventParams } from './ws-event';
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'VOICE_SERVER_UPDATE';
+export default class implements WSEvent<'VOICE_SERVER_UPDATE'> {
+  on = 'VOICE_SERVER_UPDATE' as const;
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),

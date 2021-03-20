@@ -2,10 +2,10 @@ import { Socket } from 'socket.io';
 import { UserTypes } from '../../../data/types/entity-types';
 import { User } from '../../../data/models/user';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params, WSEventParams } from './ws-event';
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'SEND_FRIEND_REQUEST';
+export default class implements WSEvent<'SEND_FRIEND_REQUEST'> {
+  on = 'SEND_FRIEND_REQUEST' as const;
 
   async invoke(ws: WebSocket, client: Socket, { senderId, friendUsername }: Params.SendFriendRequest) {
     const friend = await User.findOne({ username: friendUsername });

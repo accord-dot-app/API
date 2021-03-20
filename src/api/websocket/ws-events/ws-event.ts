@@ -2,11 +2,10 @@ import { Socket } from 'socket.io';
 import { WSEventParams } from '../../../data/types/ws-types';
 import { WebSocket } from '../websocket';
 
-// TODO: make non-default
-export default interface WSEvent {
-  on: keyof WSEventParams;
+export interface WSEvent<K extends keyof WSEventParams> {
+  on: K;
 
-  invoke: (ws: WebSocket, client: Socket, data: any) => any;
+  invoke: (ws: WebSocket, client: Socket, params: WSEventParams[K]) => Promise<any>;
 }
 
 export { Args, Params, WSEventParams } from '../../../data/types/ws-types';

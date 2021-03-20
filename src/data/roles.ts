@@ -1,6 +1,7 @@
 import DBWrapper from './db-wrapper';
 import { Lean, PermissionTypes } from './types/entity-types';
 import { defaultPermissions, hasPermission, Role, RoleDocument } from './models/role';
+import { generateSnowflake } from './snowflake-entity';
 
 export default class Roles extends DBWrapper<string, RoleDocument> {
   public async get(id: string | undefined) {
@@ -18,10 +19,9 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
     return hasPermission(totalPerms, permission);
   }
 
-  public createEveryone(guildId: string, roleId: string) {
+  public createEveryone(guildId: string) {
     return Role.create({
-      _id: roleId,
-      color: '#A2B6AD',
+      _id: generateSnowflake(),
       guildId,
       mentionable: false,
       hoisted: false,

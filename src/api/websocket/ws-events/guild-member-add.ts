@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io';
+import GuildMembers from '../../../data/guild-members';
 import Guilds from '../../../data/guilds';
 import Invites from '../../../data/invites';
 import { GuildDocument } from '../../../data/models/guild';
@@ -8,15 +9,17 @@ import { User } from '../../../data/models/user';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params, WSEventParams } from './ws-event';
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'GUILD_MEMBER_ADD';
+export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
+  on = 'GUILD_MEMBER_ADD' as const;
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),
     private guilds = Deps.get<Guilds>(Guilds),
-    private invites = Deps.get<Invites>(Invites)) {}
+    private invites = Deps.get<Invites>(Invites),
+    private guildMembers = Deps.get<GuildMembers>(GuildMembers),
+  ) {}
 
   async invoke(ws: WebSocket, client: Socket, { inviteCode }: Params.GuildMemberAdd) {
     const invite = await this.invites.get(inviteCode);
@@ -29,11 +32,7 @@ export default class implements WSEvent {
       { _id: userId },
       { $push: { guilds: guild.id } as any }
     );
-    const member = await GuildMember.create({
-      userId,
-      guildId: guild._id,
-      roleIds: [guild.roles[0]._id]
-    });
+    const member = await this.guildMembers.create(guild.id, userId);
     guild.members.push(member);
     await guild.updateOne(guild, { runValidators: true });
 

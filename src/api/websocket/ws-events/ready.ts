@@ -6,10 +6,10 @@ import { SystemBot } from '../../../system/bot';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params, WSEventParams } from './ws-event';
  
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'READY';
+export default class implements WSEvent<'READY'> {
+  on = 'READY' as const;
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),

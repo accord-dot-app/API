@@ -2,10 +2,10 @@ import { Socket } from 'socket.io';
 import Invites from '../../../data/invites';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params, WSEventParams } from './ws-event';
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'INVITE_CREATE';
+export default class implements WSEvent<'INVITE_CREATE'> {
+  on = 'INVITE_CREATE' as const;
 
   constructor(
     private invites = Deps.get<Invites>(Invites),

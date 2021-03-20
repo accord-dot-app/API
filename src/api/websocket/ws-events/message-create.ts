@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 import { Message } from '../../../data/models/message';
 import { generateSnowflake } from '../../../data/snowflake-entity';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params, WSEventParams } from './ws-event';
 import got from 'got';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
@@ -16,8 +16,8 @@ const metascraper = require('metascraper')([
   require('metascraper-url')()
 ]);
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'MESSAGE_CREATE';
+export default class implements WSEvent<'MESSAGE_CREATE'> {
+  on = 'MESSAGE_CREATE' as const;
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard)

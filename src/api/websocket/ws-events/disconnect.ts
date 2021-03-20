@@ -7,10 +7,10 @@ import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
 import voiceStateUpdate from './voice-state-update';
-import WSEvent, { Args, WSEventParams } from './ws-event';
+import { WSEvent, Args, WSEventParams } from './ws-event';
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'disconnect';
+export default class implements WSEvent<'disconnect'> {
+  on = 'disconnect' as const;
 
   constructor(
     private channels = Deps.get<Channels>(Channels),

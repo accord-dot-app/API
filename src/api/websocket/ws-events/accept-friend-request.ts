@@ -4,10 +4,10 @@ import { UserDocument } from '../../../data/models/user';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params } from './ws-event';
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'ACCEPT_FRIEND_REQUEST';
+export default class implements WSEvent<'ACCEPT_FRIEND_REQUEST'> {
+  on = 'ACCEPT_FRIEND_REQUEST' as const;
 
   constructor(
     private channels = Deps.get<Channels>(Channels),
@@ -30,12 +30,11 @@ export default class implements WSEvent {
 
   async acceptFriend(user: UserDocument, friend: UserDocument) {
     const friendExists = user.friendIds.includes(friend._id);
-    if (friendExists) return user;
-
-    await user.update({
-      $pull: { friendRequests: friend },
-      $push: { friends: friend }
-    }, { runValidators: true });
+    if (friendExists)
+      await user.update({
+        $pull: { friendRequests: { userId: friend } },
+        $push: { friends: friend }
+      }, { runValidators: true });
     return user;
   }
 }

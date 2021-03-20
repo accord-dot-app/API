@@ -55,7 +55,7 @@ export namespace Lean {
   }
   export interface Role {
     _id: string;
-    color: string;
+    color?: string;
     createdAt: Date;
     guildId: string;
     hoisted: boolean;

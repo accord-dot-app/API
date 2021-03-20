@@ -29,10 +29,11 @@ export const Role = model<RoleDocument>('role', new Schema({
   },
   color: {
     type: String,
+    // default: '#576067',
     validate: {
-      validator: function() {
+      validator: function(val: string) {
         const role = this as any as RoleDocument;
-        return role.name !== '@everyone';
+        return role.name !== '@everyone' || !val;
       },
       message: 'Cannot change @everyone role color',
     }

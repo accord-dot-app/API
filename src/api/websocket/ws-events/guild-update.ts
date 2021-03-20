@@ -4,11 +4,11 @@ import { Guild } from '../../../data/models/guild';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import WSEvent, { Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params, WSEventParams } from './ws-event';
 import { getNameAcronym } from '../../../utils/utils';
 
-export default class implements WSEvent {
-  on: keyof WSEventParams = 'GUILD_UPDATE';
+export default class implements WSEvent<'GUILD_UPDATE'> {
+  on = 'GUILD_UPDATE' as const;
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),
