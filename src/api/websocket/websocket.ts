@@ -16,7 +16,14 @@ export class WebSocket {
   }
 
   init(server: Server) {
-    this.io = new SocketServer(server);
+    this.io = new SocketServer(server, {
+      cors: {
+        origin: `http://localhost:4200`,
+        methods: ['GET', 'POST'],
+        allowedHeaders: ['Authorization'],
+        credentials: true,
+      }
+    });
 
     const dir = resolve(`${__dirname}/ws-events`);
     const files = readdirSync(dir);
@@ -33,7 +40,7 @@ export class WebSocket {
 
     this.io.on('connection', (client) => {
       for (const event of this.events)
-        client.on(event.on, async (data) => {
+        client.on(event.on, async (data: any) => {
           try {
             await event.invoke.bind(event)(this, client, data);
             client.send(`SENT - ${event.on}`);
@@ -49,7 +56,7 @@ export class WebSocket {
 
 export class SessionManager extends Map<string, string> {
   public get(key: string): string  {
-    const userId = super.get(key);
+    const userId = super.get(key);    
     if (!userId)
       throw new TypeError('User Not Logged In');
     const snowflakeRegex = /\d{18}/;

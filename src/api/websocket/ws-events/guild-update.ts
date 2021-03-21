@@ -5,7 +5,6 @@ import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
 import { WSEvent, Args, Params } from './ws-event';
-import { getNameAcronym } from '../../../utils/utils';
 
 export default class implements WSEvent<'GUILD_UPDATE'> {
   on = 'GUILD_UPDATE' as const;
@@ -19,11 +18,7 @@ export default class implements WSEvent<'GUILD_UPDATE'> {
 
     await Guild.updateOne(
       { _id: guildId },
-      {
-        name: partialGuild.name,
-        iconURL: partialGuild.iconURL,
-        nameAcronym: getNameAcronym(partialGuild.name),
-      },
+      partialGuild,
       { runValidators: true },
     );
 

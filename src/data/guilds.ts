@@ -1,7 +1,6 @@
 import { Guild, GuildDocument } from './models/guild';
 import DBWrapper from './db-wrapper';
 import { generateSnowflake } from './snowflake-entity';
-import { getNameAcronym } from '../utils/utils';
 import Deps from '../utils/deps';
 import Channels from './channels';
 import GuildMembers from './guild-members';
@@ -33,7 +32,6 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
     return await Guild.create({
       _id: guildId,
       name,
-      nameAcronym: getNameAcronym(name),
       ownerId,
       roles: [ everyoneRole ],
       members: [

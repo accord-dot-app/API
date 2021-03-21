@@ -9,6 +9,10 @@ export interface UserDocument extends Document, Lean.User {
   _id: string;
   createdAt: never;
 }
+export interface SelfUserDocument extends Document, UserTypes.Self {
+  _id: string;
+  createdAt: never;
+}
 
 export const User = model<UserDocument>('user', new Schema({
   _id: {
@@ -38,7 +42,7 @@ export const User = model<UserDocument>('user', new Schema({
     },
   },
   friendRequests: {
-    type: [String],
+    type: Array,
     default: [],
     validate: {
       validator: validators.maxLength(100),

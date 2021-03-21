@@ -5,6 +5,7 @@ import { Mock } from '../mock';
 import { UserDocument } from '../../src/data/models/user';
 import { GuildDocument } from '../../src/data/models/guild';
 import { expect } from 'chai';
+import { generateSnowflake } from '../../src/data/snowflake-entity';
 
 describe('send-friend-request', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;;
@@ -12,30 +13,40 @@ describe('send-friend-request', () => {
   let ws: WebSocket;
 
   let user: UserDocument;
+  let friend: UserDocument;
   let guild: GuildDocument;
 
   beforeEach(async () => {
     ({ event, ws, guild, user } = await Mock.defaultSetup(client, SendFriendRequest));
+
+    friend = await Mock.user();
   });
 
   afterEach(async () => await Mock.afterEach(ws));
   after(async () => await Mock.after(client));
 
-  it('fulfilled', async () => {
-    const result = () => event.invoke(ws, client, {
-      
-    });
-
-    await expect(result()).to.be.fulfilled;
+  it('sent friend request to existing user, fulfilled', async () => {
+    await expect(sendFriendRequest()).to.be.fulfilled;
   });
 
-  it('rejected', async () => {
-    const result = () => event.invoke(ws, client, {
-      
-    });
+  it('sent friend request to self, rejected', async () => {
+    friend.username = user.username;
 
-    await expect(result()).to.be.rejectedWith();
+    await expect(sendFriendRequest()).to.be.rejectedWith('Cannot add yourself as a friend');
   });
+
+  it('sent friend request to non-existing user, rejected', async () => {
+    friend.username = generateSnowflake();
+
+    await expect(sendFriendRequest()).to.be.rejectedWith('User Not Found');
+  });
+
+  async function sendFriendRequest() {
+    return event.invoke(ws, client, {
+      senderId: user._id,
+      friendUsername: friend.username,
+    });
+  }
 
   async function makeGuildOwner() {
     ws.sessions.set(client.id, guild.ownerId);

@@ -1,11 +1,12 @@
 import { Document, model, Schema } from 'mongoose';
-import { createdAtToDate, validators } from '../../utils/utils';
+import { createdAtToDate, getNameAcronym, validators } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns } from '../types/entity-types';
 
 export interface GuildDocument extends Document, Lean.Guild {
   _id: string;
   createdAt: never;
+  nameAcronym: never;
 }
 
 export const Guild = model<GuildDocument>('guild', new Schema({
@@ -22,7 +23,12 @@ export const Guild = model<GuildDocument>('guild', new Schema({
     type: Date,
     get: createdAtToDate,
   },
-  nameAcronym: String,
+  nameAcronym: {
+    type: String,
+    get: function() {
+      return getNameAcronym((this as any).name);
+    }
+  },
   iconURL: String,
   ownerId: {
     type: String,

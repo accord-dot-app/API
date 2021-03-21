@@ -13,8 +13,8 @@ router.post('/login',
   async (req, res) => {
   const user = await User.findOne({ username: req.body.username }); 
   if (!user)
-    return res.status(400).json({ message: 'Invalid Credentials' });
-  
+    return res.status(400).json({ message: 'Invalid Credentials' });  
+
   return res.status(200).json(
     users.createToken(user.id)
   );

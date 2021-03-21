@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { Channel } from '../../../data/models/channel';
-import { User } from '../../../data/models/user';
+import { SelfUserDocument, User, UserDocument } from '../../../data/models/user';
 import { Lean } from '../../../data/types/entity-types';
 import Users from '../../../data/users';
 import { SystemBot } from '../../../system/bot';
@@ -19,13 +19,13 @@ export default class implements WSEvent<'READY'> {
   ) {}
 
   async invoke(ws: WebSocket, client: Socket, { key }: Params.Ready) {   
-    const { id: userId } = this.guard.decodeKey(key);
+    const { id: userId } = await this.guard.decodeKey(key);
     if (!userId)
       throw new TypeError('Invalid User ID');
  
     ws.sessions.set(client.id, userId);
 
-    const user = await this.users.get(userId);
+    const user = await this.users.get(userId) as SelfUserDocument;    
     if (user.status === 'OFFLINE')
       await User.updateOne({ _id: userId }, { status: 'ONLINE' });
     await this.joinRooms(client, user);
@@ -45,22 +45,21 @@ export default class implements WSEvent<'READY'> {
     }
   }
 
-  private async joinRooms(client: Socket, user: Lean.User) {
+  private async joinRooms(client: Socket, user: SelfUserDocument) {
     const alreadyJoinedRooms = client.rooms.size > 1;
     if (alreadyJoinedRooms) return;
 
     await client.join(this.getKnownUsers(user));
-
-    const guilds = await this.users.getGuilds(user._id);
-    if (guilds) {
-      const guildIds = guilds.map(g => g._id);
-      await client.join(await this.getChannels(client, guilds));
+    
+    if (user.guilds) {
+      const guildIds = user.guilds.map(g => g._id);      
+      await client.join(await this.getChannels(client, user.guilds));
       await client.join(guildIds);
     }    
     const dms = await this.users.getDMChannels(user._id)               
     if (dms) {
-      const ids = dms.map(c => c._id);      
-      await client.join(ids);
+      const ids = dms.map(c => c._id);           
+      await client.join(ids);      
     }
   }
 

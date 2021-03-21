@@ -6,6 +6,7 @@ export interface WSEventArgs {
   'ACCEPT_FRIEND_REQUEST': (args: Args.AcceptFriendRequest) => any;
   'CANCEL_FRIEND_REQUEST': (args: Args.CancelFriendRequest) => any;
   'CHANNEL_CREATE': (args: Args.ChannelCreate) => any;
+  'GUILD_CREATE': (args: Args.GuildCreate) => any;
   'GUILD_DELETE': (args: Args.GuildDelete) => any;
   'GUILD_JOIN': (args: Args.GuildJoin) => any;
   'GUILD_MEMBER_ADD': (args: Args.GuildMemberAdd) => any;
@@ -33,6 +34,7 @@ export interface WSEventParams {
   'ACCEPT_FRIEND_REQUEST': Params.AcceptFriendRequest;
   'CANCEL_FRIEND_REQUEST': Params.CancelFriendRequest;
   'CHANNEL_CREATE': Params.ChannelCreate;
+  'GUILD_CREATE': Params.GuildCreate;
   'GUILD_DELETE': Params.GuildDelete;
   'GUILD_MEMBER_ADD': Params.GuildMemberAdd;
   'GUILD_MEMBER_UPDATE': Params.GuildMemberUpdate;
@@ -53,7 +55,7 @@ export interface WSEventParams {
   'USER_UPDATE': Params.UserUpdate;
   'VOICE_SERVER_UPDATE': Params.VoiceServerUpdate;
   'VOICE_STATE_UPDATE': Params.VoiceStateUpdate;
-  'disconnect': () => any;
+  'disconnect': any;
 }
 
 export namespace Params {
@@ -65,6 +67,9 @@ export namespace Params {
   export interface ChannelCreate {
     guildId: string;
     partialChannel: Partial.Channel;
+  }
+  export interface GuildCreate {
+    partialGuild: Partial.Guild;
   }
   export interface GuildDelete {
     guildId: string;
@@ -111,7 +116,6 @@ export namespace Params {
     partialMessage: Partial.Message;
   }
   export interface MessageDelete {
-    channelId: string;
     messageId: string;
   }
   export interface MessageUpdate {

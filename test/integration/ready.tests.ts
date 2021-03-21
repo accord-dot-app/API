@@ -8,7 +8,6 @@ import { Mock } from '../mock';
 import { WebSocket } from '../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import { SystemBot } from '../../src/system/bot';
-import { Lean } from '../../src/data/types/entity-types';
 import { GuildDocument } from '../../src/data/models/guild';
 
 describe('ready', () => {
@@ -61,7 +60,7 @@ describe('ready', () => {
   });
 
   it('joins guild room', async () => {
-    await makeOwner(guild);
+    await makeOwner();
     await ready();
 
     expect(rooms()).to.include(guild._id);
@@ -71,11 +70,12 @@ describe('ready', () => {
     return event.invoke(ws, client, { key });
   }
   function rooms() {
-    return Array.from(client.rooms.values())[0];
+    return (Array
+      .from(client.rooms.values()) as any)
+      .flat();
   }
-  async function makeOwner(guild: Lean.Guild) {
-    user = await User.findById(guild.ownerId);
-    ws.sessions.set(client.id, user.id);
+  async function makeOwner() {
+    ws.sessions.set(client.id, guild.ownerId);
     key = users.createToken(user.id);
   }
 });

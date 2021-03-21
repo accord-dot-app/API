@@ -17,5 +17,5 @@ connect(process.env.MONGO_URI, {
   ? Log.error(error.message, 'db')
   : Log.info('Connected to database.'));
 
-Deps.get<API>(API);
 Deps.get<SystemBot>(SystemBot).init();
+Deps.get<API>(API);

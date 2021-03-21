@@ -6,7 +6,7 @@ import { generateSnowflake } from '../../../data/snowflake-entity';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import { WSEvent, Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params } from './ws-event';
 
 export default class implements WSEvent<'GUILD_ROLE_CREATE'> {
   on = 'GUILD_ROLE_CREATE' as const;
@@ -15,7 +15,6 @@ export default class implements WSEvent<'GUILD_ROLE_CREATE'> {
     private guard = Deps.get<WSGuard>(WSGuard)
   ) {}
 
-  // TODO: throw errors when cannot manage
   async invoke(ws: WebSocket, client: Socket, { guildId, partialRole }: Params.GuildRoleCreate) {
     await this.guard.can(client, guildId, PermissionTypes.General.MANAGE_ROLES);
     // if adding an audit log, you would log the client made a role here
@@ -23,7 +22,7 @@ export default class implements WSEvent<'GUILD_ROLE_CREATE'> {
     const role = await Role.create({
       ...partialRole,
       _id: generateSnowflake(),
-      guildId
+      guildId,
     });
     await Guild.updateOne(
       { _id: guildId },

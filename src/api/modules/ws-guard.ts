@@ -7,11 +7,13 @@ import { Socket } from 'socket.io';
 import Channels from '../../data/channels';
 import Roles from '../../data/roles';
 import { Lean, PermissionTypes } from '../../data/types/entity-types';
+import Users from '../../data/users';
 
 export class WSGuard {
   constructor(
     private channels = Deps.get<Channels>(Channels),
     private roles = Deps.get<Roles>(Roles),
+    private users = Deps.get<Users>(Users),
     private ws = Deps.get<WebSocket>(WebSocket),
   ) {}
 
@@ -49,7 +51,7 @@ export class WSGuard {
       const perms = (!withUse)
         ? PermissionTypes.Voice.CONNECT 
         : PermissionTypes.Voice.CONNECT | PermissionTypes.Voice.SPEAK;
-      await this.can(client, channel.guildId, PermissionTypes.Voice.CONNECT);
+      await this.can(client, channel.guildId, perms);
       return;
     }
     const inGroup = channel.memberIds?.includes(userId);
@@ -77,8 +79,8 @@ export class WSGuard {
       }`);
   }  
 
-  public decodeKey(key: string): { id?: string } {
-    const token: any = jwt.decode(key);
-    return { id: token?._id };
+  public async decodeKey(key: string) {
+    const id = this.users.verifyToken(key);    
+    return { id };
   }
 }

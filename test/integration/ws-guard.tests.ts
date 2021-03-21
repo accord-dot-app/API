@@ -12,6 +12,7 @@ import Roles from '../../src/data/roles';
 import { Lean, PermissionTypes } from '../../src/data/types/entity-types';
 import { GuildMember } from '../../src/data/models/guild-member';
 import { Role } from '../../src/data/models/role';
+import Users from '../../src/data/users';
 
 describe('ws-guard', () => {
   let client: any;
@@ -31,6 +32,7 @@ describe('ws-guard', () => {
     guard = new WSGuard(
       new Channels(),
       new Roles(),
+      new Users(),
       ws,
     );    
 

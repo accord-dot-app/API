@@ -25,6 +25,13 @@ export default class Users extends DBWrapper<string, UserDocument> {
     return user;
   }
 
+  public async getByUsername(username: string) {
+    const user = await User.findOne({ username });
+    if (!user)
+      throw new TypeError('User Not Found');
+    return user;
+  }
+
   public async getKnown(userId: string) {
     return await User.find({
       $or: [
@@ -37,9 +44,13 @@ export default class Users extends DBWrapper<string, UserDocument> {
     }) as UserDocument[];
   }
 
-  public async getGuilds(userId: string) {
-    return (await User
-      .findById(userId)
+  public async getGuilds(userId: string): Promise<Lean.Guild[]> {
+    const user = await this.get(userId);
+    return (await this.populateGuilds(user)).guilds as Lean.Guild[];
+  }
+
+  private async populateGuilds(user: UserDocument) {
+    return user
       ?.populate({
         path: 'guilds',
         populate: { path: 'channels' }
@@ -52,7 +63,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
         path: 'guilds',
         populate: { path: 'roles' }
       })
-      .exec())?.guilds as Lean.Guild[] | undefined;
+      .execPopulate();
   }
 
   public async getDMChannels(userId: string) {
@@ -99,10 +110,18 @@ export default class Users extends DBWrapper<string, UserDocument> {
 
   public createToken(userId: string) {
     return jwt.sign({ _id: userId }, 'secret' , { expiresIn : '7d' })
-  }
-  
+  }  
   public createBotToken(userId: string) {
-    return jwt.sign({ _id: userId }, 'secret')
+    return jwt.sign({ _id: userId }, 'secret');
+  }
+
+  public idFromAuth(auth: string): string {
+    const token = auth?.slice('Bearer '.length);
+    return this.verifyToken(token);
+  }
+  public verifyToken(token: string): string {
+    const key: any = jwt.verify(token, 'secret');   
+    return key._id;
   }
 
   public createUser(username: string, password: any): Promise<UserDocument> {
