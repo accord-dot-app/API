@@ -14,6 +14,7 @@ import { WebSocket } from '../src/api/websocket/websocket';
 import Deps from '../src/utils/deps';
 import Guilds from '../src/data/guilds';
 import GuildMembers from '../src/data/guild-members';
+import { WSGuard } from '../src/api/modules/ws-guard';
 
 export class Mock {
   private static guilds = Deps.get<Guilds>(Guilds);
@@ -21,6 +22,7 @@ export class Mock {
 
   public static async defaultSetup(client: any, eventType: any) {
     Deps.get<API>(API);
+    // Deps.get<WSGuard>(WSGuard).cooldowns.
 
     const event = new (eventType as any)();
     const ws = Deps.get<WebSocket>(WebSocket);

@@ -25,6 +25,8 @@ use(should);
   await import('./integration/cancel-friend-request.tests');
   await import('./integration/channel-create.tests');
   await import('./integration/guild-member-add.tests');
+  await import('./integration/guild-create.tests');
+  await import('./integration/guild-delete.tests');
   await import('./integration/guild-update.tests');
   await import('./integration/invite-delete.tests');
   await import('./integration/message-create.tests');

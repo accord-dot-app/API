@@ -28,37 +28,6 @@ router.get('/', updateUser, validateUser, async (req, res) => {
   }
 });
 
-router.post('/', updateUser, validateUser, async (req, res) => {
-  try {
-    const guild = await guilds.create(req.body.name, res.locals.user._id);
-
-    await User.updateOne(
-      { _id: res.locals.user._id },
-      { $push: { guilds: guild } },
-      { runValidators: true },
-    );
-
-    res.status(201).json(guild);
-  } catch (err) {    
-    res.json({ code: 400, message: err?.message });
-  }
-});
-
-router.delete('/:id', updateUser, validateUser, updateGuild, validateGuildOwner, async (req, res) => {
-  try {
-    await res.locals.guild.deleteOne();
-
-    await Channel.remove({ guildId: res.locals.guild._id });
-    await GuildMember.remove({ guildId: res.locals.guild._id });
-    await Invite.remove({ guild: res.locals.guild });
-    await Message.remove({ guild: res.locals.guild });
-
-    res.status(204).json({ code: 204, message: 'Success!' });
-  } catch (err) {    
-    res.json({ code: 400, message: err?.message });
-  }
-});
-
 router.get('/:id/authorize/user',
   updateUser, validateUser, updateGuild, validateGuildExists, validateGuildOwner,
   async (req, res) => {

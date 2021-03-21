@@ -14,8 +14,6 @@ export default class implements WSEvent<'GUILD_MEMBER_DELETE'> {
 
   constructor(
     private guilds = Deps.get<Guilds>(Guilds),
-    private invites = Deps.get<Invites>(Invites),
-    private users = Deps.get<Users>(Users),
   ) {}
 
   async invoke(ws: WebSocket, client: Socket, { guildId, userId }: Params.GuildMemberDelete) {

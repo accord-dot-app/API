@@ -6,7 +6,6 @@ export interface WSEventArgs {
   'ACCEPT_FRIEND_REQUEST': (args: Args.AcceptFriendRequest) => any;
   'CANCEL_FRIEND_REQUEST': (args: Args.CancelFriendRequest) => any;
   'CHANNEL_CREATE': (args: Args.ChannelCreate) => any;
-  'GUILD_CREATE': (args: Args.GuildCreate) => any;
   'GUILD_DELETE': (args: Args.GuildDelete) => any;
   'GUILD_JOIN': (args: Args.GuildJoin) => any;
   'GUILD_MEMBER_ADD': (args: Args.GuildMemberAdd) => any;
@@ -194,7 +193,6 @@ export namespace Args {
     partialRole: Partial.Role;
   }
   export interface GuildUpdate {
-    guildId: string;
     partialGuild: Partial.Guild;
   }
   export interface InviteCreate {

@@ -63,7 +63,7 @@ describe('message-delete', () => {
   });
 
   it('message does not exist, rejected', async () => {
-    await message.remove();
+    await message.deleteOne();
 
     await expect(deleteMessage()).to.be.rejectedWith('Message Not Found');
   });

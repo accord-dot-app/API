@@ -51,7 +51,7 @@ describe('ws-guard', () => {
   it('validateIsOwner, is not owner, throws error', async () => {
     await expect(
       guard.validateIsOwner(client, guild.id)
-    ).to.be.rejectedWith('Only Guild Owner Can Do This');
+    ).to.be.rejectedWith('Only the guild owner can do this');
   });
 
   it('validateIsOwner, is owner, fulfilled', async () => {
@@ -202,7 +202,7 @@ describe('ws-guard', () => {
   });
 
   it('can, guild does not exist, rejected', async () => {
-    await guild.remove();
+    await guild.deleteOne();
 
     await expect(
       guard.can(client, guild.id, PermissionTypes.Text.SEND_MESSAGES)

@@ -8,8 +8,11 @@ import Channels from '../../data/channels';
 import Roles from '../../data/roles';
 import { Lean, PermissionTypes } from '../../data/types/entity-types';
 import Users from '../../data/users';
+import { WSEventParams } from '../websocket/ws-events/ws-event';
 
 export class WSGuard {
+  public readonly cooldowns = new Map<string, keyof WSEventParams>();
+
   constructor(
     private channels = Deps.get<Channels>(Channels),
     private roles = Deps.get<Roles>(Roles),
@@ -32,7 +35,7 @@ export class WSGuard {
       ownerId: this.userId(client)
     });    
     if (!isOwner)
-      throw new TypeError('Only Guild Owner Can Do This');
+      throw new TypeError('Only the guild owner can do this');
   }
 
   public async canAccessChannel(client: Socket, channelId?: string, withUse = false) {

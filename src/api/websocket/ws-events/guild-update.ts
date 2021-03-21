@@ -24,6 +24,6 @@ export default class implements WSEvent<'GUILD_UPDATE'> {
 
     ws.io
       .to(guildId)
-      .emit('GUILD_UPDATE', { guildId, partialGuild } as Args.GuildUpdate);
+      .emit('GUILD_UPDATE', { partialGuild } as Args.GuildUpdate);
   }
 }

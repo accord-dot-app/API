@@ -27,7 +27,7 @@ export default class implements WSEvent<'MESSAGE_DELETE'> {
         throw new TypeError('Only message author can do this');
       await this.guard.can(client, channel.guildId, PermissionTypes.Text.MANAGE_MESSAGES);
     }
-    await message.remove();
+    await message.deleteOne();
 
     ws.io
       .to(message.channelId)

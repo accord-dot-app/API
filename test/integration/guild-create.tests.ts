@@ -2,7 +2,7 @@ import { WebSocket } from '../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import GuildCreate from '../../src/api/websocket/ws-events/guild-create';
 import { Guild, GuildDocument } from '../../src/data/models/guild';
-import { UserDocument } from '../../src/data/models/user';
+import { User, UserDocument } from '../../src/data/models/user';
 import { Mock } from '../mock';
 import { expect } from 'chai';
 import { PermissionTypes } from '../../src/data/types/entity-types';
@@ -25,40 +25,24 @@ describe('guild-create', () => {
   afterEach(async () => Mock.afterEach(ws));
   after(async () => await Mock.after(client));
 
-  it('member has insufficient perms, rejected', async () => {
-
-
-    await expect(guildCreate()).to.be.rejectedWith('Missing Permissions');
-  });
-
-  it('user has MANAGE_GUILD perms, fulfilled', async () => {
-    const role = await Mock.role(guild.id, PermissionTypes.General.MANAGE_GUILD);
-    await member.update({
-      $push: { roleIds: role._id },
-    });
-
+  it('user creates guild, fulfilled', async () => {
     await expect(guildCreate()).to.be.fulfilled;
   });
 
-  it('user is owner, fulfilled', async () => {
-    ws.sessions.set(client.id, guild.ownerId);
+  it('user creates guild, added to user.guilds', async () => {
+    const oldCount = user.guilds.length;
+    await guildCreate();
 
-    await expect(guildCreate()).to.be.fulfilled;
+    user = await User.findById(user.id);
+    expect(user.guilds.length).to.be.greaterThan(oldCount);
   });
 
-  it('name acronym updated', async () => {
-    ws.sessions.set(client.id, guild.ownerId);
-
-    await guildCreate({ name: 'K E K K' });
-
-    guild = await Guild.findById(guild.id);
-
-    expect(guild.nameAcronym).to.equal('KEK');
-  });
-
-  function guildCreate(partialGuild: Partial.Guild) {
+  function guildCreate(partialGuild?: Partial.Guild) {
     return event.invoke(ws, client, {
-      partialGuild,
+      partialGuild: {
+        name: 'Mock Guild',
+        ...partialGuild,
+      },
     });
   }
 });

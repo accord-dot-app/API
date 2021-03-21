@@ -59,6 +59,11 @@ describe('ready', () => {
     expect(rooms()).to.include(dm._id);
   });
 
+  it('joins self room', async () => {
+    await ready();
+    expect(rooms()).to.include(user._id);
+  });
+
   it('joins guild room', async () => {
     await makeOwner();
     await ready();

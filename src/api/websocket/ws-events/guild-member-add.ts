@@ -54,7 +54,7 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
     invite.uses++;
 
     (invite.options?.maxUses && invite.uses >= invite.options.maxUses)
-      ? await invite.remove()
+      ? await invite.deleteOne()
       : await invite.save();
   }
 
