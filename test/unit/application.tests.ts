@@ -11,15 +11,20 @@ test(createApplication, () => {
   given({ description: 'Very epic' }).expect(true);
   given({ name: '' }).expect('Name is required');
   given({ name: longString(33) }).expect('Name is too long');
+  given({ name: 'Epic Bot' }).expect('true');
   given({ name: 'Epic Bot' }).expect(true);
   given({ owner: '' }).expect('Owner is required');
   given({ owner: '123' }).expect('Invalid Snowflake ID');
   given({ owner: generateSnowflake() }).expect(true);
+  given({ user: '' }).expect('User is required');
+  given({ user: '123' }).expect('Invalid Snowflake ID');
+  given({ user: generateSnowflake() }).expect(true);
 });
 
 function createApplication(message: any) {
   const error = new Application({
     _id: generateSnowflake(),
+    user: generateSnowflake(),
     owner: generateSnowflake(),
     name: 'Epic Bot',
     description: 'Very epic',

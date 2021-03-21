@@ -9,6 +9,8 @@ export namespace Lean {
     description: string;
     name: string;
     owner: User;
+    user: User;
+    token: string | never;
   }
   export interface Channel {
     _id: string;

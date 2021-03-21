@@ -124,17 +124,17 @@ export default class Users extends DBWrapper<string, UserDocument> {
     return key._id;
   }
 
-  public createUser(username: string, password: any): Promise<UserDocument> {
+  public createUser(username: string, password: string, bot = false): Promise<UserDocument> {
     const randomAvatar = this.getRandomAvatar();
     return (User as any).register({
       _id: generateSnowflake(),
       username,
       avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/${randomAvatar}`,
       badges: [],
-      bot: false,
+      bot,
       friends: [],
       status: 'ONLINE',
-      voice: new UserTypes.VoiceState()
+      voice: new UserTypes.VoiceState(),
     }, password);
   }
 

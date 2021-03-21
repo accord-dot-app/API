@@ -1,15 +1,16 @@
 import { Server } from 'http';
-import { Server as SocketServer } from 'socket.io';
+import { Server as SocketServer, Socket } from 'socket.io';
 import Log from '../../utils/log';
 import { WSEvent, WSEventParams } from './ws-events/ws-event';
 import { resolve } from 'path';
 import { readdirSync } from 'fs';
 
 export class WebSocket {
-  events: WSEvent<keyof WSEventParams>[] = [];
+  events = new Map<keyof WSEventParams, WSEvent<keyof WSEventParams>>();
   io: SocketServer;
   
   sessions = new SessionManager();
+  public readonly cooldowns = new Map<string, EventLog[]>();
 
   get connectedUserIds() {
     return Array.from(this.sessions.values());
@@ -32,17 +33,19 @@ export class WebSocket {
       const Event = require(`./ws-events/${file}`).default;
       try {
         const event = new Event();
-        this.events.push(event);
+        this.events.set(event.on, event);
       } catch {}
     }
 
-    Log.info(`Loaded ${this.events.length} handlers`, 'ws');
+    Log.info(`Loaded ${this.events.size} handlers`, 'ws');
 
     this.io.on('connection', (client) => {
-      for (const event of this.events)
+      for (const event of this.events.values())
         client.on(event.on, async (data: any) => {
           try {
+            this.handleCooldown(client, event.on);
             await event.invoke.bind(event)(this, client, data);
+
             client.send(`SENT - ${event.on}`);
           } catch (error) {
             client.send(`Server error on executing: ${event.on}\n${error.message}`);
@@ -52,6 +55,45 @@ export class WebSocket {
 
     Log.info('Started WebSocket', 'ws');
   }
+
+  private handleCooldown(client: Socket, eventName: keyof WSEventParams) {
+    let cooldowns = this.getCooldown(client.id);
+    cooldowns.push({ timestamp: new Date().getTime(), eventName });
+
+    this.handleWeight(cooldowns);
+
+    const totalMsDifference = cooldowns
+      .reduce((now, val) => val.timestamp - now, new Date().getTime()); 
+      
+    const spamThreshold = 1000;
+    const maxEventsPerSecond = 10;
+    if (this.cooldowns.size > maxEventsPerSecond
+      && totalMsDifference < spamThreshold)
+      throw new TypeError('You are being rate limited');
+
+    const timeToDelete = 60 * 1000;
+    setTimeout(() => {
+      const overOneMinuteAgo = (l: EventLog) => (new Date().getTime() - l.timestamp) > timeToDelete;
+      cooldowns = cooldowns.filter(overOneMinuteAgo);
+    }, timeToDelete);
+  }
+
+  private handleWeight(cooldowns: EventLog[]) {
+    const totalWeight = cooldowns
+      .map(c => (this.events.get(c.eventName) as any)?.threshold || 1)
+      .reduce((acc, val) => acc + val.threshold, 0);
+
+    const maxWeight = 100;
+    if (totalWeight > maxWeight)
+      throw new TypeError('You are being rate limited');
+  }
+
+  private getCooldown(clientId: string) {
+    return this.cooldowns.get(clientId)
+      ?? this.cooldowns
+        .set(clientId, [])
+        .get(clientId) as EventLog[];
+  }
 }
 
 export class SessionManager extends Map<string, string> {
@@ -59,9 +101,15 @@ export class SessionManager extends Map<string, string> {
     const userId = super.get(key);    
     if (!userId)
       throw new TypeError('User Not Logged In');
+
     const snowflakeRegex = /\d{18}/;
     if (!snowflakeRegex.test(userId))
       throw new TypeError('Spoofed ID Not Allowed');
     return userId;
   }
+}
+
+interface EventLog {
+  timestamp: number;
+  eventName: keyof WSEventParams;
 }

@@ -4,12 +4,10 @@ import Messages from '../../data/messages';
 import { Message } from '../../data/models/message';
 import Deps from '../../utils/deps';
 import { updateUser, validateUser } from '../modules/middleware';
-import { WSGuard } from '../modules/ws-guard';
 
 export const router = Router();
 
 const channels = Deps.get<Channels>(Channels);
-const guard = Deps.get<WSGuard>(WSGuard);
 const messages = Deps.get<Messages>(Messages);
 
 router.get('/@me/:channelId/messages', updateUser, validateUser, async (req, res) => {

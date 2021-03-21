@@ -6,7 +6,7 @@ import { Mock } from '../mock';
 import { API } from '../../src/api/server';
 import { User, UserDocument } from '../../src/data/models/user';
 import { GuildDocument } from '../../src/data/models/guild';
-import { Invite } from '../../src/data/models/invite';
+import { generateInviteCode, Invite } from '../../src/data/models/invite';
 import { expect } from 'chai';
 import { generateSnowflake } from '../../src/data/snowflake-entity';
 import { Role } from '../../src/data/models/role';
@@ -91,7 +91,7 @@ describe('invite-delete', () => {
 
   it('invite does not exist, rejected', async () => {
     const result = () => event.invoke(ws, client, {
-      inviteCode: generateSnowflake(),
+      inviteCode: generateInviteCode(),
     });
 
     await expect(result()).to.be.rejectedWith('Invite Not Found');

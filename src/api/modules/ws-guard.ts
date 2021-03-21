@@ -8,11 +8,8 @@ import Channels from '../../data/channels';
 import Roles from '../../data/roles';
 import { Lean, PermissionTypes } from '../../data/types/entity-types';
 import Users from '../../data/users';
-import { WSEventParams } from '../websocket/ws-events/ws-event';
 
 export class WSGuard {
-  public readonly cooldowns = new Map<string, keyof WSEventParams>();
-
   constructor(
     private channels = Deps.get<Channels>(Channels),
     private roles = Deps.get<Roles>(Roles),
@@ -83,7 +80,7 @@ export class WSGuard {
   }  
 
   public async decodeKey(key: string) {
-    const id = this.users.verifyToken(key);    
+    const id = this.users.verifyToken(key);      
     return { id };
   }
 }

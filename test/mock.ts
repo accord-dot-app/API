@@ -22,7 +22,6 @@ export class Mock {
 
   public static async defaultSetup(client: any, eventType: any) {
     Deps.get<API>(API);
-    // Deps.get<WSGuard>(WSGuard).cooldowns.
 
     const event = new (eventType as any)();
     const ws = Deps.get<WebSocket>(WebSocket);
@@ -34,6 +33,7 @@ export class Mock {
     Mock.ioClient(client);
     
     ws.sessions.set(client.id, user._id);
+    ws.cooldowns.clear();
 
     return { event, guild, user, member, ws };
   }

@@ -8,10 +8,21 @@ export interface InviteDocument extends Document, Lean.Invite {
   createdAt: never;
 }
 
+export function generateInviteCode() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  const codeLength = 7;
+  
+  let result = '';
+  for (let i = 0; i < codeLength; i++)
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  return result;
+}
+
 export const Invite = model<InviteDocument>('invite', new Schema({
   _id: {
     type: String,
-    default: generateSnowflake(),
+    default: generateInviteCode(),
   },
   createdAt: {
     type: Date,

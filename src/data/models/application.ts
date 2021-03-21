@@ -7,12 +7,19 @@ import { createdAtToDate } from '../../utils/utils';
 export interface ApplicationDocument extends Document, Lean.Application {
   _id: string;
   createdAt: never;
+  token: string;
 }
 
 export const Application = model<ApplicationDocument>('application', new Schema({
   _id: {
     type: String,
     default: generateSnowflake(),
+  },
+  user: {
+    type: String,
+    ref: 'user',
+    required: [true, 'User is required'],
+    validate: [patterns.snowflake, 'Invalid Snowflake ID'],
   },
   createdAt: {
     type: Date,
@@ -26,10 +33,12 @@ export const Application = model<ApplicationDocument>('application', new Schema(
   },
   name: {
     type: String,
-    default: `${faker.hacker.adjective()} ${faker.hacker.noun()}`,
+    default: `${faker.hacker.adjective()}-${faker.hacker.noun().replace(/ /, '-')}`,
     required: [true, 'Name is required'],
     maxlength: [32, 'Name is too long'],
+    validate: [patterns.username, 'Name contains invalid characters'],
   },
+  token: String,
   owner: {
     type: String,
     ref: 'user',
