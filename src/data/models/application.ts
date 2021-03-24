@@ -45,4 +45,4 @@ export const Application = model<ApplicationDocument>('application', new Schema(
     required: [true, 'Owner is required'],
     validate: [patterns.snowflake, 'Invalid Snowflake ID'],
   }
-}));
+}, { toJSON: { getters: true } }));

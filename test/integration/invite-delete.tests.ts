@@ -12,7 +12,7 @@ import { generateSnowflake } from '../../src/data/snowflake-entity';
 import { Role } from '../../src/data/models/role';
 
 describe('invite-delete', () => {
-  const client = io(`http://localhost:${process.env.PORT}`) as any;;
+  const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: InviteDelete;
   let ws: WebSocket;
 

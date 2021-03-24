@@ -4,7 +4,7 @@ import { WebSocket } from '../websocket';
 
 export interface WSEvent<K extends keyof WSEventParams> {
   on: K;
-  weight?: number;
+  cooldown?: number;
 
   invoke: (ws: WebSocket, client: Socket, params: WSEventParams[K]) => Promise<any>;
 }

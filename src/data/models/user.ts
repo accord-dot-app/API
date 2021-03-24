@@ -76,6 +76,6 @@ export const User = model<UserDocument>('user', new Schema({
     required: [true, 'Voice State is required'],
     default: new UserTypes.VoiceState(),
   }
-})
+}, { toJSON: { getters: true } })
 .plugin(passportLocalMongoose)
 .plugin(uniqueValidator));

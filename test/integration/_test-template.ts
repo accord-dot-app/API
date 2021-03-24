@@ -7,7 +7,7 @@ import { GuildDocument } from '../../src/data/models/guild';
 import { expect } from 'chai';
 
 describe(addeventnamehere, () => {
-  const client = io(`http://localhost:${process.env.PORT}`) as any;;
+  const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: SendFriendRequest;
   let ws: WebSocket;
 

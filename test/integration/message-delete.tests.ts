@@ -12,7 +12,7 @@ import { Message, MessageDocument } from '../../src/data/models/message';
 import { generateSnowflake } from '../../src/data/snowflake-entity';
 
 describe('message-delete', () => {
-  const client = io(`http://localhost:${process.env.PORT}`) as any;;
+  const client = io(`http://localhost:${process.env.PORT}`) as any;
   
   let event: MessageDelete;
   let ws: WebSocket;

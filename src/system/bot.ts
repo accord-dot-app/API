@@ -71,9 +71,8 @@ export class SystemBot {
   public async addToGuild(guildId: string) {
     const invite = await this.invites.create({
       guildId,
-      userId: this.self._id,
       options: { maxUses: 1 },
-    });
+    }, this.self._id);
 
     this.ws.emit('GUILD_MEMBER_ADD', { inviteCode: invite.id });
 

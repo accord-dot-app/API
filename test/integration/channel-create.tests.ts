@@ -10,7 +10,7 @@ import { User, UserDocument } from '../../src/data/models/user';
 import { Partial } from '../../src/data/types/ws-types';
 
 describe('channel-create', () => {
-  const client = io(`http://localhost:${process.env.PORT}`) as any;;
+  const client = io(`http://localhost:${process.env.PORT}`) as any;
   let ws: WebSocket;
   let event: ChannelCreate;
 

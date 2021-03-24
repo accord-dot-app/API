@@ -28,7 +28,7 @@ export default class implements WSEvent<'MESSAGE_CREATE'> {
 
     const message = await Message.create({
       _id: generateSnowflake(),
-      authorId: this.guard.userId(client),
+      authorId: ws.sessions.userId(client),
       channelId,
       content: partialMessage.content,
       embed: await this.getEmbed(partialMessage),

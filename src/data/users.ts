@@ -1,11 +1,14 @@
 import DBWrapper from './db-wrapper';
 import jwt from 'jsonwebtoken';
-import { User, UserDocument } from './models/user';
+import { SelfUserDocument, User, UserDocument } from './models/user';
 import { generateSnowflake } from './snowflake-entity';
 import { readdirSync } from 'fs';
 import { resolve } from 'path';
 import { Lean, UserTypes } from './types/entity-types';
 import { Channel } from './models/channel';
+import { Guild } from './models/guild';
+import { Role } from './models/role';
+import { GuildMember } from './models/guild-member';
 
 export default class Users extends DBWrapper<string, UserDocument> {
   private avatarNames: string[] = [];
@@ -45,25 +48,20 @@ export default class Users extends DBWrapper<string, UserDocument> {
   }
 
   public async getGuilds(userId: string): Promise<Lean.Guild[]> {
-    const user = await this.get(userId);
+    const user = await this.get(userId) as SelfUserDocument;
+
+    const populated = await this.populateGuilds(user);
+    
     return (await this.populateGuilds(user)).guilds as Lean.Guild[];
   }
 
-  private async populateGuilds(user: UserDocument) {
-    return user
-      ?.populate({
-        path: 'guilds',
-        populate: { path: 'channels' }
-      })
-      .populate({
-        path: 'guilds',
-        populate: { path: 'members' }
-      })
-      .populate({
-        path: 'guilds',
-        populate: { path: 'roles' }
-      })
-      .execPopulate();
+  private async populateGuilds(user: SelfUserDocument) {
+    for (const guild of user.guilds) {
+      guild.channels = await Channel.find({ guildId: guild._id });
+      guild.roles = await Role.find({ guildId: guild._id });
+      guild.members = await GuildMember.find({ guildId: guild._id });
+    }
+    return user;
   }
 
   public async getDMChannels(userId: string) {
@@ -108,11 +106,12 @@ export default class Users extends DBWrapper<string, UserDocument> {
       });
   }
 
-  public createToken(userId: string) {
-    return jwt.sign({ _id: userId }, 'secret' , { expiresIn : '7d' })
-  }  
-  public createBotToken(userId: string) {
-    return jwt.sign({ _id: userId }, 'secret');
+  public createToken(userId: string, expire = true) {
+    return jwt.sign(
+      { _id: userId },
+      'secret',
+      (expire) ? { expiresIn: '7d' } : {}
+    );
   }
 
   public idFromAuth(auth: string): string {

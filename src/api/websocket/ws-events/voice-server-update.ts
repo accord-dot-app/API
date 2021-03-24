@@ -13,11 +13,10 @@ export default class implements WSEvent<'VOICE_SERVER_UPDATE'> {
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),
-    private guilds = Deps.get<Guilds>(Guilds)
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { userId, guildId }: Params.VoiceServerUpdate) {
-    this.guard.validateIsUser(client, userId);
+  async invoke(ws: WebSocket, client: Socket, { guildId }: Params.VoiceServerUpdate) {
+    const userId = ws.sessions.userId(client);
 
     // const guild = await this.guilds.getUserGuild(userId, guildId);
     // if (!guild) return;

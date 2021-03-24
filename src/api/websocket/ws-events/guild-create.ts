@@ -16,7 +16,7 @@ export default class implements WSEvent<'GUILD_CREATE'> {
   ) {}
 
   async invoke(ws: WebSocket, client: Socket, { partialGuild }: Params.GuildCreate) {
-    const userId = this.guard.userId(client);
+    const userId = ws.sessions.userId(client);
     const guild = await this.guilds.create(partialGuild.name, userId);
 
     await User.updateOne(

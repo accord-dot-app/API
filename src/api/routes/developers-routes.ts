@@ -35,7 +35,7 @@ router.get('/applications/new', async (req, res) => {
 
   const app = new Application({ owner: user._id as any });
   app.user = (await users.createUser(app.name, generateInviteCode(), true))._id as any;
-  app.token = users.createBotToken(user.id);
+  app.token = users.createToken(user.id, false);
   await app.save();
 
   res.json(app);

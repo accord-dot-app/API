@@ -10,7 +10,7 @@ import { API } from '../../src/api/server';
 import { User, UserDocument } from '../../src/data/models/user';
 
 describe('message-create', () => {
-  const client = io(`http://localhost:${process.env.PORT}`) as any;;
+  const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: MessageCreate;
   let ws: WebSocket;
   let user: UserDocument;

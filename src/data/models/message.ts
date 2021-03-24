@@ -34,4 +34,4 @@ export const Message = model<MessageDocument>('message', new Schema({
   },
   embed: Object, // TODO: make, and unit test embed schema
   updatedAt: Date,
-}));
+}, { toJSON: { getters: true } }));

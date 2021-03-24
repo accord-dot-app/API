@@ -10,7 +10,7 @@ export default class Invites extends DBWrapper<string, InviteDocument> {
     return invite;
   }
 
-  public async create({ guildId, userId, options }: Params.InviteCreate) {
+  public async create({ guildId, options }: Params.InviteCreate, userId: string) {
     return Invite.create({
       _id: generateInviteCode(),
       guildId,

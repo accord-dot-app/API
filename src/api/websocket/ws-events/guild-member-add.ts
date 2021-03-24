@@ -23,7 +23,7 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
   async invoke(ws: WebSocket, client: Socket, { inviteCode }: Params.GuildMemberAdd) {
     const invite = await this.invites.get(inviteCode);
     const guild = await this.guilds.get(invite.guildId);
-    const userId = this.guard.userId(client);
+    const userId = ws.sessions.userId(client);
     
     await this.handleInvite(invite);
 

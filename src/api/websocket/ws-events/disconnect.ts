@@ -7,13 +7,12 @@ import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
 import voiceStateUpdate from './voice-state-update';
-import { WSEvent, Args, WSEventParams } from './ws-event';
+import { WSEvent, Args } from './ws-event';
 
 export default class implements WSEvent<'disconnect'> {
   on = 'disconnect' as const;
 
   constructor(
-    private channels = Deps.get<Channels>(Channels),
     private users = Deps.get<Users>(Users),
     private voiceState = Deps.get<voiceStateUpdate>(voiceStateUpdate),
   ) {}
@@ -49,13 +48,12 @@ export default class implements WSEvent<'disconnect'> {
       { $pull: { members: user._id } },
       { runValidators: true },
     );
-    
+
     await this.voiceState.invoke(ws, client, {
-      userId: user._id,
       voice: {
         selfMuted: false,
         channelId,
-      }
+      },
     });
   }
 

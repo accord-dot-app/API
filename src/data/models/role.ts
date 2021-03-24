@@ -68,4 +68,4 @@ export const Role = model<RoleDocument>('role', new Schema({
       message: 'Invalid permissions integer',
     },
   }
-}));
+}, { toJSON: { getters: true } }));

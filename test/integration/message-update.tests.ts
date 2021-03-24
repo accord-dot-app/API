@@ -10,7 +10,7 @@ import { API } from '../../src/api/server';
 import { Lean } from '../types/entity-types';
 
 describe('message-update', () => {
-  const client = io(`http://localhost:${process.env.PORT}`) as any;;
+  const client = io(`http://localhost:${process.env.PORT}`) as any;
   
   let event: MessageUpdate;
   let ws: WebSocket;

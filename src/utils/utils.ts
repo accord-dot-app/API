@@ -1,7 +1,8 @@
+import { Document } from 'mongoose';
 import { snowflakeToDate } from '../data/snowflake-entity';
 import { patterns } from '../data/types/entity-types';
 
-export function getNameAcronym(name: string) {
+export function getNameAcronym(name: string) {  
   return name
     .split(' ')
     .slice(0, 3)
@@ -15,6 +16,6 @@ export const validators = {
   optionalSnowflake: (val: string) => !val || patterns.snowflake.test(val),
 };
 
-export function createdAtToDate(this: any) {
-  return snowflakeToDate((this as any)._id);
+export function createdAtToDate(this: Document) {  
+  return snowflakeToDate(this._id);
 }

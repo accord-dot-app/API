@@ -10,7 +10,7 @@ import { Invite } from '../../src/data/models/invite';
 import { expect, spy } from 'chai';
 
 describe('guild-member-add', () => {
-  const client = io(`http://localhost:${process.env.PORT}`) as any;;
+  const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: GuildMemberAdd;
   let ws: WebSocket;
 

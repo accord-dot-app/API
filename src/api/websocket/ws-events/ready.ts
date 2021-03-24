@@ -1,16 +1,16 @@
 import { Socket } from 'socket.io';
-import { Channel } from '../../../data/models/channel';
-import { SelfUserDocument, User, UserDocument } from '../../../data/models/user';
+import { SelfUserDocument, User } from '../../../data/models/user';
 import { Lean } from '../../../data/types/entity-types';
 import Users from '../../../data/users';
 import { SystemBot } from '../../../system/bot';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import { WSEvent, Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params } from './ws-event';
  
 export default class implements WSEvent<'READY'> {
   on = 'READY' as const;
+  cooldown = 5;  
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),

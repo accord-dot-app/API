@@ -16,7 +16,7 @@ export class WebSocket {
     return Array.from(this.sessions.values());
   }
 
-  init(server: Server) {
+  public async init(server: Server) {
     this.io = new SocketServer(server, {
       cors: {
         origin: `http://localhost:4200`,
@@ -60,10 +60,9 @@ export class WebSocket {
     let cooldowns = this.getCooldown(client.id);
     cooldowns.push({ timestamp: new Date().getTime(), eventName });
 
-    this.handleWeight(cooldowns);
+    return;
 
-    const totalMsDifference = cooldowns
-      .reduce((now, val) => val.timestamp - now, new Date().getTime()); 
+    const { totalMsDifference } = this.handleCooldowns(cooldowns, eventName);
       
     const spamThreshold = 1000;
     const maxEventsPerSecond = 10;
@@ -78,14 +77,22 @@ export class WebSocket {
     }, timeToDelete);
   }
 
-  private handleWeight(cooldowns: EventLog[]) {
-    const totalWeight = cooldowns
-      .map(c => (this.events.get(c.eventName) as any)?.threshold || 1)
-      .reduce((acc, val) => acc + val.threshold, 0);
+  private handleCooldowns(cooldowns: EventLog[], eventName: keyof WSEventParams) {
+    const event = this.events.get(eventName);
+    let totalMsDifference = new Date().getTime();
+    let totalEventCooldown = 0;
 
-    const maxWeight = 100;
-    if (totalWeight > maxWeight)
+    for (const log of cooldowns) {
+      totalMsDifference -= log.timestamp;
+      if (log.eventName !== eventName) continue;
+
+      totalEventCooldown += event?.cooldown ?? 0;
+    }
+
+    if (totalEventCooldown > totalMsDifference)
       throw new TypeError('You are being rate limited');
+
+    return { totalMsDifference };
   }
 
   private getCooldown(clientId: string) {
@@ -106,6 +113,10 @@ export class SessionManager extends Map<string, string> {
     if (!snowflakeRegex.test(userId))
       throw new TypeError('Spoofed ID Not Allowed');
     return userId;
+  }
+
+  public userId(client: Socket) {
+    return this.get(client.id);
   }
 }
 

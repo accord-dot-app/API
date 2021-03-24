@@ -20,21 +20,13 @@ describe('voice-state-update', () => {
   
   let ws: WebSocket;
   let guild: GuildDocument;
-  let user: UserDocument;
   let member: GuildMemberDocument;
   let vc: ChannelTypes.Voice;
 
   beforeEach(async () => {
-    Deps.get<API>(API);
-
-    ws = Deps.get<WebSocket>(WebSocket);
-
-    guild = await Mock.guild();
-    user = await Mock.user([guild.id]);
-    member = await Mock.guildMember(user.id, guild.id, guild.roles);
-    vc = guild.channels[0] as ChannelTypes.Voice;
+    ({ ws, guild, member } = await Mock.defaultSetup(client, ws));
     
-    ws.sessions.set(client.id, user.id);
+    vc = guild.channels[0] as ChannelTypes.Voice;
   });
 
   afterEach(async () => await Mock.afterEach(ws));
@@ -42,7 +34,6 @@ describe('voice-state-update', () => {
 
   it('spoofed user, throws error', async () => {
     const result = () => event.invoke(ws, client, {
-      userId: user.id,
       voice: new UserTypes.VoiceState()
     });
 
@@ -53,7 +44,6 @@ describe('voice-state-update', () => {
     ws.sessions.set(client.id, guild.ownerId);
 
     await event.invoke(ws, client, {
-      userId: guild.ownerId,
       voice: {
         guildId: guild._id,
         channelId: vc._id,
@@ -70,7 +60,6 @@ describe('voice-state-update', () => {
     ws.sessions.set(client.id, guild.ownerId);
 
     const result = () => event.invoke(ws, client, {
-      userId: guild.ownerId,
       voice: {
         guildId: guild._id,
         channelId: vc._id,
@@ -83,7 +72,6 @@ describe('voice-state-update', () => {
 
   it('member attempts to connect, has default perms, authorized', async () => {
     const result = () => event.invoke(ws, client, {
-      userId: user.id,
       voice: {
         guildId: guild._id,
         channelId: vc._id,
@@ -98,7 +86,6 @@ describe('voice-state-update', () => {
     ws.sessions.set(client.id, member.userId);
 
     const result = () => event.invoke(ws, client, {
-      userId: member.userId,
       voice: {
         guildId: guild._id,
         channelId: vc._id,
@@ -111,7 +98,6 @@ describe('voice-state-update', () => {
 
   it('non-guild user attempts to connect, has default perms, unauthorized', async () => {
     const result = () => event.invoke(ws, client, {
-      userId: user.id,
       voice: {
         guildId: guild._id,
         channelId: vc._id,

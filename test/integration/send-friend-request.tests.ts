@@ -8,7 +8,7 @@ import { expect } from 'chai';
 import { generateSnowflake } from '../../src/data/snowflake-entity';
 
 describe('send-friend-request', () => {
-  const client = io(`http://localhost:${process.env.PORT}`) as any;;
+  const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: SendFriendRequest;
   let ws: WebSocket;
 
