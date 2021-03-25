@@ -17,7 +17,7 @@ export interface SelfUserDocument extends Document, UserTypes.Self {
 export const User = model<UserDocument>('user', new Schema({
   _id: {
     type: String,
-    default: generateSnowflake(),
+    default: generateSnowflake,
   },
   avatarURL: {
     type: String,
@@ -30,7 +30,7 @@ export const User = model<UserDocument>('user', new Schema({
   bot: Boolean,
   createdAt: {
     type: Date,
-    get: createdAtToDate
+    get: createdAtToDate,
   },
   friendIds: {
     type: Array,

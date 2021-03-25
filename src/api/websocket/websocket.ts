@@ -45,8 +45,6 @@ export class WebSocket {
           try {
             this.handleCooldown(client, event.on);
             await event.invoke.bind(event)(this, client, data);
-
-            client.send(`SENT - ${event.on}`);
           } catch (error) {
             client.send(`Server error on executing: ${event.on}\n${error.message}`);
           }

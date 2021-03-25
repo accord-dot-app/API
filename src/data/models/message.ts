@@ -11,7 +11,7 @@ export interface MessageDocument extends Document, Lean.Message {
 export const Message = model<MessageDocument>('message', new Schema({
   _id: {
     type: String,
-    default: generateSnowflake(),
+    default: generateSnowflake,
   },
   authorId: {
     type: String,

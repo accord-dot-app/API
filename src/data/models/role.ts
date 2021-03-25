@@ -25,7 +25,7 @@ export interface RoleDocument extends Document, Lean.Role {
 export const Role = model<RoleDocument>('role', new Schema({
   _id: {
     type: String,
-    default: generateSnowflake(),
+    default: generateSnowflake,
   },
   color: {
     type: String,

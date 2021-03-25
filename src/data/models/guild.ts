@@ -12,7 +12,7 @@ export interface GuildDocument extends Document, Lean.Guild {
 export const Guild = model<GuildDocument>('guild', new Schema({
   _id: {
     type: String,
-    default: generateSnowflake(),
+    default: generateSnowflake,
   },
   name: {
     type: String,

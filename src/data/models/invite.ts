@@ -22,7 +22,7 @@ export function generateInviteCode() {
 export const Invite = model<InviteDocument>('invite', new Schema({
   _id: {
     type: String,
-    default: generateInviteCode(),
+    default: generateInviteCode,
   },
   createdAt: {
     type: Date,

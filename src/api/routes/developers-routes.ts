@@ -28,7 +28,7 @@ router.get('/applications/user', async (req, res) => {
 
 router.get('/applications/new', async (req, res) => {  
   const user = res.locals.user;
-  const count = await Application.count({ owner: user });
+  const count = await Application.countDocuments({ owner: user });
   const maxApps = 16;
   if (count >= maxApps)
     return res.status(400).json({ message: 'Too many applications' });  
@@ -42,21 +42,32 @@ router.get('/applications/new', async (req, res) => {
 });
 
 router.get('/applications/:id', async (req, res) => {
-  const application = await Application
+  const app = await Application
     .findById(req.params.id)
     .populate('user')
     .exec();
 
-  return (application?.owner !== res.locals.user?._id)
+  return (app?.owner !== res.locals.user?._id)
     ? res.status(403).json({ message: 'Forbidden' })
-    : res.json(application);
+    : res.json(app);
 });
 
 router.patch('/applications/:id', async (req, res) => {
-  const application = await Application.findById(req.params.id);
-  if (!application || application.owner !== res.locals.user._id)
+  const app = await Application.findById(req.params.id);
+  if (!app || app.owner !== res.locals.user._id)
     return res.status(403).json({ message: 'Forbidden' });
 
-  await application.update(req.body, { runValidators: true });
-  res.json(application);
+  await app.update(req.body, { runValidators: true });
+  res.json(app);
+});
+
+router.get('/applications/:id/regen-token', async (req, res) => {
+  const app = await Application.findById(req.params.id);
+  if (!app || app.owner !== res.locals.user._id)
+    return res.status(403).json({ message: 'Forbidden' });
+
+  app.token = users.createToken(app.user as any, false);
+  await app.save();
+
+  res.json(app.token);
 });

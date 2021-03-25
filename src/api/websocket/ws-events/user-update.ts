@@ -15,10 +15,10 @@ export default class implements WSEvent<'USER_UPDATE'> {
   async invoke(ws: WebSocket, client: Socket, { key, partialUser }: Params.UserUpdate) {
     const { id: userId } = await this.guard.decodeKey(key);
 
-    await User.updateOne(
-      { _id: userId },
+    await User.findByIdAndUpdate(
+      userId,
       partialUser,
-      { runValidators: true },
+      { runValidators: true, context: 'query' },
     );
 
     client.emit('USER_UPDATE', { partialUser } as Args.UserUpdate);

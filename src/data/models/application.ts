@@ -2,7 +2,7 @@ import { Document, model, Schema } from 'mongoose';
 import { generateSnowflake } from '../snowflake-entity';
 import faker from 'faker';
 import { Lean, patterns } from '../types/entity-types';
-import { createdAtToDate } from '../../utils/utils';
+import { createdAtToDate, generateUsername } from '../../utils/utils';
 
 export interface ApplicationDocument extends Document, Lean.Application {
   _id: string;
@@ -13,7 +13,7 @@ export interface ApplicationDocument extends Document, Lean.Application {
 export const Application = model<ApplicationDocument>('application', new Schema({
   _id: {
     type: String,
-    default: generateSnowflake(),
+    default: generateSnowflake,
   },
   user: {
     type: String,
@@ -33,7 +33,7 @@ export const Application = model<ApplicationDocument>('application', new Schema(
   },
   name: {
     type: String,
-    default: `${faker.hacker.adjective()}-${faker.hacker.noun().replace(/ /, '-')}`,
+    default: generateUsername,
     required: [true, 'Name is required'],
     maxlength: [32, 'Name is too long'],
     validate: [patterns.username, 'Name contains invalid characters'],

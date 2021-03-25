@@ -20,7 +20,7 @@ export type ChannelDocument = DMChannelDocument | TextChannelDocument | VoiceCha
 export const Channel = model<ChannelDocument>('channel', new Schema({
   _id: {
     type: String,
-    default: generateSnowflake(),
+    default: generateSnowflake,
   },
   createdAt: {
     type: Date,

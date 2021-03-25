@@ -1,3 +1,4 @@
+import { hacker } from 'faker';
 import { Document } from 'mongoose';
 import { snowflakeToDate } from '../data/snowflake-entity';
 import { patterns } from '../data/types/entity-types';
@@ -18,4 +19,12 @@ export const validators = {
 
 export function createdAtToDate(this: Document) {  
   return snowflakeToDate(this._id);
+}
+
+export function generateUsername() {
+  return `${hacker
+    .adjective()
+    .replace(/ /, '')}-${hacker
+    .noun()
+    .replace(/ /, '')}`
 }
