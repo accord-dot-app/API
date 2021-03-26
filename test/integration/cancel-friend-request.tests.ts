@@ -31,7 +31,6 @@ describe('cancel-friend-request', () => {
 
   it('user sends friend request to non existing user, rejected', async () => {
     const result = () => event.invoke(ws, client, {
-      senderId: sender._id,
       friendId: generateSnowflake(),
     });
 
@@ -48,7 +47,6 @@ describe('cancel-friend-request', () => {
 
   async function cancelFriendRequest() {
     return event.invoke(ws, client, {
-      senderId: sender._id,
       friendId: friend._id,
     });
   }

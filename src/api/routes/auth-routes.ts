@@ -79,7 +79,7 @@ router.get('/verify-email', async (req, res) => {
 router.post('/change-password', updateUser, validateUser, async (req, res) => {
   try {
     const user = res.locals.user as SelfUserDocument;
-    await user.changePassword(req.body.oldPassword, req.body.newPassword);
+    await user.changePassword(req.body.oldPassword, req.body.newPassword);    
   
     return res.status(200).json(
       users.createToken(user.id)

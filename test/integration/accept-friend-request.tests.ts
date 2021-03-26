@@ -56,7 +56,6 @@ describe('accept-friend-request', () => {
 
   it('user accepts friend request, non existing friend, rejected', async () => {
     const result = () => event.invoke(ws, client, {
-      senderId: sender._id,
       friendId: generateSnowflake(),
     });
 
@@ -65,7 +64,6 @@ describe('accept-friend-request', () => {
 
   async function acceptFriendRequest() {
     return event.invoke(ws, client, {
-      senderId: sender._id,
       friendId: friend._id,
     });
   }

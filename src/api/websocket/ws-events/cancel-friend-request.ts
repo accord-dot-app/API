@@ -11,7 +11,9 @@ export default class implements WSEvent<'CANCEL_FRIEND_REQUEST'> {
     private users = Deps.get<Users>(Users),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { senderId, friendId }: Params.CancelFriendRequest) {
+  async invoke(ws: WebSocket, client: Socket, { friendId }: Params.CancelFriendRequest) {
+    const senderId = ws.sessions.userId(client);
+
     ws.io
       .to([senderId, friendId])
       .emit('CANCEL_FRIEND_REQUEST', {

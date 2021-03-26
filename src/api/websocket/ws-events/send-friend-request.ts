@@ -13,8 +13,10 @@ export default class implements WSEvent<'SEND_FRIEND_REQUEST'> {
     private users = Deps.get<Users>(Users),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { senderId, friendUsername }: Params.SendFriendRequest) {
+  async invoke(ws: WebSocket, client: Socket, { friendUsername }: Params.SendFriendRequest) {
+    const senderId = ws.sessions.userId(client);
     const friend = await this.users.getByUsername(friendUsername);
+
     if (friend.id === senderId)
       throw new TypeError('Cannot add yourself as a friend');
 

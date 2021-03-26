@@ -43,7 +43,6 @@ describe('send-friend-request', () => {
 
   async function sendFriendRequest() {
     return event.invoke(ws, client, {
-      senderId: user._id,
       friendUsername: friend.username,
     });
   }
