@@ -6,11 +6,11 @@ import { resolve } from 'path';
 import { readdirSync } from 'fs';
 
 export class WebSocket {
-  events = new Map<keyof WSEventParams, WSEvent<keyof WSEventParams>>();
-  io: SocketServer;
-  
-  sessions = new SessionManager();
   public readonly cooldowns = new Map<string, EventLog[]>();
+  public events = new Map<keyof WSEventParams, WSEvent<keyof WSEventParams>>();
+  public io: SocketServer;
+  public sessions = new SessionManager();
+  
 
   get connectedUserIds() {
     return Array.from(this.sessions.values());

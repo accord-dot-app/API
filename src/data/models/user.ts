@@ -32,6 +32,14 @@ export const User = model<UserDocument>('user', new Schema({
     type: Date,
     get: createdAtToDate,
   },
+  email: {
+    type: String,
+    unique: [true, 'Email is already in use'],
+    validate: {
+      validator: (val: string) => !val || patterns.email.test(val),
+      message: 'Invalid email address'
+    },
+  },
   friendIds: {
     type: Array,
     ref: 'user',

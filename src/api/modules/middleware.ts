@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import { PermissionTypes } from '../../data/types/entity-types';
 import Guilds from '../../data/guilds';
 import { Guild, GuildDocument } from '../../data/models/guild';
@@ -19,7 +18,7 @@ export function validateUser(req, res, next) {
 export async function updateUser(req, res, next) {
   try {
     const id = users.idFromAuth(req.get('Authorization'));
-    res.locals.user = await users.get(id);
+    res.locals.user = await users.get(id, true);
   } finally {
     return next();
   }

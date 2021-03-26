@@ -6,7 +6,6 @@ import { readdirSync } from 'fs';
 import { resolve } from 'path';
 import { Lean, UserTypes } from './types/entity-types';
 import { Channel } from './models/channel';
-import { Guild } from './models/guild';
 import { Role } from './models/role';
 import { GuildMember } from './models/guild-member';
 
@@ -21,10 +20,12 @@ export default class Users extends DBWrapper<string, UserDocument> {
       .filter(n => n.startsWith('avatar'));
   }
 
-  public async get(id: string | undefined): Promise<UserDocument> {
+  public async get(id: string | undefined, self = false): Promise<UserDocument> {
     const user = await User.findById(id);
     if (!user)
       throw new TypeError('User Not Found');
+    if (!self)
+      delete user.email;
     return user;
   }
 
@@ -51,8 +52,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
     const user = await this.get(userId) as SelfUserDocument;
 
     const populated = await this.populateGuilds(user);
-    
-    return (await this.populateGuilds(user)).guilds as Lean.Guild[];
+    return populated.guilds as Lean.Guild[];
   }
 
   private async populateGuilds(user: SelfUserDocument) {

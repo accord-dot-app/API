@@ -20,6 +20,10 @@ test(createUser, () => {
   given({ status: 'BUSY' }).expect(true);
   given({ status: 'AFK' }).expect(true);
   given({ status: 'OFFLINE' }).expect(true);
+  given({ email: '' }).expect(true);
+  given({ email: 'a' }).expect('Invalid email address');
+  given({ email: 'a@a' }).expect('Invalid email address');
+  given({ email: 'adam@d-cl.one' }).expect(true);
   given({ username: '' }).expect('Username is required');
   given({ username: 'ADAMJR' }).expect(true);
   given({ username: 'ADAM JR' }).expect('Invalid username');
@@ -28,7 +32,18 @@ test(createUser, () => {
   given({ voice: null }).expect('Voice State is required');
   given({ voice: new UserTypes.VoiceState() }).expect(true);
 
-  it('username is taken', async () => {
+  it('email is taken, rejected', async () => {
+    const user = await Mock.user();
+    user.email = 'adam@d-cl.one';
+    await user.save();
+
+    const user2 = await Mock.user();
+    user2.email = 'adam@d-cl.one';
+
+    await expect(user2.validate()).to.be.rejectedWith('expected `email` to be unique');
+  });
+
+  it('username is taken, rejected', async () => {
     const user = await Mock.user();
     user.username = 'Adam';
     await user.save();

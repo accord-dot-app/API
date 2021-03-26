@@ -1,0 +1,9 @@
+h1 Verify Email
+p Hi #{username}, here is the verification code you requested.
+
+h3 #[code #{code}]
+
+p You can use it to login with 2FA.
+p Or #[a(href=process.env.WEBSITE_URL + '/auth/verify?code=' + code) click here] to login automatically.
+
+.alert.alert-info Code expires in 5 minutes.
