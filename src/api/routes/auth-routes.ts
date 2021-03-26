@@ -5,9 +5,8 @@ import Deps from '../../utils/deps';
 import Users from '../../data/users';
 import { Email } from '../modules/email';
 import { Verification } from '../modules/verification';
-import { Lean, UserTypes } from '../../data/types/entity-types';
+import { UserTypes } from '../../data/types/entity-types';
 import { updateUser, validateUser } from '../modules/middleware';
-import { error } from 'console';
 
 export const router = Router();
 
@@ -27,14 +26,13 @@ router.post('/login',
   updateUsername,
   passport.authenticate('local', { failWithError: false }),
   async (req, res) => {
-  const user = await User
-    .findOne({ username: req.body.username }); 
+  const user = await User.findOne({ username: req.body.username }); 
   if (!user)
     return res.status(400).json({ message: 'Invalid Credentials' });  
 
-  if (user.email) {
+  if (user.email && user.verified) {
     await emailVerifyCode(user as any);
-    return res.status(303).json({ verify: true });
+    return res.status(200).json({ verify: true });
   }
   return res.status(200).json(users.createToken(user.id));
 });
@@ -45,6 +43,7 @@ router.get('/verify-code', async (req, res) => {
   if (!email || !user)
     return res.status(404).json({ message: 'Invalid Code' });
 
+  verification.delete(email);
   res.status(200).json(users.createToken(user._id));
 });
 
@@ -55,16 +54,24 @@ router.get('/send-verify-email', updateUser, validateUser, async (req, res) => {
 
   await emailVerifyEmail(email, res.locals.user);
 
-  return res.status(303).json({ verify: true })
+  await res.locals.user.updateOne(
+    { email },
+    { runValidators: true, context: 'query' },
+  );
+
+  return res.status(200).json({ verify: true })
 });
 
-router.get('/verify-email', updateUser, validateUser, async (req, res) => {
-  const email = verification.getEmailFromCode(req.query.code as any);
+router.get('/verify-email', async (req, res) => {
+  const email = verification.getEmailFromCode(req.query.code as any);  
   if (!email)
-    return res.status(404).json({ message: 'Invalid Code' });
+    return res.status(400).json({ message: 'Invalid Code' });
 
-  res.locals.user.email = email;
-  res.locals.user.verified = true;
+  await User.updateOne(
+    { email },
+    { verified: true },
+    { runValidators: true },
+  );
 
   return res.redirect('/channels/@me?success=Successfully verified your email.');
 });
@@ -95,6 +102,6 @@ async function emailVerifyEmail(emailAddress: string, user: UserTypes.Self) {
   await email.send('verify-email', {
     expiresIn,
     user,
-    code: verification.create(user.email),
+    code: verification.create(emailAddress),
   }, emailAddress);
 }

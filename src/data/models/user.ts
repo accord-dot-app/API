@@ -8,7 +8,6 @@ import { generateSnowflake } from '../snowflake-entity';
 export interface UserDocument extends Document, Lean.User {
   _id: string;
   createdAt: never;
-  verified: never;
 }
 export interface SelfUserDocument extends Document, UserTypes.Self {
   _id: string;

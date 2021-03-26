@@ -29,6 +29,7 @@ router.get('/check-email', async (req, res) => {
     email: {
       $regex: new RegExp(`^${email}$`, 'i')
     },
+    verified: true,
   });
   res.json(exists);
 });

@@ -7,11 +7,11 @@ body(style='background-color: #414244')
   header
     h1 Hello #{user.username}!
     p.lead Thank you for choosing DClone. Hopefully not a Discord rip-off.
-  
-  div
-    span.summary A verification code has been requested to login to your account.
 
   section.body
+    div
+      span.summary A verification code has been requested to login to your account.
+
     h2 Here it is... #[code.cool #{code}]
 
     p This code expires in #{expiresIn / 60 / 1000} minutes. 

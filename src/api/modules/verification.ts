@@ -12,7 +12,11 @@ export class Verification {
     return this.codes.get(email) as string;
   }
 
-  public getEmailFromCode(code: string) {
+  public delete(email: string) {
+    this.codes.delete(email);
+  }
+
+  public getEmailFromCode(code: string) {    
     return Array
       .from(this.codes.entries())
       .find(([k,v]) => v === code)?.[0];
