@@ -1,6 +1,6 @@
 import { generateSnowflake } from '../../src/data/snowflake-entity';
 import { test, given } from 'sazerac';
-import { longArray, longString, mongooseError } from '../test-utils';
+import { longArray, mongooseError } from '../test-utils';
 import { User } from '../../src/data/models/user';
 import { UserTypes } from '../../src/data/types/entity-types';
 import { Mock } from '../mock';
@@ -49,7 +49,7 @@ test(createUser, () => {
     await user.save();
 
     const user2 = await Mock.user();
-    user2.username = 'Adam';
+    user2.username = 'adam';
 
     await expect(user2.validate()).to.be.rejectedWith('expected `username` to be unique');
   });

@@ -14,11 +14,23 @@ const users = Deps.get<Users>(Users);
 
 router.get('/', updateUser, async (req, res) => res.json(res.locals.user));
 
-router.get('/usernames', async (req, res) => {
-  const users = await User.find();
-  const usernames = users.map(u => u.username);
-
-  res.json(usernames);
+router.get('/check-username', async (req, res) => {
+  const username = req.query.value?.toString().toLowerCase();
+  const exists = await User.exists({
+    username: {
+      $regex: new RegExp(`^${username}$`, 'i')
+    },
+  });
+  res.json(exists);
+});
+router.get('/check-email', async (req, res) => {
+  const email = req.query.value?.toString().toLowerCase();
+  const exists = await User.exists({
+    email: {
+      $regex: new RegExp(`^${email}$`, 'i')
+    },
+  });
+  res.json(exists);
 });
 
 router.post('/', async (req, res) => {

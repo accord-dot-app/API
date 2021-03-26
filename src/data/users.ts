@@ -49,7 +49,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
   }
 
   public async getGuilds(userId: string): Promise<Lean.Guild[]> {
-    const user = await this.get(userId) as SelfUserDocument;
+    const user = await this.get(userId) as any as SelfUserDocument;
 
     const populated = await this.populateGuilds(user);
     return populated.guilds as Lean.Guild[];

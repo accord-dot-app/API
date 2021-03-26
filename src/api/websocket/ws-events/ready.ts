@@ -25,7 +25,7 @@ export default class implements WSEvent<'READY'> {
  
     ws.sessions.set(client.id, userId);
 
-    const user = await this.users.get(userId) as SelfUserDocument;    
+    const user = await this.users.get(userId) as any as SelfUserDocument;    
     if (user.status === 'OFFLINE')
       await User.updateOne({ _id: userId }, { status: 'ONLINE' });
     await this.joinRooms(client, user);

@@ -1,0 +1,22 @@
+head
+  include ./includes.pug
+
+  style
+    include email.css
+body(style='background-color: #414244')
+  header
+    h1 #{greetings[i]}, #{user.username}!
+    p.lead Thank you for choosing DClone. Hopefully not a Discord rip-off.
+    
+    div
+      span.summary A request was sent to verify this email.
+
+  section.body
+    h2 #[a(href=process.env.WEBSITE_URL + '/verify-email?code=' + code)]
+
+    p This code expires in #{expiresIn / 60 / 60 / 1000} hours. 
+    p You can use it to login with 2FA. #[br] Or #[a(href=process.env.WEBSITE_URL + '/auth/?code=' + code) click here] to login automatically.
+
+  footer
+    hr
+    span DClone

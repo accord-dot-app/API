@@ -78,6 +78,7 @@ export namespace Lean {
     guilds: string[] | Lean.Guild[];
     status: UserTypes.StatusType;
     username: string;
+    verified?: boolean;
     voice: UserTypes.VoiceState;
   } 
 }
@@ -169,6 +170,7 @@ export namespace UserTypes {
   export interface Self extends Lean.User {
     guilds: Lean.Guild[];
     email: string;
+    verified: true;
   }
 }
 

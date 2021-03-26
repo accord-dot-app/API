@@ -18,7 +18,7 @@ export function validateUser(req, res, next) {
 export async function updateUser(req, res, next) {
   try {
     const id = users.idFromAuth(req.get('Authorization'));
-    res.locals.user = await users.get(id, true);
+    res.locals.user = await users.get(id, true);    
   } finally {
     return next();
   }

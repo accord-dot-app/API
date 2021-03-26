@@ -8,10 +8,14 @@ import { generateSnowflake } from '../snowflake-entity';
 export interface UserDocument extends Document, Lean.User {
   _id: string;
   createdAt: never;
+  verified: never;
 }
 export interface SelfUserDocument extends Document, UserTypes.Self {
   _id: string;
   createdAt: never;
+
+  changePassword: (...args) => Promise<any>;
+  register: (...args) => Promise<any>;
 }
 
 export const User = model<UserDocument>('user', new Schema({
@@ -35,6 +39,7 @@ export const User = model<UserDocument>('user', new Schema({
   email: {
     type: String,
     unique: [true, 'Email is already in use'],
+    uniqueCaseInsensitive: true,
     validate: {
       validator: (val: string) => !val || patterns.email.test(val),
       message: 'Invalid email address'
@@ -74,11 +79,13 @@ export const User = model<UserDocument>('user', new Schema({
     type: String,
     required: [true, 'Username is required'],
     unique: [true, 'Username is taken'],
+    uniqueCaseInsensitive: true,
     validate: {
       validator: patterns.username,
       message: `Invalid username`,
-    }
+    },
   },
+  verified: Boolean,
   voice: {
     type: Object,
     required: [true, 'Voice State is required'],

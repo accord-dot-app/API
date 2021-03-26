@@ -4,6 +4,7 @@ export class Verification {
   private codes = new Map<string, string>();
 
   public create(email: string, expiresIn = 5 * 60 * 1000) {
+    this.codes.delete(email);
     this.codes.set(email, generateInviteCode());
 
     setTimeout(() => this.codes.delete(email), expiresIn);
