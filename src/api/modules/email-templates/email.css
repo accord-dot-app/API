@@ -21,9 +21,13 @@ header, section.body, footer {
   margin: 25px;
 }
 
+p, span {
+  color: #CACBCD;
+}
+
 h1 {
   padding-top: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 0;
 }
 h1 + p.lead {
   margin-top: 0;

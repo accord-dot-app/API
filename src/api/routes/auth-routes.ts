@@ -66,7 +66,7 @@ router.get('/verify-email', updateUser, validateUser, async (req, res) => {
   res.locals.user.email = email;
   res.locals.user.verified = true;
 
-  return res.status(303).json({ verify: true });
+  return res.redirect('/channels/@me?success=Successfully verified your email.');
 });
 
 router.post('/change-password', updateUser, validateUser, async (req, res) => {

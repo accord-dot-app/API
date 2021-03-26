@@ -3,18 +3,13 @@ import Mail from 'nodemailer/lib/mailer';
 import { pugEngine } from 'nodemailer-pug-engine';
 import Log from '../../utils/log';
 import { UserTypes } from '../../data/types/entity-types';
-import fs from 'fs';
-
-;
 
 export class Email {
   private email: Mail;
-  private styles: string;
 
   private readonly templateDir = __dirname + '/email-templates';  
 
   constructor() {
-    this.styles = fs.readFileSync(`${this.templateDir}/email.css`, 'utf8');
     this.email = createTransport({
       service: 'gmail',
       auth: {
@@ -37,12 +32,9 @@ export class Email {
     await this.email.sendMail({
       from: process.env.EMAIL_ADDRESS,
       to: to.join(', '),
-      subject: 'Sending Email using Node.js',
+      subject: subjects[template],
       template,
-      ctx: {
-        ...ctx,
-        styles: this.styles,
-      },
+      ctx,
     } as any);
   }
 }
@@ -55,3 +47,8 @@ interface EmailTemplate {
   };
   'verify-email': this['verify'];
 } 
+
+const subjects: { [k in keyof EmailTemplate]: string } = {
+  'verify': 'DClone - Login Verification Code',
+  'verify-email': 'DClone - Verify Email',
+};
