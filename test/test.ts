@@ -21,21 +21,21 @@ use(should);
     useCreateIndex: true,
   }, (err) => console.log(err));
 
-  await import('./integration/accept-friend-request.tests');
-  await import('./integration/cancel-friend-request.tests');
-  await import('./integration/channel-create.tests');
-  await import('./integration/guild-member-add.tests');
-  await import('./integration/guild-create.tests');
-  await import('./integration/guild-delete.tests');
-  await import('./integration/guild-update.tests');
-  await import('./integration/invite-delete.tests');
-  await import('./integration/message-create.tests');
-  await import('./integration/message-update.tests');
-  await import('./integration/message-delete.tests');
-  await import('./integration/ready.tests');
-  // await import('./integration/voice-state-update.tests');
-  await import('./integration/user-update.tests');
-  await import('./integration/ws-guard.tests');
+  await import('./integration/ws/accept-friend-request.tests');
+  await import('./integration/ws/cancel-friend-request.tests');
+  await import('./integration/ws/channel-create.tests');
+  await import('./integration/ws/guild-member-add.tests');
+  await import('./integration/ws/guild-create.tests');
+  await import('./integration/ws/guild-delete.tests');
+  await import('./integration/ws/guild-update.tests');
+  await import('./integration/ws/invite-delete.tests');
+  await import('./integration/ws/message-create.tests');
+  await import('./integration/ws/message-update.tests');
+  await import('./integration/ws/message-delete.tests');
+  await import('./integration/ws/ready.tests');
+  // await import('./integration/ws/voice-state-update.tests');
+  await import('./integration/ws/user-update.tests');
+  await import('./integration/ws/ws-guard.tests');
 
   await import('./unit/application.tests');
   await import('./unit/channel.tests');

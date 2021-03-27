@@ -83,6 +83,8 @@ export class Mock {
       badges: [],
       friendIds: [],
       friendRequests: [],
+      email: `${generateSnowflake()}@gmail.com`,
+      verified: true,
       guilds: guildIds,
       status: 'ONLINE',
       username: `mock-user-${generateSnowflake()}`,
