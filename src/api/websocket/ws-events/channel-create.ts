@@ -15,7 +15,7 @@ export default class implements WSEvent<'CHANNEL_CREATE'> {
     private guard = Deps.get<WSGuard>(WSGuard)
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { partialChannel, guildId }: Params.ChannelCreate) {
+  public async invoke(ws: WebSocket, client: Socket, { partialChannel, guildId }: Params.ChannelCreate) {
     await this.guard.can(client, guildId, PermissionTypes.General.MANAGE_CHANNELS);
     
     const channel = await Channel.create({

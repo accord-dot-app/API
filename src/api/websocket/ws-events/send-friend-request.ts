@@ -13,7 +13,7 @@ export default class implements WSEvent<'SEND_FRIEND_REQUEST'> {
     private users = Deps.get<Users>(Users),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { friendUsername }: Params.SendFriendRequest) {
+  public async invoke(ws: WebSocket, client: Socket, { friendUsername }: Params.SendFriendRequest) {
     const senderId = ws.sessions.userId(client);
     const friend = await this.users.getByUsername(friendUsername);
 

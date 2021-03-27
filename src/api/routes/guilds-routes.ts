@@ -11,17 +11,16 @@ import Channels from '../../data/channels';
 import Roles from '../../data/roles';
 import Users from '../../data/users';
 import { User } from '../../data/models/user';
+import { GuildDocument } from '../../data/models/guild';
 
 export const router = Router();
 
 const bot = Deps.get<SystemBot>(SystemBot);
-const guilds = Deps.get<Guilds>(Guilds);
 const users = Deps.get<Users>(Users);
 
 router.get('/', updateUser, validateUser, async (req, res) => {
   try {
-    const userGuilds = await users.getGuilds(res.locals.user._id);    
-
+    const userGuilds = await users.getGuilds(res.locals.user._id); 
     res.json(userGuilds);
   } catch (err) {
     res.json({ code: 400, message: err?.message });

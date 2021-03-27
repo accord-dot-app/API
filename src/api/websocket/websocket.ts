@@ -39,6 +39,12 @@ export class WebSocket {
 
     Log.info(`Loaded ${this.events.size} handlers`, 'ws');
 
+    this.io.to = (room: string | string[]) => {
+      const to = this.io.to(room);
+      to.emit('message', `TO ${room}`);
+      return to;
+    }
+
     this.io.on('connection', (client) => {
       for (const event of this.events.values())
         client.on(event.on, async (data: any) => {

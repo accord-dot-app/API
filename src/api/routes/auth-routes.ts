@@ -6,6 +6,7 @@ import Users from '../../data/users';
 import { Verification } from '../modules/email/verification';
 import { updateUser, updateUsername, validateUser } from '../modules/middleware';
 import { EmailFunctions } from '../modules/email/email-functions';
+import { APIError } from '../modules/api-error';
 
 export const router = Router();
 
@@ -21,10 +22,13 @@ router.post('/login',
   if (!user)
     return res.status(400).json({ message: 'Invalid Credentials' });  
 
-  if (user.email && user.verified) {
+  const loggedInWithEmail = req.body.email;
+  if (loggedInWithEmail && user.verified) {
     await sendEmail.verifyCode(user as any);
     return res.status(200).json({ verify: true });
-  }
+  } else if (loggedInWithEmail) 
+    throw new APIError(400, 'Email is unverified');
+
   return res.status(200).json(users.createToken(user.id));
 });
 
@@ -67,11 +71,23 @@ router.get('/verify-email', async (req, res) => {
   res.redirect('/channels/@me?success=Successfully verified your email.');
 });
 
-router.post('/change-password', updateUser, validateUser, async (req, res) => {
-  const user = res.locals.user as SelfUserDocument;
+router.post('/change-password', async (req, res) => {
+  const user = User.findOne({
+    email: req.query.email?.toString(),
+    verified: true,
+  }) as any as SelfUserDocument; 
+  if (!user)
+    throw new TypeError('User Not Found');
+
   await user.changePassword(req.body.oldPassword, req.body.newPassword);    
 
   return res.status(200).json(
     users.createToken(user.id)
   );
 });
+
+interface AuthRoutes {
+  post: {
+    '/change-password': string | { message: string; }
+  }
+}

@@ -23,7 +23,7 @@ export default class implements WSEvent<'MESSAGE_UPDATE'> {
     private messages = Deps.get<Messages>(Messages),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { messageId, partialMessage, withEmbed }: Params.MessageUpdate) {
+  public async invoke(ws: WebSocket, client: Socket, { messageId, partialMessage, withEmbed }: Params.MessageUpdate) {
     const message = await this.messages.get(messageId);
     this.guard.validateIsUser(client, message.authorId);
     

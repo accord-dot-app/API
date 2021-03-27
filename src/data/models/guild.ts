@@ -25,7 +25,7 @@ export const Guild = model<GuildDocument>('guild', new Schema({
   },
   nameAcronym: {
     type: String,
-    get: function(this: GuildDocument) {
+    get: function(this: GuildDocument) {      
       return getNameAcronym(this.name);
     }
   },
@@ -59,4 +59,7 @@ export const Guild = model<GuildDocument>('guild', new Schema({
       message: 'Guild must have at least one role',
     },
   },
-}, { toJSON: { getters: true } }));
+}, {
+  toObject: { getters: true },
+  toJSON: { getters: true }
+}));

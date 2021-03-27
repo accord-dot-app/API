@@ -16,7 +16,7 @@ export default class implements WSEvent<'GUILD_MEMBER_DELETE'> {
     private guilds = Deps.get<Guilds>(Guilds),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { guildId, userId }: Params.GuildMemberDelete) {
+  public async invoke(ws: WebSocket, client: Socket, { guildId, userId }: Params.GuildMemberDelete) {
     const guild = await this.guilds.get(guildId);
     const memberExists = guild.members.some(m => m.userId === userId);
     if (memberExists)

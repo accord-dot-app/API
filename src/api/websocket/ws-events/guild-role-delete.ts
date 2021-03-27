@@ -13,7 +13,7 @@ export default class implements WSEvent<'GUILD_ROLE_DELETE'> {
     private guard = Deps.get<WSGuard>(WSGuard)
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { roleId, guildId }: Params.GuildRoleDelete) {
+  public async invoke(ws: WebSocket, client: Socket, { roleId, guildId }: Params.GuildRoleDelete) {
     await this.guard.can(client, guildId, PermissionTypes.General.MANAGE_ROLES);
 
     await Role.deleteOne({ _id: roleId });

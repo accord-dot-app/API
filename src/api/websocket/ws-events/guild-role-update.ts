@@ -14,7 +14,7 @@ export default class implements WSEvent<'GUILD_ROLE_UPDATE'> {
   ) {}
 
   // TODO: validate all role values
-  async invoke(ws: WebSocket, client: Socket, { roleId, partialRole, guildId }: Params.GuildRoleUpdate) {
+  public async invoke(ws: WebSocket, client: Socket, { roleId, partialRole, guildId }: Params.GuildRoleUpdate) {
     await this.guard.can(client, guildId, PermissionTypes.General.MANAGE_ROLES);
 
     await Role.updateOne(

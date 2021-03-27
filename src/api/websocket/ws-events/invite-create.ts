@@ -13,7 +13,7 @@ export default class implements WSEvent<'INVITE_CREATE'> {
     private invites = Deps.get<Invites>(Invites),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, params: Params.InviteCreate) {
+  public async invoke(ws: WebSocket, client: Socket, params: Params.InviteCreate) {
     ws.io
       .to(params.guildId)
       .emit('INVITE_CREATE', {

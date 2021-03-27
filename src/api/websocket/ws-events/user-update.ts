@@ -12,7 +12,7 @@ export default class implements WSEvent<'USER_UPDATE'> {
     private guard = Deps.get<WSGuard>(WSGuard),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { key, partialUser }: Params.UserUpdate) {
+  public async invoke(ws: WebSocket, client: Socket, { key, partialUser }: Params.UserUpdate) {
     const { id: userId } = await this.guard.decodeKey(key);
 
     await User.findByIdAndUpdate(

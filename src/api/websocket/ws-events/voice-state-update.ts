@@ -15,7 +15,7 @@ export default class implements WSEvent<'VOICE_STATE_UPDATE'> {
     private guard = Deps.get<WSGuard>(WSGuard)
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { voice }: Params.VoiceStateUpdate) {    
+  public async invoke(ws: WebSocket, client: Socket, { voice }: Params.VoiceStateUpdate) {    
     const userId = ws.sessions.userId(client);
     await this.guard.canAccessChannel(client, voice?.channelId);
 

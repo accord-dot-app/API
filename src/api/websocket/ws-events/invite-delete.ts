@@ -15,7 +15,7 @@ export default class implements WSEvent<'INVITE_DELETE'> {
     private invites = Deps.get<Invites>(Invites),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { inviteCode }: Params.InviteDelete) {
+  public async invoke(ws: WebSocket, client: Socket, { inviteCode }: Params.InviteDelete) {
     const invite = await this.invites.get(inviteCode);
     await this.guard.can(client, invite.guildId, PermissionTypes.General.CREATE_INVITE);
 

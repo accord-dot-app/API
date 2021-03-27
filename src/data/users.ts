@@ -8,6 +8,7 @@ import { Lean, UserTypes } from './types/entity-types';
 import { Channel } from './models/channel';
 import { Role } from './models/role';
 import { GuildMember } from './models/guild-member';
+import { generateInviteCode } from './models/invite';
 
 export default class Users extends DBWrapper<string, UserDocument> {
   private avatarNames: string[] = [];
@@ -131,6 +132,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
       avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/${randomAvatar}`,
       badges: [],
       bot,
+      email: `${generateSnowflake()}@avoid-mongodb-error.com`,
       friends: [],
       status: 'ONLINE',
       voice: new UserTypes.VoiceState(),

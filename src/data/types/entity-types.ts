@@ -170,7 +170,7 @@ export namespace UserTypes {
   export interface Self extends Lean.User {
     guilds: Lean.Guild[];
     email: string;
-    verified: true;
+    verified: boolean;
   }
 }
 

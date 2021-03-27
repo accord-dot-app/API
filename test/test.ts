@@ -1,5 +1,6 @@
 import '../src/data/types/env';
 import { config } from 'dotenv';
+import { execSync } from 'child_process';
 config({ path: 'test/.env' });
 
 import { should, use } from 'chai';
@@ -13,13 +14,18 @@ use(chaiSpies);
 use(chaiThings);
 use(should);
 
-(async() => {   
+(async() => {
   await connect(process.env.MONGO_URI, { 
     useUnifiedTopology: true, 
     useNewUrlParser: true, 
     useFindAndModify: false,
     useCreateIndex: true,
   }, (err) => console.log(err));
+
+  try {
+    // remove glitched test processes
+    execSync(`kill -9 $(lsof -i :${process.env.PORT} | tail -n 1 | cut -d ' ' -f5)`);
+  } catch {}
 
   await import('./integration/routes/auth-routes.tests');
 

@@ -16,7 +16,7 @@ export default class implements WSEvent<'MESSAGE_DELETE'> {
     private messages = Deps.get<Messages>(Messages),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { messageId }: Params.MessageDelete) {
+  public async invoke(ws: WebSocket, client: Socket, { messageId }: Params.MessageDelete) {
     const message = await this.messages.get(messageId);
     const channel = await this.channels.get(message.channelId);
 

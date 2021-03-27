@@ -92,6 +92,21 @@ export class Mock {
     });
   }
 
+  public static async bot(guildIds: string[] = []) {
+    return await User.create({
+      _id: generateSnowflake(),
+      avatarURL: 'a',
+      bot: true,
+      badges: [],
+      friendIds: [],
+      friendRequests: [],
+      guilds: guildIds,
+      status: 'ONLINE',
+      username: `mock-bot-${generateSnowflake()}`,
+      voice: new UserTypes.VoiceState(),
+    });    
+  }
+
   public static async guildMember(userId: string, guildId: string) {
     return this.guildMembers.create(guildId, userId);
   }

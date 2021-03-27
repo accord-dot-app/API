@@ -6,7 +6,7 @@ import { Mock } from '../../mock';
 import { API } from '../../../src/api/server';
 import { User, UserDocument } from '../../../src/data/models/user';
 import { Guild, GuildDocument } from '../../../src/data/models/guild';
-import { Invite } from '../../../src/data/models/invite';
+import { Invite, InviteDocument } from '../../../src/data/models/invite';
 import { expect, spy } from 'chai';
 
 describe('guild-member-add', () => {
@@ -16,19 +16,12 @@ describe('guild-member-add', () => {
 
   let user: UserDocument;
   let guild: GuildDocument;
+  let invite: InviteDocument;
 
   beforeEach(async () => {
-    Deps.get<API>(API);
+    ({ event ,ws, user, guild } = await Mock.defaultSetup(client, GuildMemberAdd));
 
-    event = new GuildMemberAdd();
-    ws = Deps.get<WebSocket>(WebSocket);
-
-    guild = await Mock.guild(); 
-    user = await User.findById(guild.members[1].userId);
-
-    Mock.ioClient(client);
-    
-    ws.sessions.set(client.id, user._id);
+    invite = await Mock.invite(guild.id);
   });
 
   afterEach(async () => await Mock.afterEach(ws));
@@ -43,81 +36,75 @@ describe('guild-member-add', () => {
 
     await expect(result()).to.be.fulfilled;
   });
+  it('valid invite and code, fulfilled', async () => {
+    await expect(guildMemberAdd()).to.be.fulfilled;
+  });
+
+  it('valid invite and code, is bot user, rejected', async () => {
+    const bot = await Mock.bot();
+    ws.sessions.set(client.id, bot._id);
+
+    await expect(guildMemberAdd()).to.be.rejectedWith('Bot users cannot accept invites');
+  });
 
   it('valid invite and code, member added to guild', async () => {
-    const invite = await Mock.invite(guild.id);
-
     const oldMemberCount = guild.members.length;
-    await event.invoke(ws, client, {
-      inviteCode: invite._id,
-    });
+    await guildMemberAdd();
 
     guild = await Guild.findById(guild.id);
     expect(guild.members.length).to.be.greaterThan(oldMemberCount);
   });
 
   it('valid invite and code, guild added to user guilds', async () => {
-    const invite = await Mock.invite(guild.id);
-
-    await event.invoke(ws, client, {
-      inviteCode: invite._id,
-    });
+    await guildMemberAdd();
 
     user = await User.findById(user.id);
     expect(user.guilds).to.include(guild.id);
   });
 
   it('invite has reached max uses, is deleted', async () => {
-    let invite = await Mock.invite(guild.id, { maxUses: 1 });
+    invite.options.maxUses = 1;
+    await invite.save();
 
-    await event.invoke(ws, client, {
-      inviteCode: invite._id,
-    });
+    await guildMemberAdd();
     invite = await Invite.findById(invite._id);
     expect(invite).to.be.null;
   });
 
   it('invite expired, rejected', async () => {
-    const invite = await Mock.invite(guild._id, {
-      expiresAt: new Date(0)
-    });
+    invite.options.expiresAt = new Date(0);
+    await invite.save();
 
-    const result = () => event.invoke(ws, client, {
-      inviteCode: invite._id,
-    });
-
-    await expect(result()).to.be.rejectedWith('Invite Expired');
+    await expect(guildMemberAdd()).to.be.rejectedWith('Invite Expired');
   });
 
   it('invalid invite code, rejected', async () => {
-    const result = () => event.invoke(ws, client, {
-      inviteCode: '',
-    });
+    invite._id = '';
 
-    await expect(result()).to.be.rejectedWith('Invite Not Found');
+    await expect(guildMemberAdd()).to.be.rejectedWith('Invite Not Found');
   });
 
   it('valid invite and code, emits to guild room', async () => {
-    const invite = await Mock.invite(guild.id);
     const to = spy.on(ws.io, 'to');
 
-    await event.invoke(ws, client, {
-      inviteCode: invite._id,
-    });
+    await guildMemberAdd();
 
     guild = await Guild.findById(guild.id);
     expect(to).to.have.been.called.with(guild._id);
   });
 
   it.skip('valid invite and code, emits guild join event', async () => {
-    const invite = await Mock.invite(guild.id);
     const to = spy.on(ws.io.to(guild._id), 'emit');
 
-    await event.invoke(ws, client, {
-      inviteCode: invite._id,
-    });
+    await guildMemberAdd();
 
     guild = await Guild.findById(guild.id);
     expect(to).to.have.been.called.with('GUILD_JOIN');
   });
+
+  function guildMemberAdd() {
+    return event.invoke(ws, client, {
+      inviteCode: invite._id,
+    });
+  }
 });

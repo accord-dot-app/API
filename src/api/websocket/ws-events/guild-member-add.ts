@@ -5,36 +5,39 @@ import Invites from '../../../data/invites';
 import { GuildDocument } from '../../../data/models/guild';
 import { InviteDocument } from '../../../data/models/invite';
 import { User } from '../../../data/models/user';
+import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import { WSEvent, Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params } from './ws-event';
 
 export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
   on = 'GUILD_MEMBER_ADD' as const;
 
   constructor(
-    private guard = Deps.get<WSGuard>(WSGuard),
     private guilds = Deps.get<Guilds>(Guilds),
     private invites = Deps.get<Invites>(Invites),
     private guildMembers = Deps.get<GuildMembers>(GuildMembers),
+    private users = Deps.get<Users>(Users),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { inviteCode }: Params.GuildMemberAdd) {
+  public async invoke(ws: WebSocket, client: Socket, { inviteCode }: Params.GuildMemberAdd) {
     const invite = await this.invites.get(inviteCode);
     const guild = await this.guilds.get(invite.guildId);
     const userId = ws.sessions.userId(client);
     
+    const user = await this.users.get(userId);
+    if (inviteCode && user.bot)
+      throw new TypeError('Bot users cannot accept invites');
+
     await this.handleInvite(invite);
 
-    await User.updateOne(
-      { _id: userId },
-      { $push: { guilds: guild.id } as any },
-      { runValidators: true },
-    );
+    user.guilds.push(guild.id as any);
+    await guild.save();
+
     const member = await this.guildMembers.create(guild.id, userId);
     guild.members.push(member);
-    await guild.update(guild, { runValidators: true });
+    await guild.save();
 
     await this.joinGuildRooms(client, guild);
 

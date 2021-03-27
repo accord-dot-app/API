@@ -18,7 +18,7 @@ export default class implements WSEvent<'READY'> {
     private users = Deps.get<Users>(Users),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { key }: Params.Ready) {   
+  public async invoke(ws: WebSocket, client: Socket, { key }: Params.Ready) {   
     const { id: userId } = await this.guard.decodeKey(key);
     if (!userId)
       throw new TypeError('Invalid User ID');

@@ -18,7 +18,7 @@ export default class implements WSEvent<'GUILD_DELETE'> {
     private guard = Deps.get<WSGuard>(WSGuard),
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { guildId }: Params.GuildDelete) {
+  public async invoke(ws: WebSocket, client: Socket, { guildId }: Params.GuildDelete) {
     await this.guard.validateIsOwner(client, guildId);
     
     await User.updateMany(

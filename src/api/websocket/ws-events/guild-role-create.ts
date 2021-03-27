@@ -15,7 +15,7 @@ export default class implements WSEvent<'GUILD_ROLE_CREATE'> {
     private guard = Deps.get<WSGuard>(WSGuard)
   ) {}
 
-  async invoke(ws: WebSocket, client: Socket, { guildId, partialRole }: Params.GuildRoleCreate) {
+  public async invoke(ws: WebSocket, client: Socket, { guildId, partialRole }: Params.GuildRoleCreate) {
     await this.guard.can(client, guildId, PermissionTypes.General.MANAGE_ROLES);
     // if adding an audit log, you would log the client made a role here
 

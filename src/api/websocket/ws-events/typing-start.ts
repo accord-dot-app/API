@@ -5,7 +5,7 @@ import { WSEvent, Args, Params, WSEventParams } from './ws-event';
 export default class implements WSEvent<'TYPING_START'> {
   on = 'TYPING_START' as const;
 
-  async invoke(ws: WebSocket, client: Socket, { channelId }: Params.TypingStart) {
+  public async invoke(ws: WebSocket, client: Socket, { channelId }: Params.TypingStart) {
     client.broadcast
       .to(channelId)
       .emit('TYPING_START', {
