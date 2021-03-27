@@ -3,24 +3,15 @@ import { SelfUserDocument, User } from '../../data/models/user';
 import passport from 'passport';
 import Deps from '../../utils/deps';
 import Users from '../../data/users';
-import { Email } from '../modules/email';
-import { Verification } from '../modules/verification';
-import { UserTypes } from '../../data/types/entity-types';
-import { updateUser, validateUser } from '../modules/middleware';
+import { Verification } from '../modules/email/verification';
+import { updateUser, updateUsername, validateUser } from '../modules/middleware';
+import { EmailFunctions } from '../modules/email/email-functions';
 
 export const router = Router();
 
-const email = Deps.get<Email>(Email);
+const sendEmail = Deps.get<EmailFunctions>(EmailFunctions);
 const users = Deps.get<Users>(Users);
 const verification = Deps.get<Verification>(Verification);
-
-async function updateUsername(req, res, next) {
-  if (!req.body.username) {
-    const user = await User.findOne({ email: req.body.email });
-    req.body.username = user?.username;    
-  }  
-  return next();
-}
 
 router.post('/login',
   updateUsername,
@@ -31,7 +22,7 @@ router.post('/login',
     return res.status(400).json({ message: 'Invalid Credentials' });  
 
   if (user.email && user.verified) {
-    await emailVerifyCode(user as any);
+    await sendEmail.verifyCode(user as any);
     return res.status(200).json({ verify: true });
   }
   return res.status(200).json(users.createToken(user.id));
@@ -52,7 +43,7 @@ router.get('/send-verify-email', updateUser, validateUser, async (req, res) => {
   if (!email)
     return res.status(404).json({ message: 'Bad Request' }); 
 
-  await emailVerifyEmail(email, res.locals.user);
+  await sendEmail.verifyEmail(email, res.locals.user);
 
   await res.locals.user.updateOne(
     { email },
@@ -73,35 +64,14 @@ router.get('/verify-email', async (req, res) => {
     { runValidators: true },
   );
 
-  return res.redirect('/channels/@me?success=Successfully verified your email.');
+  res.redirect('/channels/@me?success=Successfully verified your email.');
 });
 
 router.post('/change-password', updateUser, validateUser, async (req, res) => {
-  try {
-    const user = res.locals.user as SelfUserDocument;
-    await user.changePassword(req.body.oldPassword, req.body.newPassword);    
-  
-    return res.status(200).json(
-      users.createToken(user.id)
-    );
-  } catch (error) {
-    return res.status(400).json({ message: error.message });
-  }
-});
+  const user = res.locals.user as SelfUserDocument;
+  await user.changePassword(req.body.oldPassword, req.body.newPassword);    
 
-async function emailVerifyCode(user: UserTypes.Self) {
-  const expiresIn = 5 * 60 * 1000;
-  await email.send('verify', {
-    expiresIn,
-    user,
-    code: verification.create(user.email, expiresIn),
-  }, user.email as string);
-}
-async function emailVerifyEmail(emailAddress: string, user: UserTypes.Self) {
-  const expiresIn = 24 * 60 * 60 * 1000;
-  await email.send('verify-email', {
-    expiresIn,
-    user,
-    code: verification.create(emailAddress),
-  }, emailAddress);
-}
+  return res.status(200).json(
+    users.createToken(user.id)
+  );
+});

@@ -1,18 +1,18 @@
-import { WebSocket } from '../../src/api/websocket/websocket';
-import Deps from '../../src/utils/deps';
+import { WebSocket } from '../../../src/api/websocket/websocket';
+import Deps from '../../../src/utils/deps';
 import { Socket } from 'socket.io';
 import io from 'socket.io-client';
-import { Message } from '../../src/data/models/message';
-import { GuildMember, GuildMemberDocument } from '../../src/data/models/guild-member';
-import { Mock } from '../mock';
-import { Guild, GuildDocument } from '../../src/data/models/guild';
-import { User, UserDocument } from '../../src/data/models/user';
-import { Channel, VoiceChannelDocument } from '../../src/data/models/channel';
-import { API } from '../../src/api/server';
-import VoiceStateUpdate from '../../src/api/websocket/ws-events/voice-state-update';
+import { Message } from '../../../src/data/models/message';
+import { GuildMember, GuildMemberDocument } from '../../../src/data/models/guild-member';
+import { Mock } from '../../mock';
+import { Guild, GuildDocument } from '../../../src/data/models/guild';
+import { User, UserDocument } from '../../../src/data/models/user';
+import { Channel, VoiceChannelDocument } from '../../../src/data/models/channel';
+import { API } from '../../../src/api/server';
+import VoiceStateUpdate from '../../../src/api/websocket/ws-events/voice-state-update';
 import { expect } from 'chai';
-import { Role } from '../../src/data/models/role';
-import { ChannelTypes, UserTypes } from '../../src/data/types/entity-types';
+import { Role } from '../../../src/data/models/role';
+import { ChannelTypes, UserTypes } from '../../../src/data/types/entity-types';
 
 describe('voice-state-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;

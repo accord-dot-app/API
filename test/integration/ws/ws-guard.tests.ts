@@ -1,18 +1,18 @@
-import Deps from '../../src/utils/deps';
+import Deps from '../../../src/utils/deps';
 import io from 'socket.io-client';
-import { Mock } from '../mock';
-import { GuildDocument } from '../../src/data/models/guild';
-import { User, UserDocument } from '../../src/data/models/user';
-import { API } from '../../src/api/server';
-import { WSGuard } from '../../src/api/modules/ws-guard';
+import { Mock } from '../../mock';
+import { GuildDocument } from '../../../src/data/models/guild';
+import { User, UserDocument } from '../../../src/data/models/user';
+import { API } from '../../../src/api/server';
+import { WSGuard } from '../../../src/api/modules/ws-guard';
 import { expect } from 'chai';
-import { WebSocket } from '../../src/api/websocket/websocket';
-import Channels from '../../src/data/channels';
-import Roles from '../../src/data/roles';
-import { Lean, PermissionTypes } from '../../src/data/types/entity-types';
-import { GuildMember } from '../../src/data/models/guild-member';
-import { Role } from '../../src/data/models/role';
-import Users from '../../src/data/users';
+import { WebSocket } from '../../../src/api/websocket/websocket';
+import Channels from '../../../src/data/channels';
+import Roles from '../../../src/data/roles';
+import { Lean, PermissionTypes } from '../../../src/data/types/entity-types';
+import { GuildMember } from '../../../src/data/models/guild-member';
+import { Role } from '../../../src/data/models/role';
+import Users from '../../../src/data/users';
 
 describe('ws-guard', () => {
   let client: any;

@@ -1,13 +1,13 @@
 import { createTransport } from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import { pugEngine } from 'nodemailer-pug-engine';
-import Log from '../../utils/log';
-import { UserTypes } from '../../data/types/entity-types';
+import Log from '../../../utils/log';
+import { UserTypes } from '../../../data/types/entity-types';
 
 export class Email {
   private email: Mail;
 
-  private readonly templateDir = __dirname + '/email-templates';  
+  private readonly templateDir = __dirname + '/templates';  
 
   constructor() {
     this.email = createTransport({
@@ -23,7 +23,7 @@ export class Email {
       : Log.info('Logged in to email service', 'email'));
     
     this.email.use('compile', pugEngine({
-      templateDir: __dirname + '/email-templates',
+      templateDir: __dirname + '/templates',
       pretty: true,
     }));
   }

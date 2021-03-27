@@ -21,6 +21,8 @@ use(should);
     useCreateIndex: true,
   }, (err) => console.log(err));
 
+  await import('./integration/routes/auth-routes.tests');
+
   await import('./integration/ws/accept-friend-request.tests');
   await import('./integration/ws/cancel-friend-request.tests');
   await import('./integration/ws/channel-create.tests');

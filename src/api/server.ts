@@ -16,6 +16,8 @@ import Deps from '../utils/deps';
 import { WebSocket } from './websocket/websocket';
 
 export class API {
+  public app: Express.Application;
+
   constructor(ws = Deps.get<WebSocket>(WebSocket)) {
     const app = express();
 
@@ -37,6 +39,15 @@ export class API {
 
     app.all('/api/*', (req, res) => res.status(404).json({ code: 404 }));
     
+    app.use((error, req, res, next) => {
+      if (res.headersSent)
+        return next(error);
+
+      error.code ??= 400;
+
+      res.status(error.code).json(error);
+    });
+    
     const distPath = resolve('./dist/browser');
     app.use(express.static(distPath));
     app.all('*', (req, res) => res.status(200).sendFile(`${distPath}/index.html`));
@@ -45,5 +56,7 @@ export class API {
       Log.info(`API is running on port 3000`);
       ws.init(server);
     });
+
+    this.app = app;
   }
 }

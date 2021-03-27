@@ -1,16 +1,16 @@
-import { WebSocket } from '../../src/api/websocket/websocket';
-import Deps from '../../src/utils/deps';
+import { WebSocket } from '../../../src/api/websocket/websocket';
+import Deps from '../../../src/utils/deps';
 import io from 'socket.io-client';
-import { API } from '../../src/api/server';
-import GuildUpdate from '../../src/api/websocket/ws-events/guild-update';
-import { Guild, GuildDocument } from '../../src/data/models/guild';
-import { User, UserDocument } from '../../src/data/models/user';
-import { Mock } from '../mock';
+import { API } from '../../../src/api/server';
+import GuildUpdate from '../../../src/api/websocket/ws-events/guild-update';
+import { Guild, GuildDocument } from '../../../src/data/models/guild';
+import { User, UserDocument } from '../../../src/data/models/user';
+import { Mock } from '../../mock';
 import { expect } from 'chai';
-import { PermissionTypes } from '../../src/data/types/entity-types';
-import { GuildMember, GuildMemberDocument } from '../../src/data/models/guild-member';
-import { Partial } from '../../src/data/types/ws-types';
-import { generateSnowflake } from '../../src/data/snowflake-entity';
+import { PermissionTypes } from '../../../src/data/types/entity-types';
+import { GuildMember, GuildMemberDocument } from '../../../src/data/models/guild-member';
+import { Partial } from '../../../src/data/types/ws-types';
+import { generateSnowflake } from '../../../src/data/snowflake-entity';
 
 describe('guild-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;

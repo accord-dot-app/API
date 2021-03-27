@@ -1,13 +1,13 @@
-import { WebSocket } from '../../src/api/websocket/websocket';
-import Deps from '../../src/utils/deps';
+import { WebSocket } from '../../../src/api/websocket/websocket';
+import Deps from '../../../src/utils/deps';
 import io from 'socket.io-client';
-import { API } from '../../src/api/server';
-import ChannelCreate from '../../src/api/websocket/ws-events/channel-create';
-import { Mock } from '../mock';
+import { API } from '../../../src/api/server';
+import ChannelCreate from '../../../src/api/websocket/ws-events/channel-create';
+import { Mock } from '../../mock';
 import { expect, spy } from 'chai';
-import { Guild, GuildDocument } from '../../src/data/models/guild';
-import { User, UserDocument } from '../../src/data/models/user';
-import { Partial } from '../../src/data/types/ws-types';
+import { Guild, GuildDocument } from '../../../src/data/models/guild';
+import { User, UserDocument } from '../../../src/data/models/user';
+import { Partial } from '../../../src/data/types/ws-types';
 
 describe('channel-create', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;

@@ -1,13 +1,13 @@
-import UserUpdate from '../../src/api/websocket/ws-events/user-update';
-import { WebSocket } from '../../src/api/websocket/websocket';
+import UserUpdate from '../../../src/api/websocket/ws-events/user-update';
+import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
-import { Mock } from '../mock';
-import { User, UserDocument } from '../../src/data/models/user';
-import { GuildDocument } from '../../src/data/models/guild';
+import { Mock } from '../../mock';
+import { User, UserDocument } from '../../../src/data/models/user';
+import { GuildDocument } from '../../../src/data/models/guild';
 import { expect } from 'chai';
-import Deps from '../../src/utils/deps';
-import Users from '../../src/data/users';
-import { generateSnowflake } from '../../src/data/snowflake-entity';
+import Deps from '../../../src/utils/deps';
+import Users from '../../../src/data/users';
+import { generateSnowflake } from '../../../src/data/snowflake-entity';
 
 describe('user-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;

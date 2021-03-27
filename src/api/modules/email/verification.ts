@@ -1,4 +1,4 @@
-import { generateInviteCode } from '../../data/models/invite';
+import { generateInviteCode } from '../../../data/models/invite';
 
 export class Verification {
   private codes = new Map<string, string>();

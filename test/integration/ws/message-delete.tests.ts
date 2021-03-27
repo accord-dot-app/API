@@ -1,15 +1,15 @@
-import MessageDelete from '../../src/api/websocket/ws-events/message-delete';
-import { WebSocket } from '../../src/api/websocket/websocket';
-import Deps from '../../src/utils/deps';
+import MessageDelete from '../../../src/api/websocket/ws-events/message-delete';
+import { WebSocket } from '../../../src/api/websocket/websocket';
+import Deps from '../../../src/utils/deps';
 import { expect } from 'chai';
 import io from 'socket.io-client';
-import { Mock } from '../mock';
-import { GuildDocument } from '../../src/data/models/guild';
-import { User, UserDocument } from '../../src/data/models/user';
-import { API } from '../../src/api/server';
-import { Lean } from '../../src/data/types/entity-types';
-import { Message, MessageDocument } from '../../src/data/models/message';
-import { generateSnowflake } from '../../src/data/snowflake-entity';
+import { Mock } from '../../mock';
+import { GuildDocument } from '../../../src/data/models/guild';
+import { User, UserDocument } from '../../../src/data/models/user';
+import { API } from '../../../src/api/server';
+import { Lean } from '../../../src/data/types/entity-types';
+import { Message, MessageDocument } from '../../../src/data/models/message';
+import { generateSnowflake } from '../../../src/data/snowflake-entity';
 
 describe('message-delete', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;

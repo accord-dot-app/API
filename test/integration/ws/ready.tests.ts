@@ -1,14 +1,14 @@
-import Deps from '../../src/utils/deps';
-import { API } from '../../src/api/server';
-import ChannelCreate from '../../src/api/websocket/ws-events/ready';
-import { User, UserDocument } from '../../src/data/models/user';
+import Deps from '../../../src/utils/deps';
+import { API } from '../../../src/api/server';
+import ChannelCreate from '../../../src/api/websocket/ws-events/ready';
+import { User, UserDocument } from '../../../src/data/models/user';
 import { expect } from 'chai';
-import Users from '../../src/data/users';
-import { Mock } from '../mock';
-import { WebSocket } from '../../src/api/websocket/websocket';
+import Users from '../../../src/data/users';
+import { Mock } from '../../mock';
+import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
-import { SystemBot } from '../../src/system/bot';
-import { GuildDocument } from '../../src/data/models/guild';
+import { SystemBot } from '../../../src/system/bot';
+import { GuildDocument } from '../../../src/data/models/guild';
 
 describe('ready', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;

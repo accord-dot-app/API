@@ -1,10 +1,10 @@
-import AcceptFriendRequest from '../../src/api/websocket/ws-events/accept-friend-request';
-import { WebSocket } from '../../src/api/websocket/websocket';
+import AcceptFriendRequest from '../../../src/api/websocket/ws-events/accept-friend-request';
+import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
-import { Mock } from '../mock';
+import { Mock } from '../../mock';
 import { expect, spy } from 'chai';
-import { generateSnowflake } from '../../src/data/snowflake-entity';
-import { UserDocument } from '../../src/data/models/user';
+import { generateSnowflake } from '../../../src/data/snowflake-entity';
+import { UserDocument } from '../../../src/data/models/user';
 
 describe('cancel-friend-request', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;

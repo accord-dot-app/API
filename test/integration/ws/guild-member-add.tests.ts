@@ -1,12 +1,12 @@
-import GuildMemberAdd from '../../src/api/websocket/ws-events/guild-member-add';
-import { WebSocket } from '../../src/api/websocket/websocket';
-import Deps from '../../src/utils/deps';
+import GuildMemberAdd from '../../../src/api/websocket/ws-events/guild-member-add';
+import { WebSocket } from '../../../src/api/websocket/websocket';
+import Deps from '../../../src/utils/deps';
 import io from 'socket.io-client';
-import { Mock } from '../mock';
-import { API } from '../../src/api/server';
-import { User, UserDocument } from '../../src/data/models/user';
-import { Guild, GuildDocument } from '../../src/data/models/guild';
-import { Invite } from '../../src/data/models/invite';
+import { Mock } from '../../mock';
+import { API } from '../../../src/api/server';
+import { User, UserDocument } from '../../../src/data/models/user';
+import { Guild, GuildDocument } from '../../../src/data/models/guild';
+import { Invite } from '../../../src/data/models/invite';
 import { expect, spy } from 'chai';
 
 describe('guild-member-add', () => {

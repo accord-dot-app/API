@@ -4,6 +4,7 @@ import { Guild, GuildDocument } from '../../data/models/guild';
 import Roles from '../../data/roles';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
+import { User } from '../../data/models/user';
 
 const guilds = Deps.get<Guilds>(Guilds);
 const roles = Deps.get<Roles>(Roles);
@@ -13,6 +14,14 @@ export function validateUser(req, res, next) {
   return (res.locals.user)
     ? next()
     : res.json({ code: 401, message: 'Unauthorized' });
+}
+
+export async function updateUsername(req, res, next) {
+  if (!req.body.username) {
+    const user = await User.findOne({ email: req.body.email });
+    req.body.username = user?.username;    
+  }  
+  return next();
 }
 
 export async function updateUser(req, res, next) {

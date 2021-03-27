@@ -1,14 +1,14 @@
-import { WebSocket } from '../../src/api/websocket/websocket';
-import Deps from '../../src/utils/deps';
+import { WebSocket } from '../../../src/api/websocket/websocket';
+import Deps from '../../../src/utils/deps';
 import io from 'socket.io-client';
-import { Message } from '../../src/data/models/message';
-import { GuildMember } from '../../src/data/models/guild-member';
-import { Guild } from '../../src/data/models/guild';
-import { User } from '../../src/data/models/user';
-import { Channel } from '../../src/data/models/channel';
-import { API } from '../../src/api/server';
-import VoiceServerUpdate from '../../src/api/websocket/ws-events/voice-state-update';
-import { Mock } from '../mock';
+import { Message } from '../../../src/data/models/message';
+import { GuildMember } from '../../../src/data/models/guild-member';
+import { Guild } from '../../../src/data/models/guild';
+import { User } from '../../../src/data/models/user';
+import { Channel } from '../../../src/data/models/channel';
+import { API } from '../../../src/api/server';
+import VoiceServerUpdate from '../../../src/api/websocket/ws-events/voice-state-update';
+import { Mock } from '../../mock';
 
 describe('voice-server-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;

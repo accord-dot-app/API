@@ -1,12 +1,12 @@
-import MessageUpdate from '../../src/api/websocket/ws-events/message-update';
-import { WebSocket } from '../../src/api/websocket/websocket';
-import Deps from '../../src/utils/deps';
+import MessageUpdate from '../../../src/api/websocket/ws-events/message-update';
+import { WebSocket } from '../../../src/api/websocket/websocket';
+import Deps from '../../../src/utils/deps';
 import { expect } from 'chai';
 import io from 'socket.io-client';
-import { Mock } from '../mock';
-import { GuildDocument } from '../../src/data/models/guild';
-import { User, UserDocument } from '../../src/data/models/user';
-import { API } from '../../src/api/server';
+import { Mock } from '../../mock';
+import { GuildDocument } from '../../../src/data/models/guild';
+import { User, UserDocument } from '../../../src/data/models/user';
+import { API } from '../../../src/api/server';
 import { Lean } from '../types/entity-types';
 
 describe('message-update', () => {

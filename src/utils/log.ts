@@ -12,8 +12,8 @@ export default class Log {
   static error(err?: any, src?: string) {
     const message: string = err?.message || err || 'Unknown error';
     console.error(`[${
-      this.toHHMMSS(new Date()).cyan}
-    ] ERROR [${this.getSource(src).blue}] ${message.red}`)
+      this.toHHMMSS(new Date()).cyan
+    }] ERROR [${this.getSource(src).blue}] ${message.red}`)
   }
 
   private static toHHMMSS(time: Date) {

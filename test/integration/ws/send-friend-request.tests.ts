@@ -1,11 +1,11 @@
-import SendFriendRequest from '../../src/api/websocket/ws-events/send-friend-request';
-import { WebSocket } from '../../src/api/websocket/websocket';
+import SendFriendRequest from '../../../src/api/websocket/ws-events/send-friend-request';
+import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
-import { Mock } from '../mock';
-import { UserDocument } from '../../src/data/models/user';
-import { GuildDocument } from '../../src/data/models/guild';
+import { Mock } from '../../mock';
+import { UserDocument } from '../../../src/data/models/user';
+import { GuildDocument } from '../../../src/data/models/guild';
 import { expect } from 'chai';
-import { generateSnowflake } from '../../src/data/snowflake-entity';
+import { generateSnowflake } from '../../../src/data/snowflake-entity';
 
 describe('send-friend-request', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;

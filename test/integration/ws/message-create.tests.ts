@@ -1,13 +1,13 @@
-import MessageCreate from '../../src/api/websocket/ws-events/message-create';
-import { WebSocket } from '../../src/api/websocket/websocket';
-import Deps from '../../src/utils/deps';
+import MessageCreate from '../../../src/api/websocket/ws-events/message-create';
+import { WebSocket } from '../../../src/api/websocket/websocket';
+import Deps from '../../../src/utils/deps';
 import { expect } from 'chai';
 import io from 'socket.io-client';
-import { Mock } from '../mock';
-import { GuildDocument } from '../../src/data/models/guild';
-import { Channel, ChannelDocument } from '../../src/data/models/channel';
-import { API } from '../../src/api/server';
-import { User, UserDocument } from '../../src/data/models/user';
+import { Mock } from '../../mock';
+import { GuildDocument } from '../../../src/data/models/guild';
+import { Channel, ChannelDocument } from '../../../src/data/models/channel';
+import { API } from '../../../src/api/server';
+import { User, UserDocument } from '../../../src/data/models/user';
 
 describe('message-create', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
