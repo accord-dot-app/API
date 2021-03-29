@@ -50,14 +50,16 @@ export class API {
   } 
 
   private setupErrorHandling() {
-    this.app.all('/api/*', (req, res) => { throw new APIError(404); });
+    this.app.all('/api/*', (req, res, next) => next(new APIError(404)));
     
     this.app.use((error, req, res, next) => {
       if (res.headersSent)
         return next(error);
 
-      error.code ??= 400;
-      return res.status(error.code).json(error);
+      const code = parseInt(error.code) || 400;
+      return res.status(code).json({
+        message: error.message
+      });
     });
   }
 

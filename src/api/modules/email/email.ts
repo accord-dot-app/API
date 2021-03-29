@@ -23,7 +23,7 @@ export class Email {
       : Log.info('Logged in to email service', 'email'));
     
     this.email.use('compile', pugEngine({
-      templateDir: __dirname + '/templates',
+      templateDir: this.templateDir,
       pretty: true,
     }));
   }
@@ -39,7 +39,7 @@ export class Email {
   }
 }
 
-interface EmailTemplate {
+export interface EmailTemplate {
   'verify': {
     expiresIn: number;
     user: UserTypes.Self;
