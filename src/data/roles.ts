@@ -19,14 +19,14 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
     return hasPermission(totalPerms, permission);
   }
 
-  public createEveryone(guildId: string) {
+  public create(name: string, guildId: string) {
     return Role.create({
       _id: generateSnowflake(),
       guildId,
       mentionable: false,
       hoisted: false,
-      name: '@everyone',
-      position: 0,
+      name,
+      position: 1,
       permissions: defaultPermissions
     });
   }

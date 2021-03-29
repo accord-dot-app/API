@@ -1,4 +1,5 @@
 import DBWrapper from './db-wrapper';
+import { Channel } from './models/channel';
 import { Message, MessageDocument } from './models/message';
 
 export default class Messages extends DBWrapper<string, MessageDocument> {
@@ -13,7 +14,14 @@ export default class Messages extends DBWrapper<string, MessageDocument> {
     return new Message({ _id: id }).save();
   }
 
-  public getChannelMessages(channelId: string) {
-    return Message.find({ channelId });
+  public async getChannelMessages(channelId: string) {
+    return await Message.find({ channelId });
+  }
+
+  public async getDMChannelMessages(channelId: string, memberId: string) {
+    const isMember = await Channel.exists({ _id: channelId, memberIds: memberId });
+    if (isMember)
+      throw new TypeError('You cannot access this channel');
+    return await Message.find({ channelId });
   }
 }
