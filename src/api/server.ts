@@ -11,6 +11,7 @@ import { router as channelsRoutes } from './routes/channels-routes';
 import { router as developersRoutes } from './routes/developers-routes';
 import { router as guildsRoutes } from './routes/guilds-routes';
 import { router as usersRoutes } from './routes/users-routes';
+import { router as invitesRoutes } from './routes/invites-routes';
 import { User } from '../data/models/user';
 import cors from 'cors';
 import { resolve } from 'path';
@@ -43,8 +44,9 @@ export class API {
 
   private setupRoutes() {
     this.app.use('/api', express.static(resolve('./assets')));
-    this.app.use('/api', apiRoutes, authRoutes);
+    this.app.use('/api', apiRoutes, authRoutes,);
   
+    this.app.use('/api/invites', invitesRoutes);
     this.app.use('/api/developers', developersRoutes);
     this.app.use('/api/channels', channelsRoutes);
     this.app.use('/api/guilds', guildsRoutes);

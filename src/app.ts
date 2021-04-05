@@ -7,8 +7,6 @@ import { API } from './api/server';
 import { SystemBot } from './system/bot';
 import Deps from './utils/deps';
 import Log from './utils/log';
-import { Email } from './api/modules/email/email';
-import { generateInviteCode } from './data/models/invite';
 
 connect(process.env.MONGO_URI, { 
   useUnifiedTopology: true, 
