@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 import Invites from '../../../data/invites';
+import { PermissionTypes } from '../../../data/types/entity-types';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
@@ -14,11 +15,12 @@ export default class implements WSEvent<'INVITE_CREATE'> {
   ) {}
 
   public async invoke(ws: WebSocket, client: Socket, params: Params.InviteCreate) {
+    await this.guard.can(client, params.guildId, PermissionTypes.General.CREATE_INVITE);
+
+    const invite = await this.invites.create(params, ws.sessions.userId(client));
+
     ws.io
       .to(params.guildId)
-      .emit('INVITE_CREATE', {
-        invite: await this.invites
-          .create(params, ws.sessions.userId(client)),
-      } as Args.InviteCreate);
+      .emit('INVITE_CREATE', { invite } as Args.InviteCreate);
   }
 }

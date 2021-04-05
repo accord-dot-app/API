@@ -22,7 +22,7 @@ export default class GuildMembers extends DBWrapper<string, GuildMemberDocument>
   }
 
   private async getEveryoneRoleId(guildId: string) {
-    const role = await Role.findOne({ guildId, name: '@everyone' });
+    const role = await Role.findOne({ guildId, name: '@everyone' });        
     return role?._id;
   }
 }

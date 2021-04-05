@@ -60,7 +60,7 @@ export class WSGuard {
   }
 
   public async can(client: Socket, guildId: string | undefined, permission: PermissionTypes.Permission) {
-    const userId = this.userId(client);    
+    const userId = this.userId(client);
     const member = await GuildMember.findOne({ guildId, userId });
     if (!member)
       throw new TypeError('Member Not Found');
@@ -69,15 +69,16 @@ export class WSGuard {
     if (!guild)
       throw new TypeError('Guild Not Found');
       
-    const can = await this.roles.hasPermission(member, permission)
-      || guild.ownerId === userId;    
-    if (!can)
-      throw new TypeError(`Missing Permissions - ${
-        PermissionTypes.General[permission]
-        || PermissionTypes.Text[permission]
-        || PermissionTypes.Voice[permission]
-      }`);
+    const can = await this.roles
+      .hasPermission(member, permission) || guild.ownerId === userId;
+    this.validateCan(can, permission);
   }  
+  private validateCan(can: boolean, permission: PermissionTypes.Permission) {
+    if (!can)
+      throw new TypeError(`Missing Permissions - ${PermissionTypes.General[permission]
+        || PermissionTypes.Text[permission]
+        || PermissionTypes.Voice[permission]}`);
+  }
 
   public async decodeKey(key: string) {
     const id = this.users.verifyToken(key);      

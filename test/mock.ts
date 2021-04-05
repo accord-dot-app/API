@@ -4,7 +4,7 @@ import { GuildMember } from '../src/data/models/guild-member';
 import { User } from '../src/data/models/user';
 import { generateSnowflake } from '../src/data/snowflake-entity';
 import { Types } from 'mongoose';
-import { defaultPermissions, Role } from '../src/data/models/role';
+import { defaultPermissions, Role, RoleDocument } from '../src/data/models/role';
 import { ChannelTypes, InviteTypes, Lean, PermissionTypes, UserTypes } from '../src/data/types/entity-types';
 import { Message } from '../src/data/models/message';
 import { generateInviteCode, Invite } from '../src/data/models/invite';
@@ -15,6 +15,7 @@ import Deps from '../src/utils/deps';
 import Guilds from '../src/data/guilds';
 import GuildMembers from '../src/data/guild-members';
 import { WSGuard } from '../src/api/modules/ws-guard';
+import Roles from '../src/data/roles';
 
 export class Mock {
   private static guilds = Deps.get<Guilds>(Guilds);
@@ -28,14 +29,16 @@ export class Mock {
 
     const guild = await Mock.guild();
     const member = await GuildMember.findById(guild.members[1]._id);
+    const role = await Role.findById(guild.roles[0]._id);
     const user = await User.findById(member.userId);
+    const channel = await Channel.findById(guild.channels[0]._id);
 
     Mock.ioClient(client);
     
     ws.sessions.set(client.id, user._id);
     ws.cooldowns.clear();
 
-    return { event, guild, user, member, ws };
+    return { event, guild, user, member, ws, role, channel };
   }
   public static async afterEach(ws) {
     ws.sessions.clear();    
@@ -162,11 +165,16 @@ export class Mock {
       { permissions: 0 },
     );
   }
+  
+  public static async giveEveryonePerms(role: RoleDocument, permissions: PermissionTypes.General) {
+    role.permissions |= permissions;
+    await role.save();
+  }
 
   public static async giveEveryoneAdmin(guild: Lean.Guild) {
     await Role.updateOne(
       { _id: guild.roles[0]._id },
-      { permissions: PermissionTypes.General.ADMINISTRATOR }
+      { permissions: PermissionTypes.General.ADMINISTRATOR },
     );
   }
 

@@ -31,7 +31,7 @@ export default class implements WSEvent<'CHANNEL_CREATE'> {
       { _id: guildId },
       { $push: { channels: channel } },
       { runValidators: true },
-    ).lean();
+    );
 
     await client.join(channel.id);
 

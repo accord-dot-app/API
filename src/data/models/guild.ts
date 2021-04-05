@@ -60,6 +60,5 @@ export const Guild = model<GuildDocument>('guild', new Schema({
     },
   },
 }, {
-  toObject: { getters: true },
   toJSON: { getters: true }
 }));

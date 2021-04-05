@@ -1,22 +1,18 @@
 import { Router } from 'express';
-import Guilds from '../../data/guilds';
 import Deps from '../../utils/deps';
-import { updateGuild, updateUser, validateGuildExists, validateGuildOwner, validateUser } from '../modules/middleware';
-import { Channel } from '../../data/models/channel';
-import { GuildMember } from '../../data/models/guild-member';
-import { Invite } from '../../data/models/invite';
-import { Message } from '../../data/models/message';
-import { SystemBot } from '../../system/bot';
-import Channels from '../../data/channels';
-import Roles from '../../data/roles';
+import { updateGuild, updateUser, validateGuildExists, validateGuildOwner, validateHasPermission, validateUser } from '../modules/middleware';
 import Users from '../../data/users';
-import { User } from '../../data/models/user';
+import Guilds from '../../data/guilds';
+import { WebSocket } from '../websocket/websocket';
 import { GuildDocument } from '../../data/models/guild';
+import { Args } from '../websocket/ws-events/ws-event';
+import { PermissionTypes } from '../../data/types/entity-types';
 
 export const router = Router();
 
-const bot = Deps.get<SystemBot>(SystemBot);
+const guilds = Deps.get<Guilds>(Guilds);
 const users = Deps.get<Users>(Users);
+const ws = Deps.get<WebSocket>(WebSocket);
 
 router.get('/', updateUser, validateUser, async (req, res) => {
   try {
@@ -27,15 +23,35 @@ router.get('/', updateUser, validateUser, async (req, res) => {
   }
 });
 
-router.get('/:id/authorize/user',
+router.get('/:id/authorize/:botId',
   updateUser, validateUser, updateGuild, validateGuildExists, validateGuildOwner,
   async (req, res) => {
   try {
-    // req.query.client_id
-    // FIXME: allow adding bots other than 2PG
-    await bot.addToGuild(req.params.id);
+    const guild = res.locals.guild as GuildDocument;
+    const bot = await users.get(req.params.botId);
+        
+    const member = await guilds.join(bot, res.locals.guild);
+
+    ws.io
+      .to(guild.id)
+      .emit('GUILD_MEMBER_ADD', { member } as Args.GuildMemberAdd);
+    ws.io
+      .to(bot.id)
+      .emit('GUILD_JOIN', { guild } as Args.GuildJoin);
 
     res.json({ message: 'Success' });
+  } catch (err) {    
+    res.json({ code: 400, message: err?.message });
+  }
+});
+
+router.get('/:id/invites/:guildId',
+  updateUser, validateUser, updateGuild, validateGuildExists,
+  validateHasPermission(PermissionTypes.General.MANAGE_GUILD),
+  async (req, res) => {
+  try {
+    const invites = await guilds.invites(req.params.id);
+    res.json(invites);
   } catch (err) {    
     res.json({ code: 400, message: err?.message });
   }

@@ -71,6 +71,16 @@ describe('ready', () => {
     expect(rooms()).to.include(guild._id);
   });
 
+  it('joins guild channel rooms', async () => {
+    const newChannel = await Mock.channel('TEXT', guild.id);
+
+    await makeOwner();
+    await ready();
+
+    expect(rooms()).to.include(guild.channels[0]._id, newChannel[2]._id);
+  });
+
+
   function ready() {
     return event.invoke(ws, client, { key });
   }

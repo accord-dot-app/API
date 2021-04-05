@@ -63,7 +63,7 @@ describe('guild-member-add', () => {
   });
 
   it('invite has reached max uses, is deleted', async () => {
-    invite.options.maxUses = 1;
+    invite.options = { maxUses: 1 };
     await invite.save();
 
     await guildMemberAdd();
@@ -72,7 +72,7 @@ describe('guild-member-add', () => {
   });
 
   it('invite expired, rejected', async () => {
-    invite.options.expiresAt = new Date(0);
+    invite.options = { expiresAt: new Date(0) };
     await invite.save();
 
     await expect(guildMemberAdd()).to.be.rejectedWith('Invite Expired');

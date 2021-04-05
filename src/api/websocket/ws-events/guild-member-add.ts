@@ -4,7 +4,7 @@ import Guilds from '../../../data/guilds';
 import Invites from '../../../data/invites';
 import { GuildDocument } from '../../../data/models/guild';
 import { InviteDocument } from '../../../data/models/invite';
-import { User } from '../../../data/models/user';
+import { User, UserDocument } from '../../../data/models/user';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
@@ -17,7 +17,6 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
   constructor(
     private guilds = Deps.get<Guilds>(Guilds),
     private invites = Deps.get<Invites>(Invites),
-    private guildMembers = Deps.get<GuildMembers>(GuildMembers),
     private users = Deps.get<Users>(Users),
   ) {}
 
@@ -32,12 +31,7 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
 
     await this.handleInvite(invite);
 
-    user.guilds.push(guild.id as any);
-    await guild.save();
-
-    const member = await this.guildMembers.create(guild.id, userId);
-    guild.members.push(member);
-    await guild.save();
+    const member = await this.guilds.join(user, guild);
 
     await this.joinGuildRooms(client, guild);
 

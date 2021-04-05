@@ -34,6 +34,10 @@ export default class implements WSEvent<'MESSAGE_CREATE'> {
       embed: await this.getEmbed(partialMessage),
     });
 
+    // FIXME: dumb fix, should be handled in ready
+    if (!client.rooms.has(channelId))
+      await client.join(channelId);
+
     ws.io
       .to(channelId)
       .emit('MESSAGE_CREATE', { message } as Args.MessageCreate);

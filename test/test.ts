@@ -36,6 +36,7 @@ use(should);
   await import('./integration/ws/guild-create.tests');
   await import('./integration/ws/guild-delete.tests');
   await import('./integration/ws/guild-update.tests');
+  await import('./integration/ws/invite-create.tests');
   await import('./integration/ws/invite-delete.tests');
   await import('./integration/ws/message-create.tests');
   await import('./integration/ws/message-update.tests');

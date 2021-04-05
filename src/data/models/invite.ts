@@ -47,4 +47,6 @@ export const Invite = model<InviteDocument>('invite', new Schema({
     validate: [patterns.snowflake, 'Invalid Snowflake ID'],
   },
   uses: Number,
-}, { toJSON: { getters: true } }));
+}));
+// { toJSON: { getters: true } })
+// -> Cannot convert string to a BigInt

@@ -9,6 +9,7 @@ import { Channel } from './models/channel';
 import { Role } from './models/role';
 import { GuildMember } from './models/guild-member';
 import { generateInviteCode } from './models/invite';
+import { Guild } from './models/guild';
 
 export default class Users extends DBWrapper<string, UserDocument> {
   private avatarNames: string[] = [];
@@ -50,10 +51,11 @@ export default class Users extends DBWrapper<string, UserDocument> {
   }
 
   public async getGuilds(userId: string): Promise<Lean.Guild[]> {
-    const user = await this.get(userId) as any as SelfUserDocument;
+    const user = await this.get(userId) as any as SelfUserDocument;    
 
     const populated = await this.populateGuilds(user);
-    return populated.guilds as Lean.Guild[];
+    return populated.guilds
+      .map(g => new Guild(g).toJSON()) as Lean.Guild[];
   }
 
   private async populateGuilds(user: SelfUserDocument) {

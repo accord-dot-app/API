@@ -17,6 +17,7 @@ import { resolve } from 'path';
 import Deps from '../utils/deps';
 import { WebSocket } from './websocket/websocket';
 import { APIError } from './modules/api-error';
+import helmet from 'helmet';
 
 export class API {
   public app = express();
@@ -37,6 +38,7 @@ export class API {
     this.app.use(bodyParser.json());
     this.app.use(passport.initialize());
     this.app.use(cors());
+    this.app.use(helmet())
   }
 
   private setupRoutes() {

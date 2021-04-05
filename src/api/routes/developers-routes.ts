@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { Application } from '../../data/models/application';
 import { generateInviteCode } from '../../data/models/invite';
-import { generateSnowflake } from '../../data/snowflake-entity';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import { updateUser, validateUser } from '../modules/middleware';
@@ -10,12 +9,18 @@ export const router = Router();
 
 const users = Deps.get<Users>(Users);
 
-// FIXME: inefficient if too many applications
 router.get('/applications', async (req, res) => {
-  const applications = await Application
+  const start = parseInt(req.query.start as string);
+  const end = parseInt(req.query.end as string);
+
+  const applications = (await Application
     .find()
-    .populate('-token')
-    .exec();
+    .select('-token')
+    .populate('user')
+    .populate('owner')
+    .exec())
+    .slice(start || 0, end || 25);
+
   res.json(applications);
 });
 
