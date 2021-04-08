@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import 'express-async-errors';
 
 import bodyParser from 'body-parser';
@@ -22,6 +22,7 @@ import helmet from 'helmet';
 
 export class API {
   public app = express();
+  private prefix = `/api/v1`;
 
   constructor(private ws = Deps.get<WebSocket>(WebSocket)) {
     this.setupMiddleware();
@@ -43,27 +44,27 @@ export class API {
   }
 
   private setupRoutes() {
-    this.app.use('/api', express.static(resolve('./assets')));
-    this.app.use('/api', apiRoutes, authRoutes,);
+    this.app.use(`${this.prefix}`, express.static(resolve('./assets')));
+    this.app.use(`${this.prefix}`, apiRoutes, authRoutes,);
   
-    this.app.use('/api/invites', invitesRoutes);
-    this.app.use('/api/developers', developersRoutes);
-    this.app.use('/api/channels', channelsRoutes);
-    this.app.use('/api/guilds', guildsRoutes);
-    this.app.use('/api/users', usersRoutes);
+    this.app.use(`${this.prefix}/invites`, invitesRoutes);
+    this.app.use(`${this.prefix}/developers`, developersRoutes);
+    this.app.use(`${this.prefix}/channels`, channelsRoutes);
+    this.app.use(`${this.prefix}/guilds`, guildsRoutes);
+    this.app.use(`${this.prefix}/users`, usersRoutes);
   } 
 
   private setupErrorHandling() {
-    this.app.all('/api/*', (req, res, next) => next(new APIError(404)));
+    this.app.all(`${this.prefix}/*`, (req, res, next) => next(new APIError(404)));
     
-    this.app.use((error, req, res, next) => {
+    this.app.use((error: APIError, req: Request, res: Response, next: NextFunction) => {
       if (res.headersSent)
         return next(error);
 
-      const code = parseInt(error.code) || 400;
-      return res.status(code).json({
-        message: error.message
-      });
+      const code = error.code || 400;
+      return res
+        .status(code)
+        .json({ message: error.message });
     });
   }
 

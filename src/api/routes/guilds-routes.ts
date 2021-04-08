@@ -24,12 +24,12 @@ router.get('/', updateUser, validateUser, async (req, res) => {
 });
 
 router.get('/:id/authorize/:botId',
-  updateUser, validateUser, updateGuild, validateGuildExists, validateGuildOwner,
+  updateUser, validateUser, updateGuild,
+  validateHasPermission(PermissionTypes.General.MANAGE_GUILD),
   async (req, res) => {
   try {
-    const guild = res.locals.guild as GuildDocument;
+    const guild = await guilds.get(req.params.id);
     const bot = await users.get(req.params.botId);
-        
     const member = await guilds.join(bot, res.locals.guild);
 
     ws.io
@@ -45,7 +45,7 @@ router.get('/:id/authorize/:botId',
   }
 });
 
-router.get('/:id/invites/:guildId',
+router.get('/:id/invites',
   updateUser, validateUser, updateGuild, validateGuildExists,
   validateHasPermission(PermissionTypes.General.MANAGE_GUILD),
   async (req, res) => {

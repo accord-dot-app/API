@@ -22,8 +22,8 @@ describe('invite-create', () => {
   afterEach(async () => await Mock.afterEach(ws));
   after(async () => await Mock.after(client));
 
-  it('member with invite create perms, fulfilled', async () => {
-    await Mock.giveEveryonePerms(role, PermissionTypes.General.CREATE_INVITE);
+  it('member with manage guild perms, fulfilled', async () => {
+    await Mock.giveEveryonePerms(role, PermissionTypes.General.MANAGE_GUILD);
     await expect(inviteCreate()).to.be.fulfilled;
   });
 

@@ -28,6 +28,8 @@ use(should);
   } catch {}
 
   await import('./integration/routes/auth-routes.tests');
+  await import('./integration/routes/invites-routes.tests');
+  await import('./integration/routes/guilds-routes.tests');
 
   await import('./integration/ws/accept-friend-request.tests');
   await import('./integration/ws/cancel-friend-request.tests');

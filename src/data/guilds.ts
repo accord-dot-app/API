@@ -7,6 +7,7 @@ import GuildMembers from './guild-members';
 import Roles from './roles';
 import { UserDocument } from './models/user';
 import { Invite } from './models/invite';
+import { APIError } from '../api/modules/api-error';
 
 export default class Guilds extends DBWrapper<string, GuildDocument> {
   constructor(
@@ -23,7 +24,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
       .populate('channels')
       .exec();
     if (!guild)
-      throw new TypeError('Guild Not Found');
+      throw new APIError(404, 'Guild Not Found');
     return guild;
   }
 

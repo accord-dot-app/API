@@ -10,6 +10,7 @@ import { Role } from './models/role';
 import { GuildMember } from './models/guild-member';
 import { generateInviteCode } from './models/invite';
 import { Guild } from './models/guild';
+import { APIError } from '../api/modules/api-error';
 
 export default class Users extends DBWrapper<string, UserDocument> {
   private avatarNames: string[] = [];
@@ -25,7 +26,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
   public async get(id: string | undefined, self = false): Promise<UserDocument> {
     const user = await User.findById(id);
     if (!user)
-      throw new TypeError('User Not Found');
+      throw new APIError(404, 'User Not Found');
     if (!self)
       delete user.email;
     return user;
@@ -34,7 +35,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
   public async getByUsername(username: string) {
     const user = await User.findOne({ username });
     if (!user)
-      throw new TypeError('User Not Found');
+      throw new APIError(404, 'User Not Found');
     return user;
   }
 
@@ -60,9 +61,10 @@ export default class Users extends DBWrapper<string, UserDocument> {
 
   private async populateGuilds(user: SelfUserDocument) {
     for (const guild of user.guilds) {
-      guild.channels = await Channel.find({ guildId: guild._id });
-      guild.roles = await Role.find({ guildId: guild._id });
-      guild.members = await GuildMember.find({ guildId: guild._id });
+      const guildId = guild._id;
+      guild.channels = await Channel.find({ guildId });
+      guild.roles = await Role.find({ guildId });
+      guild.members = await GuildMember.find({ guildId });
     }
     return user;
   }
@@ -134,7 +136,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
       avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/${randomAvatar}`,
       badges: [],
       bot,
-      email: `${generateSnowflake()}@avoid-mongodb-error.com`,
+      email: `${generateSnowflake()}@avoid-mongodb-error.com`, // FIXME
       friends: [],
       status: 'ONLINE',
       voice: new UserTypes.VoiceState(),

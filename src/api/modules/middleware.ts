@@ -5,18 +5,20 @@ import Roles from '../../data/roles';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import { User } from '../../data/models/user';
+import { APIError } from './api-error';
+import { NextFunction, Request, Response } from 'express';
 
 const guilds = Deps.get<Guilds>(Guilds);
 const roles = Deps.get<Roles>(Roles);
 const users = Deps.get<Users>(Users);
 
-export function validateUser(req, res, next) {  
-  return (res.locals.user)
-    ? next()
-    : res.json({ code: 401, message: 'Unauthorized' });
+export function validateUser(req: Request, res: Response, next: NextFunction) {  
+  if (res.locals.user)
+    return next();
+  throw new APIError(401);
 }
 
-export async function updateUsername(req, res, next) {
+export async function updateUsername(req: Request, res: Response, next: NextFunction) {
   if (!req.body.username) {
     const user = await User.findOne({ email: req.body.email });
     req.body.username = user?.username;    
@@ -24,45 +26,48 @@ export async function updateUsername(req, res, next) {
   return next();
 }
 
-export async function updateUser(req, res, next) {
+export async function updateUser(req: Request, res: Response, next: NextFunction) {
   try {
-    const id = users.idFromAuth(req.get('Authorization'));
+    const key = req.get('Authorization') as string;
+    const id = users.idFromAuth(key);
+
     res.locals.user = await users.get(id, true);    
   } finally {
     return next();
   }
 }
 
-export async function updateGuild(req, res, next) {
+export async function updateGuild(req: Request, res: Response, next: NextFunction) {
   res.locals.guild = await guilds.get(req.params.id);
-
   return next();
 }
 
-export async function validateGuildExists(req, res, next) {
+export async function validateGuildExists(req: Request, res: Response, next: NextFunction) {
   const exists = await Guild.exists({ _id: req.params.id });
   return (exists)
     ? next()
     : res.status(404).json({ message: 'Guild does not exist' });
 }
  
-export async function validateGuildOwner(req, res, next) {
+export async function validateGuildOwner(req: Request, res: Response, next: NextFunction) {
   const userOwnsGuild = res.locals.guild.ownerId === res.locals.user._id;
-
-  return (userOwnsGuild)
-    ? next()
-    : res.code(401).json({ code: 401, message: 'You do not own this guild!' });
+  if (userOwnsGuild)
+    return next();
+  throw new APIError(401, 'You do not own this guild!');
 }
 
 export function validateHasPermission(permission: PermissionTypes.Permission) {
-  return async (req, res, next) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     const guild: GuildDocument = res.locals.guild;
     const member = guild.members.find(m => m.userId === res.locals.user._id);
     if (!member)
-      return res.status(401);
+      throw new APIError(401);
 
-    return (roles.hasPermission(member, permission))
-      ? next()
-      : res.status(401);
+    const isOwner = guild.ownerId === res.locals.user._id;
+    const hasPerm = await roles.hasPermission(member, permission);
+    if (hasPerm || isOwner)
+      return next();
+
+    throw new APIError(401, 'Missing Permissions');
   };
 }
