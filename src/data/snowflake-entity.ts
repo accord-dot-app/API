@@ -29,10 +29,15 @@ export function generateSnowflake() {
   return BigInt(snowflake).toString();
 }
 
-function binary64(str: string) {
-  return `0b${BigInt(str)
-    .toString(2)
-    .padStart(64, '0')}`;
+function binary64(val: string) {
+  try {
+    return `0b${BigInt(val)
+      .toString(2)
+      .padStart(64, '0')}`;
+  } catch (e) {
+    console.log(e);
+    return '';    
+  }
 }
 
 // what this method does

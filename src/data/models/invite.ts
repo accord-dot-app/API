@@ -26,7 +26,7 @@ export const Invite = model<InviteDocument>('invite', new Schema({
   },
   createdAt: {
     type: Date,
-    get: createdAtToDate,
+    default: new Date(),
   },
   options: new Schema<InviteTypes.Options>({
     expiresAt: Date,
@@ -47,6 +47,4 @@ export const Invite = model<InviteDocument>('invite', new Schema({
     validate: [patterns.snowflake, 'Invalid Snowflake ID'],
   },
   uses: Number,
-}));
-// { toJSON: { getters: true } })
-// -> Cannot convert string to a BigInt
+}, { toJSON: { getters: true } }));

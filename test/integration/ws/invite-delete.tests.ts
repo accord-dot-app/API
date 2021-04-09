@@ -8,7 +8,7 @@ import { expect } from 'chai';
 import { PermissionTypes } from '../../../src/data/types/entity-types';
 import { RoleDocument } from '../../../src/data/models/role';
 
-describe.only('invite-delete', () => {
+describe('invite-delete', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: InviteDelete;
   let ws: WebSocket;
