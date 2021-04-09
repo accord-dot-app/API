@@ -11,7 +11,7 @@ import { generateInviteCode } from '../../../src/data/models/invite';
 import { Email } from '../../../src/api/modules/email/email';
 
 describe.skip('auth-routes', () => {
-  const endpoint = `/api`;
+  const endpoint = `/api/v1`;
 
   let app: Express.Application;
   let users: Users;
@@ -30,7 +30,7 @@ describe.skip('auth-routes', () => {
       username: generateUsername(),
       password: 'Testing@123',
     };
-    user = await users.createUser(credentials.username, credentials.password) as any;
+    user = await users.create(credentials.username, credentials.password) as any;
     credentials.email = user.email; 
 
     authorization = `Bearer ${users.createToken(user.id)}`;

@@ -68,7 +68,7 @@ router.get('/verify-email', async (req, res) => {
     { runValidators: true },
   );
 
-  res.redirect('/channels/@me?success=Successfully verified your email.');
+  res.redirect(`${process.env.WEBSITE_URL}/channels/@me?success=Successfully verified your email.`);
 });
 
 router.post('/change-password', async (req, res) => {

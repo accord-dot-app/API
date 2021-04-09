@@ -49,6 +49,6 @@ export interface EmailTemplate {
 } 
 
 const subjects: { [k in keyof EmailTemplate]: string } = {
-  'verify': 'DClone - Login Verification Code',
-  'verify-email': 'DClone - Verify Email',
+  'verify': 'Accord - Login Verification Code',
+  'verify-email': 'Accord - Verify Email',
 };

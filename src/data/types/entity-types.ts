@@ -152,6 +152,8 @@ export namespace PermissionTypes {
     ...Voice,
   }
   export type Permission = General | Text | Voice;
+
+  export type PermissionString = keyof typeof All;
 }
 
 export namespace UserTypes {
@@ -170,7 +172,7 @@ export namespace UserTypes {
   export interface Self extends Lean.User {
     guilds: Lean.Guild[];
     email: string;
-    verified: boolean;
+    verified: true;
   }
 }
 

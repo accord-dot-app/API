@@ -2,10 +2,10 @@ import cluster from 'cluster';
 
 let inc = 0;
 let lastSnowflake: string;
-export const dcloneEpoch = 1577836800000;
+export const accordEpoch = 1577836800000;
 
 export function generateSnowflake() {
-  const msSince = (new Date().getTime() - dcloneEpoch)
+  const msSince = (new Date().getTime() - accordEpoch)
     .toString(2)
     .padStart(42, '0');  
   const pid = process.pid
@@ -41,5 +41,5 @@ export function snowflakeToDate(snowflake: string) {
   const sinceEpochMs = Number(
     binary64(snowflake).slice(0, 42 + 2)
   );  
-  return new Date(sinceEpochMs + dcloneEpoch);
+  return new Date(sinceEpochMs + accordEpoch);
 }

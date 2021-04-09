@@ -9,7 +9,7 @@ import { InviteDocument } from '../../../src/data/models/invite';
 import { GuildDocument } from '../../../src/data/models/guild';
 
 describe.only('invite-routes', () => {
-  const endpoint = `/api/invites`;
+  const endpoint = `/api/v1/invites`;
 
   let app: Express.Application;
   let users: Users;

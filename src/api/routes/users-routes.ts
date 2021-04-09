@@ -36,7 +36,7 @@ router.get('/check-email', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const user = await users.createUser(req.body.username, req.body.password); 
+    const user = await users.create(req.body.username, req.body.password); 
     const dm = await channels.createDM(bot.self._id, user._id);
     await bot.message(dm, 'Hello there new user :smile:!');
     

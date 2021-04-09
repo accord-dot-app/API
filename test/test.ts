@@ -27,9 +27,9 @@ use(should);
     execSync(`kill -9 $(lsof -i :${process.env.PORT} | tail -n 1 | cut -d ' ' -f5)`);
   } catch {}
 
-  await import('./integration/routes/auth-routes.tests');
-  await import('./integration/routes/invites-routes.tests');
-  await import('./integration/routes/guilds-routes.tests');
+  // await import('./integration/routes/auth-routes.tests');
+  // await import('./integration/routes/invites-routes.tests');
+  // await import('./integration/routes/guilds-routes.tests');
 
   await import('./integration/ws/accept-friend-request.tests');
   await import('./integration/ws/cancel-friend-request.tests');

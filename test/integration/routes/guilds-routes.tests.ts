@@ -7,12 +7,11 @@ import { UserDocument } from '../../../src/data/models/user';
 import { expect } from 'chai';
 import { InviteDocument } from '../../../src/data/models/invite';
 import { GuildDocument } from '../../../src/data/models/guild';
-import { Role, RoleDocument } from '../../../src/data/models/role';
+import { Role } from '../../../src/data/models/role';
 import { Lean, PermissionTypes } from '../../../src/data/types/entity-types';
-import Guilds from '../../../src/data/guilds';
 
-describe.only('guilds-routes', () => {
-  const endpoint = `/api/guilds`;
+describe('guilds-routes', () => {
+  const endpoint = `/api/v1/guilds`;
 
   let app: Express.Application;
   let users: Users;
