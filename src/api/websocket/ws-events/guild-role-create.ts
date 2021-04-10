@@ -7,12 +7,14 @@ import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
 import { WSEvent, Args, Params } from './ws-event';
+import Roles from '../../../data/roles';
 
 export default class implements WSEvent<'GUILD_ROLE_CREATE'> {
   on = 'GUILD_ROLE_CREATE' as const;
 
   constructor(
-    private guard = Deps.get<WSGuard>(WSGuard)
+    private guard = Deps.get<WSGuard>(WSGuard),
+    private roles = Deps.get<Roles>(Roles),
   ) {}
 
   public async invoke(ws: WebSocket, client: Socket, { guildId, partialRole }: Params.GuildRoleCreate) {

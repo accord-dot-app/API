@@ -31,7 +31,7 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
     const key = req.get('Authorization') as string;
     const id = users.idFromAuth(key);
 
-    res.locals.user = await users.get(id, true);    
+    res.locals.user = await users.getSelf(id);    
   } finally {
     return next();
   }

@@ -16,8 +16,8 @@ const ws = Deps.get<WebSocket>(WebSocket);
 
 router.get('/', updateUser, validateUser, async (req, res) => {
   try {
-    const userGuilds = await users.getGuilds(res.locals.user._id); 
-    res.json(userGuilds);
+    const user = await users.getSelf(res.locals.user._id); 
+    res.json(user.guilds);
   } catch (err) {
     res.json({ code: 400, message: err?.message });
   }

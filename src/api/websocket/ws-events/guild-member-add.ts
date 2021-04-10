@@ -1,13 +1,10 @@
 import { Socket } from 'socket.io';
-import GuildMembers from '../../../data/guild-members';
 import Guilds from '../../../data/guilds';
 import Invites from '../../../data/invites';
 import { GuildDocument } from '../../../data/models/guild';
 import { InviteDocument } from '../../../data/models/invite';
-import { User, UserDocument } from '../../../data/models/user';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
-import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
 import { WSEvent, Args, Params } from './ws-event';
 
@@ -30,9 +27,7 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
       throw new TypeError('Bot users cannot accept invites');
 
     await this.handleInvite(invite);
-
     const member = await this.guilds.join(user, guild);
-
     await this.joinGuildRooms(client, guild);
 
     ws.io

@@ -103,6 +103,7 @@ export class Mock {
       badges: [],
       friendIds: [],
       friendRequests: [],
+      email: `${generateSnowflake()}@gmail.com`, // FIXME
       guilds: guildIds,
       status: 'ONLINE',
       username: `mock-bot-${generateSnowflake()}`,

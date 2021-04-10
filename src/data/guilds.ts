@@ -5,7 +5,7 @@ import Deps from '../utils/deps';
 import Channels from './channels';
 import GuildMembers from './guild-members';
 import Roles from './roles';
-import { UserDocument } from './models/user';
+import { User, UserDocument } from './models/user';
 import { Invite } from './models/invite';
 import { APIError } from '../api/modules/api-error';
 
@@ -48,11 +48,11 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
   }
 
   public async join(user: UserDocument, guild: GuildDocument) {
-    user.guilds.push(guild.id as any);
+    user.guilds.push(guild.id);
     await guild.save();
 
     const member = await this.members.create(guild.id, user.id);
-    guild.members.push(member);
+    guild.members.push(member.id);
     await guild.save();
 
     return member;

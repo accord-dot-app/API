@@ -23,12 +23,29 @@ export default class Users extends DBWrapper<string, UserDocument> {
       .filter(n => n.startsWith('avatar'));
   }
 
-  public async get(id: string | undefined, self = false): Promise<UserDocument> {
+  public async get(id: string | undefined): Promise<UserDocument> {
     const user = await User.findById(id);
     if (!user)
       throw new APIError(404, 'User Not Found');
-    if (!self)
-      delete user.email;
+    return user;
+  }
+
+  public async getSelf(id: string | undefined, self = false): Promise<SelfUserDocument> {
+    const user = await this.get(id) as SelfUserDocument;
+
+    user.guilds = (await this
+      .populateGuilds(user)).guilds
+      .map(g => new Guild(g).toJSON()) as Lean.Guild[];
+    return user;
+  }
+
+  private async populateGuilds(user: SelfUserDocument) {
+    for (const guild of user.guilds) {
+      const guildId = guild._id;
+      guild.channels = await Channel.find({ guildId });
+      guild.roles = await Role.find({ guildId });
+      guild.members = await GuildMember.find({ guildId });
+    }
     return user;
   }
 
@@ -51,47 +68,8 @@ export default class Users extends DBWrapper<string, UserDocument> {
     }) as UserDocument[];
   }
 
-  public async getGuilds(userId: string): Promise<Lean.Guild[]> {
-    const user = await this.get(userId) as any as SelfUserDocument;    
-
-    const populated = await this.populateGuilds(user);
-    return populated.guilds
-      .map(g => new Guild(g).toJSON()) as Lean.Guild[];
-  }
-
-  private async populateGuilds(user: SelfUserDocument) {
-    for (const guild of user.guilds) {
-      const guildId = guild._id;
-      guild.channels = await Channel.find({ guildId });
-      guild.roles = await Role.find({ guildId });
-      guild.members = await GuildMember.find({ guildId });
-    }
-    return user;
-  }
-
   public async getDMChannels(userId: string) {
     return await Channel.find({ memberIds: userId });
-  }
-
-  public async getGuild(userId: string, guildId: string) {
-    return (await User
-      .findOne({
-        _id: userId,
-        guilds: guildId as any
-      }, 'guilds')
-      ?.populate({
-        path: 'guilds',
-        populate: { path: 'channels' }
-      })
-      .populate({
-        path: 'guilds',
-        populate: { path: 'members' }
-      })
-      .populate({
-        path: 'guilds',
-        populate: { path: 'roles' }
-      })
-      .exec())?.guilds;
   }
 
   public async getSystemUser() {

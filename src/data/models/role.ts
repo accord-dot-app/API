@@ -1,5 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
-import { createdAtToDate } from '../../utils/utils';
+import { checkForDuplicates, createdAtToDate } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns, PermissionTypes } from '../types/entity-types';
 
@@ -7,6 +7,8 @@ export function hasPermission(current: PermissionTypes.Permission, required: Per
   return Boolean(current & required)
     || Boolean(current & PermissionTypes.General.ADMINISTRATOR);
 }
+
+const everyoneColor = '#ffffff';
 
 export const defaultPermissions =
   PermissionTypes.General.VIEW_CHANNELS
@@ -29,11 +31,12 @@ export const Role = model<RoleDocument>('role', new Schema({
   },
   color: {
     type: String,
-    // default: '#576067',
+    default: everyoneColor,
     validate: {
-      validator: function(val: string) {
-        const role = this as any as RoleDocument;
-        return role.name !== '@everyone' || !val;
+      validator: function(this: RoleDocument, val: string) {
+        return this.name !== '@everyone'
+          || val === everyoneColor
+          || !val;
       },
       message: 'Cannot change @everyone role color',
     }
@@ -58,6 +61,10 @@ export const Role = model<RoleDocument>('role', new Schema({
     type: Number,
     required: [true, 'Position is required'],
     min: [0, 'Position must be greater than 0'],
+    unique: async function(this: RoleDocument) {
+      const roles = await Role.find({ guildId: this.guildId });
+      return checkForDuplicates(roles);
+    }
   },
   permissions: {
     type: Number,
