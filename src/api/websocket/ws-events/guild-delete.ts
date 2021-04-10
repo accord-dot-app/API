@@ -25,13 +25,15 @@ export default class implements WSEvent<'GUILD_DELETE'> {
       { guilds: guildId },
       { $pull: { guilds: guildId } },
     );
+
+    const guildChannels = await Channel.find({ guildId });
+    await Message.deleteMany({ channelId: guildChannels.map(c => c.id) as any })
       
     await Guild.deleteOne({ _id: guildId });
-    await Channel.deleteMany({ guildId });
     await GuildMember.deleteMany({ guildId });
     await Invite.deleteMany({ guildId });
     await Role.deleteMany({ guildId });
-    // TODO: delete guild messages
+    await Channel.deleteMany({ guildId });
 
     ws.io
       .to(guildId)
