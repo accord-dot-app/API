@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import Channels from '../../data/channels';
 import Messages from '../../data/messages';
+import { UserTypes } from '../../data/types/entity-types';
 import Deps from '../../utils/deps';
 import { updateUser, validateUser } from '../modules/middleware';
 
@@ -15,10 +16,12 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
     const start = +(req.query.start || 0);
     const end = +(req.query.end || 25);
 
+    const user: UserTypes.Self = res.locals.user;
     const channelMsgs = (await messages
       .getChannelMessages(channelId) ?? await messages
       .getDMChannelMessages(channelId, res.locals.user._id))
-      .slice(start, end);
+      .slice(start, end)
+      .filter(m => !user.ignored.userIds.includes(m.authorId));
     
     res.json(channelMsgs);
   } catch (err) {

@@ -5,7 +5,7 @@ import Deps from '../utils/deps';
 import Channels from './channels';
 import GuildMembers from './guild-members';
 import Roles from './roles';
-import { User, UserDocument } from './models/user';
+import {  UserDocument } from './models/user';
 import { Invite } from './models/invite';
 import { APIError } from '../api/modules/api-error';
 
@@ -16,16 +16,20 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
     private roles = Deps.get<Roles>(Roles),
   ) { super(); }
 
-  public async get(id: string | undefined) {
-    const guild = await Guild
-      .findById(id)
-      ?.populate('members')
-      .populate('roles')
-      .populate('channels')
-      .exec();
+  public async get(id: string | undefined, populate = true) {
+    const guild = await Guild.findById(id);
     if (!guild)
       throw new APIError(404, 'Guild Not Found');
-    return guild;
+    return (populate)
+      ? guild.populate('members')
+        .populate('roles')
+        .populate('channels')
+        .execPopulate()
+      : guild;
+  }
+
+  public async getFromChannel(id: string) {
+    return await Guild.findOne({ channels: { $in: id } as any });
   }
 
   public async create(name: string, ownerId: string) {    

@@ -34,12 +34,13 @@ export default class Users extends DBWrapper<string, UserDocument> {
     return user;
   }
 
-  public async getSelf(id: string | undefined, self = false): Promise<SelfUserDocument> {
+  public async getSelf(id: string | undefined, populateGuilds = true): Promise<SelfUserDocument> {
     const user = await this.get(id) as SelfUserDocument;
 
-    user.guilds = (await this
-      .populateGuilds(user)).guilds
-      .map(g => new Guild(g).toJSON()) as Lean.Guild[];
+    if (populateGuilds)
+      user.guilds = (await this
+        .populateGuilds(user)).guilds
+        .map(g => new Guild(g).toJSON()) as Lean.Guild[];
     return user;
   }
 

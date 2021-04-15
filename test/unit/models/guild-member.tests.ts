@@ -1,7 +1,7 @@
-import { generateSnowflake } from '../../src/data/snowflake-entity';
+import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { test, given } from 'sazerac';
-import { mongooseError } from '../test-utils';
-import { GuildMember } from '../../src/data/models/guild-member';
+import { mongooseError } from '../../test-utils';
+import { GuildMember } from '../../../src/data/models/guild-member';
 
 test(createGuildMember, () => {
   given().expect(true);

@@ -1,7 +1,7 @@
-import { generateSnowflake } from '../../src/data/snowflake-entity';
+import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { test, given } from 'sazerac';
-import { longArray, longString, mongooseError } from '../test-utils';
-import { defaultPermissions, Role } from '../../src/data/models/role';
+import { longArray, longString, mongooseError } from '../../test-utils';
+import { defaultPermissions, Role } from '../../../src/data/models/role';
 
 test(createRole, () => {
   given().expect(true);

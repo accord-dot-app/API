@@ -1,7 +1,7 @@
-import { generateSnowflake } from '../../src/data/snowflake-entity';
+import { generateSnowflake } from '../../../../src/data/snowflake-entity';
 import { test, given } from 'sazerac';
-import { longArray, longString, mongooseError } from '../test-utils';
-import { Application } from '../../src/data/models/application';
+import { longString, mongooseError } from '../../../test-utils';
+import { Application } from '../../../../src/data/models/application';
 
 test(createApplication, () => {
   given().expect(true);

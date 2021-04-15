@@ -1,7 +1,7 @@
-import { Channel } from '../../src/data/models/channel';
-import { generateSnowflake } from '../../src/data/snowflake-entity';
+import { Channel } from '../../../src/data/models/channel';
+import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { test, given } from 'sazerac';
-import { longArray, longString, mongooseError } from '../test-utils';
+import { longArray, longString, mongooseError } from '../../test-utils';
 
 test(createChannel, () => {
   given().expect(true);

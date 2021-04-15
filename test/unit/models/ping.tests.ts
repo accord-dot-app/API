@@ -1,7 +1,7 @@
-import { generateSnowflake } from '../../src/data/snowflake-entity';
+import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { test, given } from 'sazerac';
-import { mongooseError } from '../test-utils';
-import { Ping } from '../../src/data/models/ping';
+import { mongooseError } from '../../test-utils';
+import { ChannelPings } from '../../../src/data/models/ping';
 
 test(createPing, () => {
   given().expect(true);
@@ -9,8 +9,8 @@ test(createPing, () => {
   given({ pings: [] }).expect(true);
 });
 
-function createPing(message: any) {
-  const error = new Ping({
+function createPing() {
+  const error = new ChannelPings({
     _id: generateSnowflake(),
     pings: [],
   }).validateSync();
