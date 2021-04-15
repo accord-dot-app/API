@@ -16,6 +16,7 @@ import Guilds from '../src/data/guilds';
 import GuildMembers from '../src/data/guild-members';
 import { WSGuard } from '../src/api/modules/ws-guard';
 import Roles from '../src/data/roles';
+import { ChannelPings } from '../src/data/models/ping';
 
 export class Mock {
   private static guilds = Deps.get<Guilds>(Guilds);
@@ -182,6 +183,7 @@ export class Mock {
   public static async cleanDB() {
     await Application.deleteMany({});
     await Channel.deleteMany({});
+    await ChannelPings.deleteMany({});
     await Guild.deleteMany({});
     await GuildMember.deleteMany({});
     await Invite.deleteMany({});
