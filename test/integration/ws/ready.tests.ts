@@ -80,7 +80,6 @@ describe('ready', () => {
     expect(rooms()).to.include(guild.channels[0]._id, newChannel[2]._id);
   });
 
-
   function ready() {
     return event.invoke(ws, client, { key });
   }

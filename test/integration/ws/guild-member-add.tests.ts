@@ -10,7 +10,7 @@ import { expect, spy } from 'chai';
 import Guilds from '../../../src/data/guilds';
 import Users from '../../../src/data/users';
 
-describe.only('guild-member-add', () => {
+describe('guild-member-add', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: GuildMemberAdd;
   let guilds: Guilds;

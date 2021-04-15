@@ -27,6 +27,10 @@ export default class Users extends DBWrapper<string, UserDocument> {
     const user = await User.findById(id);
     if (!user)
       throw new APIError(404, 'User Not Found');
+
+    delete user['email'];
+    delete user['ignored'];
+
     return user;
   }
 
@@ -63,7 +67,8 @@ export default class Users extends DBWrapper<string, UserDocument> {
         { _id: this.systemUser._id },
         { friendIds: userId as any },
         { friendRequests: { userId, type: 'INCOMING' } },
-        { friendRequests: { userId, type: 'OUTGOING' } }
+        { friendRequests: { userId, type: 'OUTGOING' } },
+        { ignored: { userIds: userId } },
       ]
     }) as UserDocument[];
   }

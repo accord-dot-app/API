@@ -1,6 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
 import { generateSnowflake } from '../snowflake-entity';
-import faker from 'faker';
 import { Lean, patterns } from '../types/entity-types';
 import { createdAtToDate, generateUsername } from '../../utils/utils';
 

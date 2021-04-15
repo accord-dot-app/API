@@ -55,6 +55,10 @@ export namespace Lean {
     embed?: MessageTypes.Embed;
     updatedAt?: Date;
   }
+  export interface Ping {
+    _id: string;
+    pings: PingTypes.Message[];
+  }
   export interface Role {
     _id: string;
     color?: string;
@@ -72,7 +76,6 @@ export namespace Lean {
     badges: UserTypes.BadgeType[];
     bot: boolean;
     createdAt: Date;
-    email?: never | string;
     friendIds: string[];
     friendRequests: UserTypes.FriendRequest[];
     guilds: string[] | Lean.Guild[];
@@ -156,6 +159,13 @@ export namespace PermissionTypes {
   export type PermissionString = keyof typeof All;
 }
 
+export namespace PingTypes {
+  export interface Message {
+    userId: string;
+    lastRead: string;
+  }
+}
+
 export namespace UserTypes {
   export type BadgeType = 'VIEWER' | 'DEVELOPER';
   export interface FriendRequest {
@@ -163,6 +173,11 @@ export namespace UserTypes {
     type: FriendRequestType
   }
   export type FriendRequestType = 'OUTGOING' | 'INCOMING';
+  export class Ignored {
+    channelIds: string[] = [];
+    guildIds: string[] = [];
+    userIds: string[] = [];
+  }
   export type StatusType = 'ONLINE' | 'BUSY' | 'AFK' | 'OFFLINE';
   export class VoiceState {
     channelId?: string;
@@ -173,6 +188,11 @@ export namespace UserTypes {
     guilds: Lean.Guild[];
     email: string;
     verified: true;
+    ignored: {
+      channelIds: string[];
+      guildIds: string[];
+      userIds: string[];
+    }
   }
 }
 

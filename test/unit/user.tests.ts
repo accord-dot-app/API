@@ -24,6 +24,10 @@ test(createUser, () => {
   given({ email: 'a' }).expect('Invalid email address');
   given({ email: 'a@a' }).expect('Invalid email address');
   given({ email: 'adam@d-cl.one' }).expect(true);
+  given({ ignored: null }).expect(true);
+  given({ ignored: { channelIds: [] } }).expect(true);
+  given({ ignored: { guildIds: [] } }).expect(true);
+  given({ ignored: { userIds: [] } }).expect(true);
   given({ username: '' }).expect('Username is required');
   given({ username: 'ADAMJR' }).expect(true);
   given({ username: 'ADAM JR' }).expect('Invalid username');

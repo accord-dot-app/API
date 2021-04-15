@@ -1,5 +1,4 @@
 import { Socket } from 'socket.io';
-import { GuildDocument } from '../../../data/models/guild';
 import { SelfUserDocument, User } from '../../../data/models/user';
 import { Lean } from '../../../data/types/entity-types';
 import Users from '../../../data/users';

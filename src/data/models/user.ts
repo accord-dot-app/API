@@ -53,6 +53,22 @@ export const User = model<UserDocument>('user', new Schema({
       message: 'Clout limit reached',
     },
   },
+  ignored: {
+    type: Object,
+    default: new UserTypes.Ignored(),
+    channelIds: {
+      type: [String],
+      default: []
+    },
+    guildIds: {
+      type: [String],
+      default: []
+    },
+    userIds: {
+      type: [String],
+      default: []
+    },
+  },
   friendRequests: {
     type: Array,
     default: [],
