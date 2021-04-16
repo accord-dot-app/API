@@ -96,6 +96,10 @@ export class Mock {
     });
   }
 
+  public static async self(guildIds: string[] = []) {
+    return await this.user(guildIds) as SelfUserDocument;
+  }
+
   public static async bot(guildIds: string[] = []) {
     return await User.create({
       _id: generateSnowflake(),

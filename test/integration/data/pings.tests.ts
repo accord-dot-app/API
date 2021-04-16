@@ -4,7 +4,7 @@ import Deps from '../../../src/utils/deps';
 import { Mock } from '../../mock';
 import { expect } from 'chai';
 
-describe.only('data/pings', () => {
+describe('data/pings', () => {
   let guild: Lean.Guild;
   let message: Lean.Message; 
   let pings: Pings;
