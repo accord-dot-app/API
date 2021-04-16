@@ -2,12 +2,13 @@ import { Socket } from 'socket.io';
 import { Message } from '../../../data/models/message';
 import { generateSnowflake } from '../../../data/snowflake-entity';
 import { WebSocket } from '../websocket';
-import { WSEvent, Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params } from './ws-event';
 import got from 'got';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { MessageTypes } from '../../../data/types/entity-types';
 import { Partial } from '../../../data/types/ws-types';
+import Pings from '../../../data/pings';
 
 const metascraper = require('metascraper')([
   require('metascraper-description')(),
@@ -20,7 +21,7 @@ export default class implements WSEvent<'MESSAGE_CREATE'> {
   on = 'MESSAGE_CREATE' as const;
 
   constructor(
-    private guard = Deps.get<WSGuard>(WSGuard)
+    private guard = Deps.get<WSGuard>(WSGuard),
   ) {}
 
   public async invoke(ws: WebSocket, client: Socket, { channelId, partialMessage }: Params.MessageCreate) {
@@ -34,10 +35,8 @@ export default class implements WSEvent<'MESSAGE_CREATE'> {
       embed: await this.getEmbed(partialMessage),
     });
 
-    // FIXME: dumb fix, should be handled in ready
     if (!client.rooms.has(channelId))
       await client.join(channelId);
-
     ws.io
       .to(channelId)
       .emit('MESSAGE_CREATE', { message } as Args.MessageCreate);

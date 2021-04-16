@@ -90,6 +90,10 @@ export const User = model<UserDocument>('user', new Schema({
     required: [true, 'Status is required'],
     validate: [patterns.status, 'Invalid status'],
   },
+  lastReadMessages: {
+    type: Object,
+    default: {}
+  },
   username: {
     type: String,
     required: [true, 'Username is required'],
