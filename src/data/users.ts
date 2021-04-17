@@ -8,7 +8,6 @@ import { Lean, UserTypes } from './types/entity-types';
 import { Channel } from './models/channel';
 import { Role } from './models/role';
 import { GuildMember } from './models/guild-member';
-import { generateInviteCode } from './models/invite';
 import { Guild } from './models/guild';
 import { APIError } from '../api/modules/api-error';
 

@@ -17,15 +17,17 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
   ) { super(); }
 
   public async get(id: string | undefined, populate = true) {
-    const guild = await Guild.findById(id);
-    if (!guild)
-      throw new APIError(404, 'Guild Not Found');
-    return (populate)
-      ? guild.populate('members')
+    const guild = (populate)
+      ? await Guild
+        .findById(id)
+        ?.populate('members')
         .populate('roles')
         .populate('channels')
-        .execPopulate()
-      : guild;
+      : await Guild.findById(id);
+    if (!guild)
+      throw new APIError(404, 'Guild Not Found');
+
+    return guild;
   }
 
   public async getFromChannel(id: string) {

@@ -3,7 +3,6 @@ import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import { Mock } from '../../mock';
 import { User, UserDocument } from '../../../src/data/models/user';
-import { GuildDocument } from '../../../src/data/models/guild';
 import { expect } from 'chai';
 import Deps from '../../../src/utils/deps';
 import Users from '../../../src/data/users';

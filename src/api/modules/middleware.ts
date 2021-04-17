@@ -38,7 +38,7 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
 }
 
 export async function updateGuild(req: Request, res: Response, next: NextFunction) {
-  res.locals.guild = await guilds.get(req.params.id);
+  res.locals.guild = await guilds.get(req.params.id);  
   return next();
 }
 
@@ -61,7 +61,7 @@ export function validateHasPermission(permission: PermissionTypes.Permission) {
     const guild: GuildDocument = res.locals.guild;
     const member = guild.members.find(m => m.userId === res.locals.user._id);
     if (!member)
-      throw new APIError(401);
+      throw new APIError(401, 'You are not a guild member');
 
     const isOwner = guild.ownerId === res.locals.user._id;
     const hasPerm = await roles.hasPermission(member, permission);

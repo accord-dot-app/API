@@ -5,7 +5,7 @@ import Deps from '../../../src/utils/deps';
 import { API } from '../../../src/api/server';
 import request from 'supertest';
 import Users from '../../../src/data/users';
-import { UserDocument, User } from '../../../src/data/models/user';
+import { UserDocument, User, SelfUserDocument } from '../../../src/data/models/user';
 import { generateUsername } from '../../../src/utils/utils';
 import { generateInviteCode } from '../../../src/data/models/invite';
 import { Email } from '../../../src/api/modules/email/email';
@@ -16,7 +16,7 @@ describe.skip('auth-routes', () => {
   let app: Express.Application;
   let users: Users;
   let credentials: { username?, password?, email? };
-  let user: UserDocument;
+  let user: SelfUserDocument;
   let email: EmailMock;
   let authorization: string;
 
@@ -183,7 +183,7 @@ describe.skip('auth-routes', () => {
       .set('Authorization', authorization)
       .query({ email: newEmail });
 
-    user = await User.findById(user._id);
+    user = await User.findById(user._id) as SelfUserDocument;
     expect(user.email).to.equal(newEmail);
   });
 

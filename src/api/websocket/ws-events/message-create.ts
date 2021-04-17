@@ -37,6 +37,7 @@ export default class implements WSEvent<'MESSAGE_CREATE'> {
 
     if (!client.rooms.has(channelId))
       await client.join(channelId);
+
     ws.io
       .to(channelId)
       .emit('MESSAGE_CREATE', { message } as Args.MessageCreate);

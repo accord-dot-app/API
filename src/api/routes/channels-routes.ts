@@ -24,8 +24,10 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
     .slice(start, end)
     .filter(m => !user.ignored.userIds.includes(m.authorId));
 
-  const lastMessage = channelMsgs[channelMsgs.length - 1];
-  await pings.markAsRead(user, lastMessage);
+  const index = Math.max(channelMsgs.length - 1, 0);
+  const lastMessage = channelMsgs[index];
+  if (lastMessage)
+    await pings.markAsRead(user, lastMessage);
   
   res.json(channelMsgs);
 });

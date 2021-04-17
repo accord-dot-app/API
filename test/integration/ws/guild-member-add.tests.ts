@@ -36,6 +36,8 @@ describe('guild-member-add', () => {
   afterEach(async () => await Mock.afterEach(ws));
   after(async () => await Mock.after(client));
 
+  it('user already joined, rejected');
+
   it('valid invite and code, fulfilled', async () => {
     await expect(guildMemberAdd()).to.be.fulfilled;
   });

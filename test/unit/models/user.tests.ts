@@ -1,7 +1,7 @@
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { test, given } from 'sazerac';
 import { longArray, mongooseError } from '../../test-utils';
-import { SelfUserDocument, User } from '../../../src/data/models/user';
+import { User } from '../../../src/data/models/user';
 import { UserTypes } from '../../../src/data/types/entity-types';
 import { Mock } from '../../mock';
 import { expect } from 'chai';

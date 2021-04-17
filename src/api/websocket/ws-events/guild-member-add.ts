@@ -21,6 +21,10 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
     const invite = await this.invites.get(inviteCode);
     const guild = await this.guilds.get(invite.guildId);
     const userId = ws.sessions.userId(client);
+
+    const inGuild = guild.members.some(m => m.userId === userId);
+    if (inGuild)
+      throw new TypeError('User already in guild');
     
     const user = await this.users.get(userId);
     if (inviteCode && user.bot)
@@ -28,11 +32,12 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
 
     await this.handleInvite(invite);
     const member = await this.guilds.join(user, guild);
-    await this.joinGuildRooms(client, guild);
 
     ws.io
       .to(guild._id)
       .emit('GUILD_MEMBER_ADD', { member } as Args.GuildMemberAdd);
+    
+    await this.joinGuildRooms(client, guild);
     ws.io
       .to(client.id)
       .emit('GUILD_JOIN', { guild } as Args.GuildJoin);

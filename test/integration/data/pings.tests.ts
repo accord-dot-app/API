@@ -19,30 +19,4 @@ describe('data/pings', () => {
   });
 
   after(async () => await Mock.cleanDB());
-
-  it('nothing is ignored, returns true', async () => {
-    const result = await pings.handle(message);
-    expect(result).to.be.true;
-  });
-
-  it('message author is ignored, returns false', async () => {
-    user.ignored.userIds.push(message.authorId);
-
-    const result = await pings.handle(message);
-    expect(result).to.be.false;
-  });
-
-  it('channel is ignored, returns false', async () => {
-    user.ignored.channelIds.push(message.channelId);
-
-    const result = await pings.handle(message);
-    expect(result).to.be.false;
-  });
-
-  it('guild is ignored, returns false', async () => {
-    user.ignored.guildIds.push(guild._id);
-
-    const result = await pings.handle(message);
-    expect(result).to.be.false;
-  });
 });
