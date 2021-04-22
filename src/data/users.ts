@@ -67,8 +67,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
         { _id: userId },
         { _id: this.systemUser._id },
         { friendIds: userId as any },
-        { friendRequests: { userId, type: 'INCOMING' } },
-        { friendRequests: { userId, type: 'OUTGOING' } },
+        { friendRequestIds: userId },
         { ignored: { userIds: userId } },
       ]
     }) as UserDocument[];
@@ -89,7 +88,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
         status: 'ONLINE',
         username,
         friendIds: [],
-        friendRequests: [],
+        friendRequestIds: [],
         guilds: [],
         voice: new UserTypes.VoiceState,
       });

@@ -3,7 +3,7 @@ import { test, given } from 'sazerac';
 import { longArray, mongooseError } from '../../test-utils';
 import { User } from '../../../src/data/models/user';
 import { UserTypes } from '../../../src/data/types/entity-types';
-import { Mock } from '../mock';
+import { Mock } from '../../mock/mock';
 import { expect } from 'chai';
 
 test(createUser, () => {
@@ -12,8 +12,8 @@ test(createUser, () => {
   given({ avatarURL: 'a' }).expect(true);
   given({ friendIds: longArray(101) }).expect('Clout limit reached');
   given({ friendIds: [] }).expect(true);
-  given({ friendRequests: longArray(101) }).expect('Clout limit reached');
-  given({ friendRequests: [] }).expect(true);
+  given({ friendRequestIds: longArray(101) }).expect('Clout limit reached');
+  given({ friendRequestIds: [] }).expect(true);
   given({ status: '' }).expect('Status is required');
   given({ status: 'A' }).expect('Invalid status');
   given({ status: 'ONLINE' }).expect(true);
@@ -37,11 +37,11 @@ test(createUser, () => {
   given({ voice: new UserTypes.VoiceState() }).expect(true);
 
   it('email is taken, rejected', async () => {
-    const user = await Mock.user();
+    const user = await Mock.self();
     user.email = 'adam@d-cl.one';
     await user.save();
 
-    const user2 = await Mock.user();
+    const user2 = await Mock.self();
     user2.email = 'adam@d-cl.one';
 
     await expect(user2.validate()).to.be.rejectedWith('expected `email` to be unique');
@@ -68,7 +68,7 @@ function createUser(user: any) {
     bot: false,
     badges: [],
     friendIds: [],
-    friendRequests: [],
+    friendRequestIds: [],
     guilds: [generateSnowflake()],
     status: 'ONLINE',
     username: `mock-user-${generateSnowflake()}`,

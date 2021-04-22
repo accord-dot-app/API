@@ -21,19 +21,27 @@ export default class implements WSEvent<'REMOVE_FRIEND'> {
     ws.io
       .to(senderId)
       .to(friendId)
-      .emit('REMOVE_FRIEND', {
-        sender: await this.removeFriend(sender, friend),
-        friend: await this.removeFriend(friend, sender),
-      } as Args.RemoveFriend);
+      .emit('REMOVE_FRIEND', await this.handle(sender, friend) as Args.RemoveFriend);
   }
 
-  async removeFriend(user: UserDocument, friend: UserDocument) {
-    const friendExists = user.friendIds.includes(friend._id);
-    return (friendExists)
-      ? await user.update(
-          { $pull: { friends: friend } },
-          { runValidators: true },
-        )
-      : user;
+  private async handle(sender: UserDocument, friend: UserDocument): Promise<Args.RemoveFriend> {
+    if (sender._id === friend._id)
+      throw new TypeError('You cannot remove yourself as a friend');
+    
+    await this.removeFriend(sender, friend);
+    await this.removeFriend(friend, sender);
+
+    return { sender, friend };
+  }
+
+  private async removeFriend(sender: UserDocument, friend: UserDocument) {
+    return sender.update({
+        $pull: {
+          friendRequestIds: friend._id,
+          friends: friend._id,
+        },
+      },
+      { runValidators: true, context: 'query' },
+    );
   }
 }

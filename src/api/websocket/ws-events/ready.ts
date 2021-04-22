@@ -89,7 +89,7 @@ export default class implements WSEvent<'READY'> {
     return [
       user._id,
       this.systemBot.self?._id,
-      ...user.friendRequests.map(f => f.userId),
+      ...user.friendRequestIds,
       ...user.friendIds,
     ];
   }

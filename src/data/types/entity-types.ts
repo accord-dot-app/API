@@ -77,7 +77,7 @@ export namespace Lean {
     bot: boolean;
     createdAt: Date;
     friendIds: string[];
-    friendRequests: UserTypes.FriendRequest[];
+    friendRequestIds: string[];
     guilds: string[] | Lean.Guild[];
     status: UserTypes.StatusType;
     username: string;
@@ -168,11 +168,6 @@ export namespace PingTypes {
 
 export namespace UserTypes {
   export type BadgeType = 'VIEWER' | 'DEVELOPER';
-  export interface FriendRequest {
-    userId: string,
-    type: FriendRequestType
-  }
-  export type FriendRequestType = 'OUTGOING' | 'INCOMING';
   export class Ignored {
     channelIds: string[] = [];
     guildIds: string[] = [];

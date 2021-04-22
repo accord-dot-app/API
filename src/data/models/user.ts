@@ -69,12 +69,13 @@ export const User = model<UserDocument>('user', new Schema({
       default: []
     },
   },
-  friendRequests: {
+  friendRequestIds: {
     type: Array,
+    ref: 'user',
     default: [],
     validate: {
       validator: validators.maxLength(100),
-      message: 'Clout limit reached',
+      message: 'Max friend requests reached',
     },
   },
   guilds: {

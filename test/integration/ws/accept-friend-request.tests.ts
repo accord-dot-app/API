@@ -40,8 +40,8 @@ describe('accept-friend-request', () => {
     friend = await User.findById(friend.id);
     sender = await User.findById(sender.id);    
 
-    expect(friend.friendRequests).to.be.empty;
-    expect(sender.friendRequests).to.be.empty;
+    expect(friend.friendRequestIds).to.be.empty;
+    expect(sender.friendRequestIds).to.be.empty;
   });
 
   it('user accepts friend request, friend added', async () => {

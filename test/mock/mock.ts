@@ -1,22 +1,19 @@
-import { Channel } from '../src/data/models/channel';
-import { Guild } from '../src/data/models/guild';
-import { GuildMember } from '../src/data/models/guild-member';
-import { User } from '../src/data/models/user';
-import { generateSnowflake } from '../src/data/snowflake-entity';
-import { Types } from 'mongoose';
-import { defaultPermissions, Role, RoleDocument } from '../src/data/models/role';
-import { ChannelTypes, InviteTypes, Lean, PermissionTypes, UserTypes } from '../src/data/types/entity-types';
-import { Message } from '../src/data/models/message';
-import { generateInviteCode, Invite } from '../src/data/models/invite';
-import { Application } from '../src/data/models/application';
-import { API } from '../src/api/server';
-import { WebSocket } from '../src/api/websocket/websocket';
-import Deps from '../src/utils/deps';
-import Guilds from '../src/data/guilds';
-import GuildMembers from '../src/data/guild-members';
-import { WSGuard } from '../src/api/modules/ws-guard';
-import Roles from '../src/data/roles';
-import { ChannelPings } from '../src/data/models/ping';
+import { Channel } from '../../src/data/models/channel';
+import { Guild } from '../../src/data/models/guild';
+import { GuildMember } from '../../src/data/models/guild-member';
+import { User, SelfUserDocument } from '../../src/data/models/user';
+import { generateSnowflake } from '../../src/data/snowflake-entity';
+import { defaultPermissions, Role, RoleDocument } from '../../src/data/models/role';
+import { ChannelTypes, InviteTypes, Lean, PermissionTypes, UserTypes } from '../../src/data/types/entity-types';
+import { Message } from '../../src/data/models/message';
+import { Invite } from '../../src/data/models/invite';
+import { Application } from '../../src/data/models/application';
+import { API } from '../../src/api/server';
+import { WebSocket } from '../../src/api/websocket/websocket';
+import Deps from '../../src/utils/deps';
+import Guilds from '../../src/data/guilds';
+import GuildMembers from '../../src/data/guild-members';
+import { ChannelPings } from '../../src/data/models/ping';
 
 export class Mock {
   private static guilds = Deps.get<Guilds>(Guilds);
@@ -79,6 +76,10 @@ export class Mock {
     return guild.save();
   }
 
+  public static async self(guildIds: string[] = []) {
+    return await this.user(guildIds) as SelfUserDocument;
+  }
+
   public static async user(guildIds: string[] = []) {
     return await User.create({
       _id: generateSnowflake(),
@@ -86,14 +87,14 @@ export class Mock {
       bot: false,
       badges: [],
       friendIds: [],
-      friendRequests: [],
+      friendRequestIds: [],
       email: `${generateSnowflake()}@gmail.com`,
       verified: true,
       guilds: guildIds,
       status: 'ONLINE',
       username: `mock-user-${generateSnowflake()}`,
       voice: new UserTypes.VoiceState(),
-    });
+    } as any);
   }
 
   public static async bot(guildIds: string[] = []) {
@@ -103,13 +104,13 @@ export class Mock {
       bot: true,
       badges: [],
       friendIds: [],
-      friendRequests: [],
+      friendRequestIds: [],
       email: `${generateSnowflake()}@gmail.com`, // FIXME
       guilds: guildIds,
       status: 'ONLINE',
       username: `mock-bot-${generateSnowflake()}`,
       voice: new UserTypes.VoiceState(),
-    });    
+    } as any);    
   }
 
   public static async guildMember(userId: string, guildId: string) {
