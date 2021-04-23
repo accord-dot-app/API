@@ -7,7 +7,7 @@ import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { User, UserDocument } from '../../../src/data/models/user';
 import { Channel } from '../../../src/data/models/channel';
 
-describe('accept-friend-request', () => {
+describe('add-friend-request', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: AcceptFriendRequest;
   let ws: WebSocket;
