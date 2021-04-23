@@ -24,10 +24,10 @@ export default class implements WSEvent<'MESSAGE_UPDATE'> {
   ) {}
 
   public async invoke(ws: WebSocket, client: Socket, { messageId, partialMessage, withEmbed }: Params.MessageUpdate) {
-    const message = await this.messages.get(messageId);
+    let message = await this.messages.get(messageId);
     this.guard.validateIsUser(client, message.authorId);
     
-    await message.update({
+    message = await message.update({
       content: partialMessage.content,
       embed: (withEmbed) ? await this.getEmbed(message) : undefined,
       updatedAt: new Date()
@@ -35,7 +35,7 @@ export default class implements WSEvent<'MESSAGE_UPDATE'> {
 
     ws.io
       .to(message.channelId)
-      .emit('MESSAGE_UPDATE', { messageId, partialMessage } as Args.MessageUpdate);
+      .emit('MESSAGE_UPDATE', { message } as Args.MessageUpdate);
   }
 
   public async getEmbed(message: MessageDocument): Promise<MessageTypes.Embed | undefined> {

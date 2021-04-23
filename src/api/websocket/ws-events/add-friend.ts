@@ -14,14 +14,14 @@ export default class implements WSEvent<'ADD_FRIEND'> {
     private users = Deps.get<Users>(Users),
   ) {}
 
-  public async invoke(ws: WebSocket, client: Socket, { friendId }: Params.AddFriend) {
+  public async invoke(ws: WebSocket, client: Socket, { username }: Params.AddFriend) {
     const senderId = ws.sessions.userId(client);
     const sender = await this.users.get(senderId);
-    const friend = await this.users.get(friendId);
+    const friend = await this.users.getByUsername(username);
 
     ws.io
       .to(senderId)
-      .to(friendId)
+      .to(friend._id)
       .emit('ADD_FRIEND', await this.handle(sender, friend) as Args.AddFriend);
   }
 

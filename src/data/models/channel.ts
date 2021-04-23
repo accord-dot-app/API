@@ -10,10 +10,12 @@ export interface DMChannelDocument extends Document, ChannelTypes.DM {
 export interface TextChannelDocument extends Document, ChannelTypes.Text {
   _id: string;
   createdAt: never;
+  guildId: string;
 }
 export interface VoiceChannelDocument extends Document, ChannelTypes.Voice {
   _id: string;
   createdAt: never;
+  guildId: string;
 }
 export type ChannelDocument = DMChannelDocument | TextChannelDocument | VoiceChannelDocument;
 
