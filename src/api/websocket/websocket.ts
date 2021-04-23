@@ -54,6 +54,7 @@ export class WebSocket {
     Log.info('Started WebSocket', 'ws');
   }
 
+  // TODO: move to separate file
   private handleCooldown(client: Socket, eventName: keyof WSEventParams) {
     let cooldowns = this.getCooldown(client.id);
     cooldowns.push({ timestamp: new Date().getTime(), eventName });

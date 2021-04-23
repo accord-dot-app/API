@@ -46,13 +46,9 @@ router.get('/:id/authorize/:botId',
 });
 
 router.get('/:id/invites',
-  updateUser, validateUser, updateGuild, validateGuildExists,
+  updateUser, validateUser, updateGuild,
   validateHasPermission(PermissionTypes.General.MANAGE_GUILD),
   async (req, res) => {
-  try {
-    const invites = await guilds.invites(req.params.id);
-    res.json(invites);
-  } catch (err) {    
-    res.json({ code: 400, message: err?.message });
-  }
+  const invites = await guilds.invites(req.params.id);
+  res.json(invites);
 });

@@ -55,10 +55,6 @@ export namespace Lean {
     embed?: MessageTypes.Embed;
     updatedAt?: Date;
   }
-  export interface Ping {
-    _id: string;
-    pings: PingTypes.Message[];
-  }
   export interface Role {
     _id: string;
     color?: string;
@@ -159,13 +155,6 @@ export namespace PermissionTypes {
   export type PermissionString = keyof typeof All;
 }
 
-export namespace PingTypes {
-  export interface Message {
-    userId: string;
-    lastRead: string;
-  }
-}
-
 export namespace UserTypes {
   export type BadgeType = 'VIEWER' | 'DEVELOPER';
   export class Ignored {
@@ -183,11 +172,14 @@ export namespace UserTypes {
     guilds: Lean.Guild[];
     email: string;
     verified: true;
+    lastReadMessages: {
+      [k: string]: string
+    };
     ignored: {
       channelIds: string[];
       guildIds: string[];
       userIds: string[];
-    }
+    };
   }
 }
 

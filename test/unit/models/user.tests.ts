@@ -48,7 +48,7 @@ test(createUser, () => {
   });
 
   it('username is taken, rejected', async () => {
-    const user = await Mock.user();
+    const user = await Mock.self();
     user.username = 'Adam';
     await user.save();
 

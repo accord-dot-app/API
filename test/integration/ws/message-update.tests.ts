@@ -7,7 +7,7 @@ import { Mock } from '../../mock';
 import { GuildDocument } from '../../../src/data/models/guild';
 import { User, UserDocument } from '../../../src/data/models/user';
 import { API } from '../../../src/api/server';
-import { Lean } from '../types/entity-types';
+import { Lean } from '../../../src/data/types/entity-types';
 
 describe('message-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
@@ -58,7 +58,7 @@ describe('message-update', () => {
 
   async function updateMessage(message: Lean.Message) {
     return event.invoke(ws, client, {
-      messageId: message.id,
+      messageId: message._id,
       partialMessage: {
         content: 'test',
       },

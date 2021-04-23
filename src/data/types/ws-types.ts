@@ -88,7 +88,7 @@ export interface WSEventArgs {
   'MESSAGE_DELETE': (args: Args.MessageDelete) => any;
   /** Called when an existing message is updated in a text-based channel. */
   'MESSAGE_UPDATE': (args: Args.MessageUpdate) => any;
-  /** Called when a known user's presence status is updated. */
+  'PING': (args: Args.Ping) => any;
   'PRESENCE_UPDATE': (params: Args.PresenceUpdate) => any;
   /** Called when the websocket accepts that you are ready. */
   'READY': () => any;
@@ -265,6 +265,10 @@ export namespace Args {
   export interface MessageUpdate {
     /** Full object of the message that was updated. */
     message: Lean.Message;
+  }
+  export interface Ping {
+    channelId: string;
+    guildId?: string;
   }
   export interface PresenceUpdate {
     userId: string;
