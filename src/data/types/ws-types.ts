@@ -111,6 +111,7 @@ export namespace Params {
     partialChannel: Partial.Channel;
   }
   export interface ChannelDelete {
+    /** ID of the channel to delete. */
     channelId: string;
   }
   export interface GuildCreate {
@@ -298,7 +299,7 @@ export namespace Partial {
   }
   /** Properties to update a class. */
   export interface Guild {
-    name?: string;
+    name: string;
     iconURL?: string;
   }
   /** Properties to update a guild member. */
@@ -311,7 +312,7 @@ export namespace Partial {
   }
   /** Properties to update a role. */
   export interface Role {
-    name?: string;
+    name: string;
     color?: string;
     hoisted?: boolean;
     mentionable?: boolean;
