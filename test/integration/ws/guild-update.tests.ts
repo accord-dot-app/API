@@ -5,7 +5,7 @@ import { API } from '../../../src/api/server';
 import GuildUpdate from '../../../src/api/websocket/ws-events/guild-update';
 import { Guild, GuildDocument } from '../../../src/data/models/guild';
 import { User, UserDocument } from '../../../src/data/models/user';
-import { Mock } from '../../mock';
+import { Mock } from '../../mock/mock';
 import { expect } from 'chai';
 import { PermissionTypes } from '../../../src/data/types/entity-types';
 import { GuildMember, GuildMemberDocument } from '../../../src/data/models/guild-member';

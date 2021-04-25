@@ -12,7 +12,7 @@ test(createUser, () => {
   given({ avatarURL: 'a' }).expect(true);
   given({ friendIds: longArray(101) }).expect('Clout limit reached');
   given({ friendIds: [] }).expect(true);
-  given({ friendRequestIds: longArray(101) }).expect('Clout limit reached');
+  given({ friendRequestIds: longArray(101) }).expect('Max friend requests reached');
   given({ friendRequestIds: [] }).expect(true);
   given({ status: '' }).expect('Status is required');
   given({ status: 'A' }).expect('Invalid status');

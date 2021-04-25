@@ -33,7 +33,7 @@ use(should);
 
   await import('./integration/ws/add-friend.tests');
   await import('./integration/ws/channel-create.tests');
-  /*await import('./integration/ws/guild-member-add.tests');
+  await import('./integration/ws/guild-member-add.tests');
   await import('./integration/ws/guild-create.tests');
   await import('./integration/ws/guild-delete.tests');
   await import('./integration/ws/guild-update.tests');
@@ -43,11 +43,9 @@ use(should);
   await import('./integration/ws/message-update.tests');
   await import('./integration/ws/message-delete.tests');
   await import('./integration/ws/ready.tests');
-  */await import('./integration/ws/remove-friend.tests');/*
-  // await import('./integration/ws/voice-state-update.tests');
+  await import('./integration/ws/remove-friend.tests');
   await import('./integration/ws/user-update.tests');
   await import('./integration/ws/ws-guard.tests');
-  await import('./integration/data/pings.tests');
 
   await import('./unit/models/application.tests');
   await import('./unit/models/channel.tests');
@@ -57,6 +55,6 @@ use(should);
   await import('./unit/models/message.tests');
   await import('./unit/models/role.tests');
   await import('./unit/models/user.tests');
-  await import('./unit/snowflake-entity.tests');*/
+  await import('./unit/snowflake-entity.tests');
   await import('./unit/ws/ws-cooldowns.tests');
 })();

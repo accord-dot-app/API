@@ -3,7 +3,7 @@ import { WebSocket } from '../../../src/api/websocket/websocket';
 import Deps from '../../../src/utils/deps';
 import { expect } from 'chai';
 import io from 'socket.io-client';
-import { Mock } from '../../mock';
+import { Mock } from '../../mock/mock';
 import { GuildDocument } from '../../../src/data/models/guild';
 import { Channel, ChannelDocument } from '../../../src/data/models/channel';
 import { API } from '../../../src/api/server';

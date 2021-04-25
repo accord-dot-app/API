@@ -1,7 +1,7 @@
 import InviteDelete from '../../../src/api/websocket/ws-events/invite-delete';
 import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
-import { Mock } from '../../mock';
+import { Mock } from '../../mock/mock';
 import { GuildDocument } from '../../../src/data/models/guild';
 import { Invite, InviteDocument } from '../../../src/data/models/invite';
 import { expect } from 'chai';

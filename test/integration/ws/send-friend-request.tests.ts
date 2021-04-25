@@ -1,7 +1,7 @@
 import SendFriendRequest from '../../../src/api/websocket/ws-events/send-friend-request';
 import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
-import { Mock } from '../../mock';
+import { Mock } from '../../mock/mock';
 import { UserDocument } from '../../../src/data/models/user';
 import { GuildDocument } from '../../../src/data/models/guild';
 import { expect } from 'chai';

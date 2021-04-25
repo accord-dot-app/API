@@ -18,6 +18,7 @@ test(createGuildMember, () => {
 
 function createGuildMember(member: any) {
   const error = new GuildMember({
+    _id: generateSnowflake(),
     guildId: generateSnowflake(),
     userId: generateSnowflake(),
     roleIds: [generateSnowflake()],

@@ -6,7 +6,7 @@ import { expect } from 'chai';
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { User, UserDocument } from '../../../src/data/models/user';
 
-describe.only('remove-friend', () => {
+describe('remove-friend', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: RemoveFriend;
   let ws: WebSocket;

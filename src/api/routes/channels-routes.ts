@@ -22,7 +22,12 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
     .getChannelMessages(channelId) ?? await messages
     .getDMChannelMessages(channelId, res.locals.user._id))
     .slice(start, end)
-    .filter(m => !user.ignored.userIds.includes(m.authorId));
+    .map(m => {
+      const isIgnored = user.ignored.userIds.includes(m.authorId);
+      return (isIgnored)
+        ? { ...m, content: 'This user is blocked, and the message content has been hidden' }
+        : m;
+    });
 
   const index = Math.max(channelMsgs.length - 1, 0);
   const lastMessage = channelMsgs[index];

@@ -1,4 +1,4 @@
-import { Mock } from '../../mock';
+import { Mock } from '../../mock/mock';
 import { EmailMock } from '../../mock/email-mock';
 import { assert, expect, spy } from 'chai';
 import Deps from '../../../src/utils/deps';

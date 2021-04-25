@@ -4,7 +4,7 @@ import ChannelCreate from '../../../src/api/websocket/ws-events/ready';
 import { User, UserDocument } from '../../../src/data/models/user';
 import { expect } from 'chai';
 import Users from '../../../src/data/users';
-import { Mock } from '../../mock';
+import { Mock } from '../../mock/mock';
 import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import { SystemBot } from '../../../src/system/bot';

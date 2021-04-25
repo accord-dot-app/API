@@ -2,7 +2,7 @@ import GuildMemberAdd from '../../../src/api/websocket/ws-events/guild-member-ad
 import { WebSocket } from '../../../src/api/websocket/websocket';
 import Deps from '../../../src/utils/deps';
 import io from 'socket.io-client';
-import { Mock } from '../../mock';
+import { Mock } from '../../mock/mock';
 import { UserDocument } from '../../../src/data/models/user';
 import { GuildDocument } from '../../../src/data/models/guild';
 import { Invite, InviteDocument } from '../../../src/data/models/invite';

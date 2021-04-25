@@ -1,7 +1,7 @@
 import UserUpdate from '../../../src/api/websocket/ws-events/user-update';
 import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
-import { Mock } from '../../mock';
+import { Mock } from '../../mock/mock';
 import { User, UserDocument } from '../../../src/data/models/user';
 import { expect } from 'chai';
 import Deps from '../../../src/utils/deps';
