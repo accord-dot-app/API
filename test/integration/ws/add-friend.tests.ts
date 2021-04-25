@@ -7,7 +7,7 @@ import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { User, UserDocument } from '../../../src/data/models/user';
 import { Channel } from '../../../src/data/models/channel';
 
-describe('add-friend-request', () => {
+describe('add-friend', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: AddFriend;
   let ws: WebSocket;
@@ -23,19 +23,33 @@ describe('add-friend-request', () => {
   afterEach(async () => await Mock.afterEach(ws));
   after(async () => await Mock.after(client));
 
-  it('user accepts friend request, fulfilled', async () => {
-    await expect(acceptFriendRequest()).to.be.fulfilled;
+  it('user sends request, fulfilled', async () => {
+    await expect(addFriend()).to.be.fulfilled;
   });
 
-  it('user accepts friend request, creates dm channel', async () => {
-    await acceptFriendRequest();
+  it('user adds self as friend, rejected', async () => {
+    friend.username = sender.username;
+
+    await expect(addFriend()).to.be.rejectedWith('You cannot add yourself as a friend');
+  });
+
+  it('user adds non existing user, rejected', async () => {
+    await friend.deleteOne();
+
+    await expect(addFriend()).to.be.rejectedWith('User Not Found');
+  });
+
+  it('both users add each other, creates dm channel', async () => {
+    await addFriend();
+    await returnFriend();
 
     const exists = await Channel.exists({ memberIds: sender.id }); 
     expect(exists).to.be.true;
   });
 
-  it('user accepts friend request, friend request removed', async () => {
-    await acceptFriendRequest();
+  it('both users add each other, friend request removed', async () => {
+    await addFriend();
+    await returnFriend();
 
     friend = await User.findById(friend.id);
     sender = await User.findById(sender.id);    
@@ -44,8 +58,9 @@ describe('add-friend-request', () => {
     expect(sender.friendRequestIds).to.be.empty;
   });
 
-  it('user accepts friend request, friend added', async () => {
-    await acceptFriendRequest();
+  it('both users add each other, friend added', async () => {
+    await addFriend();
+    await returnFriend();
 
     friend = await User.findById(friend.id);
     sender = await User.findById(sender.id);
@@ -54,15 +69,13 @@ describe('add-friend-request', () => {
     expect(sender.friendIds.length).to.equal(1);
   });
 
-  it('user accepts friend request, non existing friend, rejected', async () => {
-    friend.username = generateSnowflake();
+  async function addFriend() {
+    return event.invoke(ws, client, { username: friend.username });
+  }
 
-    await expect(acceptFriendRequest()).to.be.rejectedWith('User Not Found');
-  });
-
-  async function acceptFriendRequest() {
-    return event.invoke(ws, client, {
-      username: friend.username,
-    });
+  async function returnFriend() {
+    ws.sessions.set(client.id, friend.id);
+    await event.invoke(ws, client, { username: sender.username });
+    ws.sessions.set(client.id, sender.id);
   }
 });

@@ -33,7 +33,6 @@ export class Mock {
     Mock.ioClient(client);
     
     ws.sessions.set(client.id, user._id);
-    ws.cooldowns.clear();
 
     return { event, guild, user, member, ws, role, channel };
   }

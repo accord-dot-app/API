@@ -20,7 +20,7 @@ use(should);
     useNewUrlParser: true, 
     useFindAndModify: false,
     useCreateIndex: true,
-  }, (err) => console.log(err));
+  }, (error) => error && console.log(error));
 
   try {
     // remove glitched test processes
@@ -31,9 +31,9 @@ use(should);
   // await import('./integration/routes/invites-routes.tests');
   // await import('./integration/routes/guilds-routes.tests');
 
-  /*await import('./integration/ws/add-friend.tests');
+  await import('./integration/ws/add-friend.tests');
   await import('./integration/ws/channel-create.tests');
-  await import('./integration/ws/guild-member-add.tests');
+  /*await import('./integration/ws/guild-member-add.tests');
   await import('./integration/ws/guild-create.tests');
   await import('./integration/ws/guild-delete.tests');
   await import('./integration/ws/guild-update.tests');
