@@ -66,8 +66,11 @@ export class Mock {
     const memberUser = await Mock.user();
     
     const guild = await this.guilds.create('Mock Guild', owner.id);
-    await owner.update({ $push: { guilds: guild } });
-    await memberUser.update({ $push: { guilds: guild } });
+    
+    owner.guilds.push(guild.id);
+    await owner.save();
+    memberUser.guilds.push(guild.id);
+    await memberUser.save();
 
     const member = await Mock.guildMember(memberUser.id, guild.id);
     guild.members.push(member);

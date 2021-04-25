@@ -10,7 +10,7 @@ import { Channel } from '../../../src/data/models/channel';
 import { Invite } from '../../../src/data/models/invite';
 import { Role } from '../../../src/data/models/role';
 
-describe('guild-delete', () => {
+describe.only('guild-delete', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let ws: WebSocket;
   let event: GuildDelete;

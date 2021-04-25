@@ -20,11 +20,11 @@ export default class implements WSEvent<'GUILD_DELETE'> {
 
   public async invoke(ws: WebSocket, client: Socket, { guildId }: Params.GuildDelete) {
     await this.guard.validateIsOwner(client, guildId);
-    
+
     await User.updateMany(
       { guilds: guildId },
       { $pull: { guilds: guildId } },
-    );
+    );   
 
     const guildChannels = await Channel.find({ guildId });
     await Message.deleteMany({ channelId: guildChannels.map(c => c.id) as any })
