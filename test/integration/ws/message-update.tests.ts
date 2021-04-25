@@ -8,55 +8,42 @@ import { GuildDocument } from '../../../src/data/models/guild';
 import { User, UserDocument } from '../../../src/data/models/user';
 import { API } from '../../../src/api/server';
 import { Lean } from '../../../src/data/types/entity-types';
+import { ChannelDocument } from '../../../src/data/models/channel';
+import { MessageDocument } from '../../../src/data/models/message';
+import { generateSnowflake } from '../../../src/data/snowflake-entity';
 
 describe('message-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   
+  let channel: ChannelDocument;
   let event: MessageUpdate;
   let ws: WebSocket;
   let user: UserDocument;
   let guild: GuildDocument;
-  let channelId: string;
+  let message: MessageDocument;
 
   beforeEach(async () => {
-    Deps.get<API>(API);
+    ({ event, ws, guild, user, channel } = await Mock.defaultSetup(client, MessageUpdate));
 
-    event = new MessageUpdate();
-    ws = Deps.get<WebSocket>(WebSocket);
-
-    Mock.ioClient(client);
-    
-    guild = await Mock.guild();
-    user = await User.findById(guild.members[1].userId);
-    channelId = guild.channels[0]._id;
-
-    ws.sessions.set(client.id, user.id);
+    message = await Mock.message(user, channel._id);
   });
 
   afterEach(async () => await Mock.afterEach(ws));
   after(async () => await Mock.after(client));
 
   it('user not author, rejected', async () => {
-    const message = await Mock.message(user, channelId);
-    
     await makeGuildOwner();
 
-    await expect(updateMessage(message)).to.be.rejectedWith('Unauthorized');
+    await expect(messageUpdate()).to.be.rejectedWith('Unauthorized');
   });
 
-  it('message does not exist, rejected', async () => {    
-    const result = () => event.invoke(ws, client, {
-      messageId: '',
-      partialMessage: {
-        content: 'test',
-      },
-      withEmbed: false,
-    });
+  it('message does not exist, rejected', async () => {
+    message._id = generateSnowflake();
 
-    await expect(result()).to.be.rejectedWith('Message Not Found');
+    await expect(messageUpdate()).to.be.rejectedWith('Message Not Found');
   });
 
-  async function updateMessage(message: Lean.Message) {
+  function messageUpdate() {
     return event.invoke(ws, client, {
       messageId: message._id,
       partialMessage: {
@@ -65,6 +52,7 @@ describe('message-update', () => {
       withEmbed: true
     });
   }
+
   async function makeGuildOwner() {
     ws.sessions.set(client.id, guild.ownerId);
     await Mock.clearRolePerms(guild);
