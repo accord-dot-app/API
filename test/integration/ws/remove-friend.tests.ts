@@ -1,70 +1,62 @@
-import AcceptFriendRequest from '../../../src/api/websocket/ws-events/accept-friend-request';
+import RemoveFriend from '../../../src/api/websocket/ws-events/remove-friend';
 import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
-import { Mock } from '../../mock';
+import { Mock } from '../../mock/mock';
 import { expect } from 'chai';
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { User, UserDocument } from '../../../src/data/models/user';
-import { Channel } from '../../../src/data/models/channel';
 
-describe('remove-friend', () => {
+describe.only('remove-friend', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
-  let event: AcceptFriendRequest;
+  let event: RemoveFriend;
   let ws: WebSocket;
 
   let sender: UserDocument;
   let friend: UserDocument;
 
   beforeEach(async () => {
-    ({ event, ws, user: sender } = await Mock.defaultSetup(client, AcceptFriendRequest));
+    ({ event, ws, user: sender } = await Mock.defaultSetup(client, RemoveFriend));
     friend = await Mock.user();
   });
 
   afterEach(async () => await Mock.afterEach(ws));
   after(async () => await Mock.after(client));
 
-  it('user accepts friend request, fulfilled', async () => {
-    await expect(acceptFriendRequest()).to.be.fulfilled;
+  it('user sends request, fulfilled', async () => {
+    await expect(removeFriend()).to.be.fulfilled;
   });
 
-  it('user accepts friend request, creates dm channel', async () => {
-    await acceptFriendRequest();
+  it('user removes self as friend, rejected', async () => {
+    friend._id = sender._id;
 
-    const exists = await Channel.exists({ memberIds: sender.id }); 
-    expect(exists).to.be.true;
+    await expect(removeFriend()).to.be.rejectedWith('You cannot remove yourself as a friend');
   });
 
-  it('user accepts friend request, friend request removed', async () => {
-    await acceptFriendRequest();
+  it('removes non existing friend, rejected', async () => {
+    friend._id = generateSnowflake();
 
-    friend = await User.findById(friend.id);
-    sender = await User.findById(sender.id);    
+    await expect(removeFriend()).to.be.rejectedWith('User Not Found');
+  });
 
-    expect(friend.friendRequestIds).to.be.empty;
+  it('sender cancels request, friend request removed', async () => {
+    await removeFriend();
+
+    sender = await User.findById(sender.id);   
+
     expect(sender.friendRequestIds).to.be.empty;
   });
 
-  it('user accepts friend request, friend added', async () => {
-    await acceptFriendRequest();
+  it('sender removes friend, friend removed on both users', async () => {
+    await removeFriend();
 
     friend = await User.findById(friend.id);
     sender = await User.findById(sender.id);
 
-    expect(friend.friendIds.length).to.equal(1);
-    expect(sender.friendIds.length).to.equal(1);
+    expect(friend.friendIds.length).to.equal(0);
+    expect(sender.friendIds.length).to.equal(0);
   });
 
-  it('user accepts friend request, non existing friend, rejected', async () => {
-    const result = () => event.invoke(ws, client, {
-      friendId: generateSnowflake(),
-    });
-
-    await expect(result()).to.be.rejectedWith('User Not Found');
-  });
-
-  async function acceptFriendRequest() {
-    return event.invoke(ws, client, {
-      friendId: friend._id,
-    });
+  async function removeFriend() {
+    return event.invoke(ws, client, { friendId: friend._id });
   }
 });

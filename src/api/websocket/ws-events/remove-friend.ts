@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
-import { User, UserDocument } from '../../../data/models/user';
-import { Params, WSEventParams } from '../../../data/types/ws-types';
+import { UserDocument } from '../../../data/models/user';
+import { Params } from '../../../data/types/ws-types';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
@@ -35,7 +35,7 @@ export default class implements WSEvent<'REMOVE_FRIEND'> {
   }
 
   private async removeFriend(sender: UserDocument, friend: UserDocument) {
-    return sender.update({
+    return sender.updateOne({
         $pull: {
           friendRequestIds: friend._id,
           friends: friend._id,

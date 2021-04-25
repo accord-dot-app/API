@@ -3,7 +3,6 @@ import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import { Mock } from '../../mock/mock';
 import { expect } from 'chai';
-import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { User, UserDocument } from '../../../src/data/models/user';
 import { Channel } from '../../../src/data/models/channel';
 

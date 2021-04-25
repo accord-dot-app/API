@@ -1,7 +1,7 @@
 import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import ChannelCreate from '../../../src/api/websocket/ws-events/channel-create';
-import { Mock } from '../../mock';
+import { Mock } from '../../mock/mock';
 import { expect, spy } from 'chai';
 import { Guild, GuildDocument } from '../../../src/data/models/guild';
 import { Partial } from '../../../src/data/types/ws-types';

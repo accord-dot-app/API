@@ -1,6 +1,6 @@
 import Deps from '../../../src/utils/deps';
 import io from 'socket.io-client';
-import { Mock } from '../../mock';
+import { Mock } from '../../mock/mock';
 import { GuildDocument } from '../../../src/data/models/guild';
 import { User, UserDocument } from '../../../src/data/models/user';
 import { API } from '../../../src/api/server';

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { WSCooldowns } from '../../../src/api/websocket/modules/ws-cooldowns';
 import { generateInviteCode } from '../../../src/data/models/invite';
 
-describe.only('ws-cooldowns', () => {
+describe('ws-cooldowns', () => {
   let clientId: string;
   let cooldowns: WSCooldowns;
 

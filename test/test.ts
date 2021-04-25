@@ -43,7 +43,7 @@ use(should);
   await import('./integration/ws/message-update.tests');
   await import('./integration/ws/message-delete.tests');
   await import('./integration/ws/ready.tests');
-  await import('./integration/ws/remove-friend.tests');
+  */await import('./integration/ws/remove-friend.tests');/*
   // await import('./integration/ws/voice-state-update.tests');
   await import('./integration/ws/user-update.tests');
   await import('./integration/ws/ws-guard.tests');
