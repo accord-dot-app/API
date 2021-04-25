@@ -10,7 +10,7 @@ import { expect, spy } from 'chai';
 import Guilds from '../../../src/data/guilds';
 import Users from '../../../src/data/users';
 
-describe('guild-member-add', () => {
+describe.only('guild-member-add', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: GuildMemberAdd;
   let guilds: Guilds;
@@ -27,7 +27,7 @@ describe('guild-member-add', () => {
     guilds = Deps.get<Guilds>(Guilds);
     users = Deps.get<Users>(Users);
 
-    user = await Mock.user();
+    user = await Mock.user([]);
     ws.sessions.set(client.id, user.id);
 
     invite = await Mock.invite(guild.id);
@@ -36,10 +36,14 @@ describe('guild-member-add', () => {
   afterEach(async () => await Mock.afterEach(ws));
   after(async () => await Mock.after(client));
 
-  it('user already joined, rejected');
-
   it('valid invite and code, fulfilled', async () => {
     await expect(guildMemberAdd()).to.be.fulfilled;
+  });
+
+  it('user already joined, rejected', async () => {
+    await guildMemberAdd();
+
+    await expect(guildMemberAdd()).to.be.rejectedWith('User already in guild');
   });
 
   it('valid invite and code, is bot user, rejected', async () => {
@@ -61,7 +65,7 @@ describe('guild-member-add', () => {
     await guildMemberAdd();
 
     user = await users.get(user.id);    
-    expect(user.guilds.length).to.equal(2);
+    expect(user.guilds.length).to.equal(1);
   });
 
   it('invite has reached max uses, is deleted', async () => {
@@ -77,7 +81,7 @@ describe('guild-member-add', () => {
     invite.options = { expiresAt: new Date(0) };
     await invite.save();
 
-    await expect(guildMemberAdd()).to.be.rejectedWith('Invite Expired');
+    await expect(guildMemberAdd()).to.be.rejectedWith('Invite expired');
   });
 
   it('invalid invite code, rejected', async () => {
@@ -95,18 +99,7 @@ describe('guild-member-add', () => {
     expect(to).to.have.been.called.with(guild._id);
   });
 
-  it.skip('valid invite and code, emits guild join event', async () => {
-    const to = spy.on(ws.io.to(guild._id), 'emit');
-
-    await guildMemberAdd();
-
-    guild = await guilds.get(guild.id);
-    expect(to).to.have.been.called.with('GUILD_JOIN');
-  });
-
   function guildMemberAdd() {
-    return event.invoke(ws, client, {
-      inviteCode: invite._id,
-    });
+    return event.invoke(ws, client, { inviteCode: invite._id });
   }
 });

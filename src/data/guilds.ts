@@ -55,7 +55,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
 
   public async join(user: UserDocument, guild: GuildDocument) {
     user.guilds.push(guild.id);
-    await guild.save();
+    await user.save();
 
     const member = await this.members.create(guild.id, user.id);
     guild.members.push(member.id);

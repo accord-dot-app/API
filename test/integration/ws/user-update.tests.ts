@@ -22,7 +22,10 @@ describe('user-update', () => {
     regenToken();
   });
 
-  afterEach(async () => await Mock.afterEach(ws));
+  afterEach(async () => {
+    await user.deleteOne();
+    await Mock.afterEach(ws);
+  });
   after(async () => await Mock.after(client));
 
   it('client updates user, fulfilled', async () => {
@@ -37,7 +40,7 @@ describe('user-update', () => {
   });
 
   it('client is impostor, rejected', async () => {
-    user.id = generateSnowflake();
+    user._id = generateSnowflake();
     await regenToken();
 
     await expect(updateUser()).to.be.rejectedWith('Unauthorized');
@@ -54,6 +57,8 @@ describe('user-update', () => {
   }
 
   async function regenToken() {
-    key = Deps.get<Users>(Users).createToken(user.id, false);
+    key = Deps
+      .get<Users>(Users)
+      .createToken(user._id, false);
   }
 });

@@ -1,7 +1,7 @@
-import { Channel } from '../../src/data/models/channel';
-import { Guild } from '../../src/data/models/guild';
-import { GuildMember } from '../../src/data/models/guild-member';
-import { User, SelfUserDocument } from '../../src/data/models/user';
+import { Channel, ChannelDocument } from '../../src/data/models/channel';
+import { Guild, GuildDocument } from '../../src/data/models/guild';
+import { GuildMember, GuildMemberDocument } from '../../src/data/models/guild-member';
+import { User, SelfUserDocument, UserDocument } from '../../src/data/models/user';
 import { generateSnowflake } from '../../src/data/snowflake-entity';
 import { defaultPermissions, Role, RoleDocument } from '../../src/data/models/role';
 import { ChannelTypes, InviteTypes, Lean, PermissionTypes, UserTypes } from '../../src/data/types/entity-types';
@@ -61,7 +61,7 @@ export class Mock {
     });
   }
 
-  public static async guild() {
+  public static async guild(): Promise<GuildDocument> {
     const owner = await Mock.user();
     const memberUser = await Mock.user();
     
@@ -74,7 +74,7 @@ export class Mock {
     return guild.save();
   }
 
-  public static async user(guildIds: string[] = []) {
+  public static async user(guildIds: string[] = []): Promise<UserDocument> {
     return await User.create({
       _id: generateSnowflake(),
       avatarURL: 'a',
@@ -95,7 +95,7 @@ export class Mock {
     return await this.user(guildIds) as SelfUserDocument;
   }
 
-  public static async bot(guildIds: string[] = []) {
+  public static async bot(guildIds: string[] = []): Promise<SelfUserDocument> {
     return await User.create({
       _id: generateSnowflake(),
       avatarURL: 'a',
@@ -108,14 +108,14 @@ export class Mock {
       status: 'ONLINE',
       username: `mock-bot-${generateSnowflake()}`,
       voice: new UserTypes.VoiceState(),
-    } as any);    
+    } as any) as SelfUserDocument;    
   }
 
-  public static async guildMember(userId: string, guildId: string) {
+  public static async guildMember(userId: string, guildId: string): Promise<GuildMemberDocument> {
     return this.guildMembers.create(guildId, userId);
   }
 
-  public static async channel(type: ChannelTypes.Type, guildId?: string) {
+  public static async channel(type: ChannelTypes.Type, guildId?: string): Promise<ChannelDocument> {
     return await Channel.create({
       _id: generateSnowflake(),
       guildId,

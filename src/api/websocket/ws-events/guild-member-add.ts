@@ -46,7 +46,7 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
   private async handleInvite(invite: InviteDocument) {
     const inviteExpired = Number(invite.options?.expiresAt?.getTime()) < new Date().getTime();
     if (inviteExpired)
-      throw new TypeError('Invite Expired');
+      throw new TypeError('Invite expired');
     
     invite.uses++;
 
