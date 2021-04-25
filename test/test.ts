@@ -31,7 +31,7 @@ use(should);
   // await import('./integration/routes/invites-routes.tests');
   // await import('./integration/routes/guilds-routes.tests');
 
-  await import('./integration/ws/add-friend.tests');
+  /*await import('./integration/ws/add-friend.tests');
   await import('./integration/ws/channel-create.tests');
   await import('./integration/ws/guild-member-add.tests');
   await import('./integration/ws/guild-create.tests');
@@ -57,5 +57,6 @@ use(should);
   await import('./unit/models/message.tests');
   await import('./unit/models/role.tests');
   await import('./unit/models/user.tests');
-  await import('./unit/snowflake-entity.tests');
+  await import('./unit/snowflake-entity.tests');*/
+  await import('./unit/ws/ws-cooldowns.tests');
 })();

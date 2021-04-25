@@ -1,7 +1,7 @@
-import AcceptFriendRequest from '../../../src/api/websocket/ws-events/accept-friend-request';
+import AddFriend from '../../../src/api/websocket/ws-events/add-friend';
 import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
-import { Mock } from '../../mock';
+import { Mock } from '../../mock/mock';
 import { expect } from 'chai';
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { User, UserDocument } from '../../../src/data/models/user';
@@ -9,14 +9,14 @@ import { Channel } from '../../../src/data/models/channel';
 
 describe('add-friend-request', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
-  let event: AcceptFriendRequest;
+  let event: AddFriend;
   let ws: WebSocket;
 
   let sender: UserDocument;
   let friend: UserDocument;
 
   beforeEach(async () => {
-    ({ event, ws, user: sender } = await Mock.defaultSetup(client, AcceptFriendRequest));
+    ({ event, ws, user: sender } = await Mock.defaultSetup(client, AddFriend));
     friend = await Mock.user();
   });
 
@@ -55,16 +55,14 @@ describe('add-friend-request', () => {
   });
 
   it('user accepts friend request, non existing friend, rejected', async () => {
-    const result = () => event.invoke(ws, client, {
-      friendId: generateSnowflake(),
-    });
+    friend.username = generateSnowflake();
 
-    await expect(result()).to.be.rejectedWith('User Not Found');
+    await expect(acceptFriendRequest()).to.be.rejectedWith('User Not Found');
   });
 
   async function acceptFriendRequest() {
     return event.invoke(ws, client, {
-      friendId: friend._id,
+      username: friend.username,
     });
   }
 });

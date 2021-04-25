@@ -32,7 +32,7 @@ export default class implements WSEvent<'GUILD_MEMBER_DELETE'> {
 
     ws.io
       .to(guildId)
-      .emit('GUILD_MEMBER_REMOVE', { userId } as Args.GuildMemberDelete);
+      .emit('GUILD_MEMBER_DELETE', { userId } as Args.GuildMemberDelete);
     ws.io
       .to(client.id)
       .emit('GUILD_LEAVE', { guildId } as Args.GuildLeave);

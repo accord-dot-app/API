@@ -1,7 +1,5 @@
 // REMEMBER: Sync types below with Website project.
 // -> in entity-types.ts
-import { Types } from 'mongoose';
-
 export namespace Lean {
   export interface Application {
     _id: string;
@@ -33,7 +31,7 @@ export namespace Lean {
     roles: Role[];
   }
   export interface GuildMember {
-    _id: Types.ObjectId;
+    _id: string;
     guildId: string;
     roleIds: string[];
     userId: string;

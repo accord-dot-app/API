@@ -4,17 +4,19 @@ import Log from '../../utils/log';
 import { WSEvent, WSEventParams } from './ws-events/ws-event';
 import { resolve } from 'path';
 import { readdirSync } from 'fs';
+import { WSCooldowns } from './modules/ws-cooldowns';
+import Deps from '../../utils/deps';
 
 export class WebSocket {
-  public readonly cooldowns = new Map<string, EventLog[]>();
   public events = new Map<keyof WSEventParams, WSEvent<keyof WSEventParams>>();
   public io: SocketServer;
-  public sessions = new SessionManager();
-  
+  public sessions = new SessionManager();  
 
-  get connectedUserIds() {
+  public get connectedUserIds() {
     return Array.from(this.sessions.values());
   }
+
+  constructor(private cooldowns = Deps.get<WSCooldowns>(WSCooldowns)) {}
 
   public async init(server: Server) {
     this.io = new SocketServer(server, {
@@ -43,7 +45,7 @@ export class WebSocket {
       for (const event of this.events.values())
         client.on(event.on, async (data: any) => {
           try {
-            this.handleCooldown(client, event.on);
+            this.cooldowns.handle(client.id, event.on);
             await event.invoke.bind(event)(this, client, data);
           } catch (error) {
             client.send(`Server error on executing: ${event.on}\n${error.message}`);
@@ -52,53 +54,6 @@ export class WebSocket {
     });
 
     Log.info('Started WebSocket', 'ws');
-  }
-
-  // TODO: move to separate file
-  private handleCooldown(client: Socket, eventName: keyof WSEventParams) {
-    let cooldowns = this.getCooldown(client.id);
-    cooldowns.push({ timestamp: new Date().getTime(), eventName });
-
-    return;
-
-    const { totalMsDifference } = this.handleCooldowns(cooldowns, eventName);
-      
-    const spamThreshold = 1000;
-    const maxEventsPerSecond = 10;
-    if (this.cooldowns.size > maxEventsPerSecond
-      && totalMsDifference < spamThreshold)
-      throw new TypeError('You are being rate limited');
-
-    const timeToDelete = 60 * 1000;
-    setTimeout(() => {
-      const overOneMinuteAgo = (l: EventLog) => (new Date().getTime() - l.timestamp) > timeToDelete;
-      cooldowns = cooldowns.filter(overOneMinuteAgo);
-    }, timeToDelete);
-  }
-
-  private handleCooldowns(cooldowns: EventLog[], eventName: keyof WSEventParams) {
-    const event = this.events.get(eventName);
-    let totalMsDifference = new Date().getTime();
-    let totalEventCooldown = 0;
-
-    for (const log of cooldowns) {
-      totalMsDifference -= log.timestamp;
-      if (log.eventName !== eventName) continue;
-
-      totalEventCooldown += event?.cooldown ?? 0;
-    }
-
-    if (totalEventCooldown > totalMsDifference)
-      throw new TypeError('You are being rate limited');
-
-    return { totalMsDifference };
-  }
-
-  private getCooldown(clientId: string) {
-    return this.cooldowns.get(clientId)
-      ?? this.cooldowns
-        .set(clientId, [])
-        .get(clientId) as EventLog[];
   }
 }
 
@@ -117,9 +72,4 @@ export class SessionManager extends Map<string, string> {
   public userId(client: Socket) {
     return this.get(client.id);
   }
-}
-
-interface EventLog {
-  timestamp: number;
-  eventName: keyof WSEventParams;
 }

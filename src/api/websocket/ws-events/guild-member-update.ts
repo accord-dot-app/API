@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 import GuildMembers from '../../../data/guild-members';
+import Roles from '../../../data/roles';
 import { PermissionTypes } from '../../../data/types/entity-types';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
@@ -13,6 +14,7 @@ export default class implements WSEvent<'GUILD_MEMBER_UPDATE'> {
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),
     private guildMembers = Deps.get<GuildMembers>(GuildMembers),
+    private roles = Deps.get<Roles>(Roles),
   ) {}
 
   // TODO: validate can manage etc.
@@ -22,13 +24,14 @@ export default class implements WSEvent<'GUILD_MEMBER_UPDATE'> {
     this.guard.can(client, member.guildId, PermissionTypes.General.MANAGE_ROLES);
 
     // if role is equal or higher than client
-    if (member.role)
-      throw new TypeError('You cannot give this role');
+    const isHigher = await this.roles.isHigher(selfMember.roleIds, member.roleIds);
+    if (!isHigher)
+      throw new TypeError('Member has higher roles than you');
     
-    await Guildf
+    await member.updateOne(partialMember);
     
     ws.io
-      .to(guildId)
-      .emit('GUILD_MEMBER_UPDATE', { userId, partialMember } as Args.GuildMemberUpdate);
+      .to(member.guildId)
+      .emit('GUILD_MEMBER_UPDATE', { memberId, partialMember } as Args.GuildMemberUpdate);
   }
 }

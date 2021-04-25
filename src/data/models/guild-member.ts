@@ -1,14 +1,18 @@
-import { Document, model, Schema, Types } from 'mongoose';
+import { Document, model, Schema } from 'mongoose';
 import { validators } from '../../utils/utils';
+import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns } from '../types/entity-types';
-import { Role, RoleDocument } from './role';
 
 export interface GuildMemberDocument extends Document, Lean.GuildMember {
-  _id: Types.ObjectId;
+  _id: string;
   createdAt: never;
 }
 
 export const GuildMember = model<GuildMemberDocument>('guildMember', new Schema({
+  _id: {
+    type: String,
+    default: generateSnowflake,
+  },
   guildId: {
     type: String,
     required: [true, 'Guild ID is required'],

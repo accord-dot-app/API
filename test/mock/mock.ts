@@ -13,7 +13,6 @@ import { WebSocket } from '../../src/api/websocket/websocket';
 import Deps from '../../src/utils/deps';
 import Guilds from '../../src/data/guilds';
 import GuildMembers from '../../src/data/guild-members';
-import { ChannelPings } from '../../src/data/models/ping';
 
 export class Mock {
   private static guilds = Deps.get<Guilds>(Guilds);
@@ -74,10 +73,6 @@ export class Mock {
     const member = await Mock.guildMember(memberUser.id, guild.id);
     guild.members.push(member);
     return guild.save();
-  }
-
-  public static async self(guildIds: string[] = []) {
-    return await this.user(guildIds) as SelfUserDocument;
   }
 
   public static async user(guildIds: string[] = []) {
@@ -188,7 +183,6 @@ export class Mock {
   public static async cleanDB() {
     await Application.deleteMany({});
     await Channel.deleteMany({});
-    await ChannelPings.deleteMany({});
     await Guild.deleteMany({});
     await GuildMember.deleteMany({});
     await Invite.deleteMany({});
