@@ -53,22 +53,6 @@ export const User = model<UserDocument>('user', new Schema({
       message: 'Clout limit reached',
     },
   },
-  ignored: {
-    type: Object,
-    default: new UserTypes.Ignored(),
-    channelIds: {
-      type: [String],
-      default: []
-    },
-    guildIds: {
-      type: [String],
-      default: []
-    },
-    userIds: {
-      type: [String],
-      default: []
-    },
-  },
   friendRequestIds: {
     type: Array,
     ref: 'user',
@@ -86,14 +70,30 @@ export const User = model<UserDocument>('user', new Schema({
       message: 'Guild limit reached',
     },
   },
-  status: {
-    type: String,
-    required: [true, 'Status is required'],
-    validate: [patterns.status, 'Invalid status'],
+  ignored: {
+    type: Object,
+    default: new UserTypes.Ignored(),
+    channelIds: {
+      type: [String],
+      default: []
+    },
+    guildIds: {
+      type: [String],
+      default: []
+    },
+    userIds: {
+      type: [String],
+      default: []
+    },
   },
   lastReadMessages: {
     type: Object,
     default: {}
+  },
+  status: {
+    type: String,
+    required: [true, 'Status is required'],
+    validate: [patterns.status, 'Invalid status'],
   },
   username: {
     type: String,
@@ -106,11 +106,6 @@ export const User = model<UserDocument>('user', new Schema({
     },
   },
   verified: Boolean,
-  voice: {
-    type: Object,
-    required: [true, 'Voice State is required'],
-    default: new UserTypes.VoiceState(),
-  }
 }, { toJSON: { getters: true } })
 .plugin(passportLocalMongoose)
 .plugin(uniqueValidator));

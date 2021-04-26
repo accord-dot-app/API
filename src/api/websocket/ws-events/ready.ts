@@ -5,6 +5,7 @@ import Users from '../../../data/users';
 import { SystemBot } from '../../../system/bot';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
+import { WSRooms } from '../modules/ws-rooms';
 import { WebSocket } from '../websocket';
 import { WSEvent, Args, Params } from './ws-event';
  
@@ -14,7 +15,7 @@ export default class implements WSEvent<'READY'> {
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),
-    private systemBot = Deps.get<SystemBot>(SystemBot),
+    private rooms = Deps.get<WSRooms>(WSRooms),
     private users = Deps.get<Users>(Users),
   ) {}
 
@@ -25,72 +26,20 @@ export default class implements WSEvent<'READY'> {
  
     ws.sessions.set(client.id, userId);
 
-    const user = await this.users.get(userId) as any as SelfUserDocument;    
+    const user = await this.users.getSelf(userId);    
     if (user.status === 'OFFLINE')
       await User.updateOne({ _id: userId }, { status: 'ONLINE' });
-    await this.joinRooms(client, user);
+    await this.rooms.join(client, user);
 
     ws.io
       .to(client.id)
       .emit('READY');
-
-    const knownUsers = this.getKnownUsers(user);
-    for (const id of knownUsers) {      
-      ws.io
-        .to(id)
-        .emit('PRESENCE_UPDATE', {
-          userId,
-          status: user.status
-        } as Args.PresenceUpdate);
-    }
-  }
-
-  private async joinRooms(client: Socket, user: SelfUserDocument) {
-    const alreadyJoinedRooms = client.rooms.size > 1;
-    if (alreadyJoinedRooms) return;
-
-    await client.join(this.getKnownUsers(user));
     
-    await this.joinGuildRooms(user, client);
-    await this.joinDMRooms(user, client);
-  }
-
-  private async joinDMRooms(user: SelfUserDocument, client) {
-    const dms = await this.users.getDMChannels(user._id);
-    if (!dms) return;
-
-    const ids = dms.map(c => c._id);
-    await client.join(ids);
-  }
-
-  private async joinGuildRooms(user: SelfUserDocument, client: Socket) {
-    if (!user.guilds) return;
-
-    const guildIds = user.guilds.map(g => g._id);
-    await client.join(guildIds);
-
-    const channelIds = await this.getChannelIds(client, user.guilds as any);
-    await client.join(channelIds);        
-  }
-
-  private async getChannelIds(client: Socket, guilds: [{ channels: string[] }]) {
-    const ids: string[] = [];
-    const channelIds = guilds.flatMap(g => g.channels);    
-    
-    for (const id of channelIds)
-      try {        
-        await this.guard.canAccessChannel(client, id);
-        ids.push(id);
-      } catch {}    
-    return ids;
-  }
-
-  private getKnownUsers(user: Lean.User) {
-    return [
-      user._id,
-      this.systemBot.self?._id,
-      ...user.friendRequestIds,
-      ...user.friendIds,
-    ];
+    ws.io
+      .to(this.users.getKnownIds(user))
+      .emit('PRESENCE_UPDATE', {
+        userId,
+        status: user.status
+      } as Args.PresenceUpdate);
   }
 }

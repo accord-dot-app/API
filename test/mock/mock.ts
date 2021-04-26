@@ -119,7 +119,7 @@ export class Mock {
   }
 
   public static async channel(type: ChannelTypes.Type, guildId?: string): Promise<ChannelDocument> {
-    return await Channel.create({
+    const channel = await Channel.create({
       _id: generateSnowflake(),
       guildId,
       memberIds: [],
@@ -127,6 +127,13 @@ export class Mock {
       summary: '',
       type,
     });
+    
+    if (guildId) {
+      const guild = await Guild.findById(guildId);
+      guild.channels.push(channel);
+      await guild.save();
+    }
+    return channel;
   }
 
   public static async role(guildId: string, permissions?: number) {

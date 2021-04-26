@@ -6,16 +6,16 @@ import { readdirSync } from 'fs';
 import { resolve } from 'path';
 import { Lean, UserTypes } from './types/entity-types';
 import { Channel } from './models/channel';
-import { Role } from './models/role';
-import { GuildMember } from './models/guild-member';
 import { Guild } from './models/guild';
 import { APIError } from '../api/modules/api-error';
+import Deps from '../utils/deps';
+import Guilds from './guilds';
 
 export default class Users extends DBWrapper<string, UserDocument> {
   private avatarNames: string[] = [];
   private systemUser: UserDocument;
 
-  constructor() {
+  constructor(private guilds = Deps.get<Guilds>(Guilds)) {
     super();
 
     this.avatarNames = readdirSync(resolve('assets/avatars'))
@@ -28,8 +28,8 @@ export default class Users extends DBWrapper<string, UserDocument> {
       throw new APIError(404, 'User Not Found');
 
     delete user['email'];
+    delete user['friendRequestIds'];
     delete user['ignored'];
-
     return user;
   }
 
@@ -43,13 +43,9 @@ export default class Users extends DBWrapper<string, UserDocument> {
     return user;
   }
 
-  private async populateGuilds(user: SelfUserDocument) {
-    for (const guild of user.guilds) {
-      const guildId = guild._id;
-      guild.channels = await Channel.find({ guildId });
-      guild.roles = await Role.find({ guildId });
-      guild.members = await GuildMember.find({ guildId });
-    }
+  private async populateGuilds(user: UserDocument) {
+    for (let i = 0; i < user.guilds.length; i++)
+      user.guilds[i] = (await this.guilds.get(user.guilds[i] as string, false));
     return user;
   }
 
@@ -61,22 +57,24 @@ export default class Users extends DBWrapper<string, UserDocument> {
   }
 
   public async getKnown(userId: string) {
-    return await User.find({
-      $or: [
-        { _id: userId },
-        { _id: this.systemUser._id },
-        { friendIds: userId as any },
-        { friendRequestIds: userId },
-        { ignored: { userIds: userId } },
-      ]
-    }) as UserDocument[];
+    const user = await this.getSelf(userId);
+    return await User.find({ _id: this.getKnownIds(user) as any }) as UserDocument[];
+  }
+
+  public getKnownIds(user: UserTypes.Self) {
+    return [
+      user._id,
+      this.systemUser?._id,
+      ...user.friendRequestIds,
+      ...user.friendIds,
+    ];
   }
 
   public async getDMChannels(userId: string) {
     return await Channel.find({ memberIds: userId });
   }
 
-  public async getSystemUser() {
+  public async updateSystemUser() {
     const username = '2PG';
     return this.systemUser = await User.findOne({ username })
       ?? await User.create({
@@ -87,7 +85,6 @@ export default class Users extends DBWrapper<string, UserDocument> {
         status: 'ONLINE',
         username,
         friendIds: [],
-        friendRequestIds: [],
         guilds: [],
         voice: new UserTypes.VoiceState,
       });

@@ -24,7 +24,7 @@ export class SystemBot {
 
   public async init() {
     if (this.self) return;
-    this._self = await this.users.getSystemUser();
+    this._self = await this.users.updateSystemUser();
 
     await this.readyUp();
 

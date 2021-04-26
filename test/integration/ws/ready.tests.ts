@@ -77,7 +77,9 @@ describe('ready', () => {
     await makeOwner();
     await ready();
 
-    expect(rooms()).to.include(guild.channels[0]._id, newChannel._id);
+    expect(rooms()).to.contain(guild.channels[0]._id);
+    expect(rooms()).to.contain(guild.channels[1]._id);
+    expect(rooms()).to.contain(newChannel._id);
   });
 
   function ready() {
