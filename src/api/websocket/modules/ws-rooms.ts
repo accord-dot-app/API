@@ -28,7 +28,7 @@ export class WSRooms {
     await client.join(ids);
   }
 
-  private async joinGuildRooms(user: SelfUserDocument, client: Socket) {
+  public async joinGuildRooms(user: SelfUserDocument, client: Socket) {
     if (!user.guilds) return;
 
     const guildIds = user.guilds.map(g => g._id);

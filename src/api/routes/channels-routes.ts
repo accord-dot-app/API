@@ -24,9 +24,9 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
     .slice(start, end)
     .map(m => {
       const isIgnored = user.ignored.userIds.includes(m.authorId);
-      return (isIgnored)
-        ? { ...m, content: 'This user is blocked, and the message content has been hidden' }
-        : m;
+      if (isIgnored)
+        m.content = 'This user is blocked, and the message content has been hidden';
+      return m;
     });
 
   const index = Math.max(channelMsgs.length - 1, 0);

@@ -5,6 +5,7 @@ import { GuildDocument } from '../../../data/models/guild';
 import { InviteDocument } from '../../../data/models/invite';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
+import { WSRooms } from '../modules/ws-rooms';
 import { WebSocket } from '../websocket';
 import { WSEvent, Args, Params } from './ws-event';
 
@@ -14,6 +15,7 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
   constructor(
     private guilds = Deps.get<Guilds>(Guilds),
     private invites = Deps.get<Invites>(Invites),
+    private rooms = Deps.get<WSRooms>(WSRooms),
     private users = Deps.get<Users>(Users),
   ) {}
 
@@ -26,7 +28,7 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
     if (inGuild)
       throw new TypeError('User already in guild');
     
-    const user = await this.users.get(userId);
+    const user = await this.users.getSelf(userId);
     if (inviteCode && user.bot)
       throw new TypeError('Bot users cannot accept invites');
 
@@ -37,7 +39,7 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
       .to(guild._id)
       .emit('GUILD_MEMBER_ADD', { member } as Args.GuildMemberAdd);
     
-    await this.joinGuildRooms(client, guild);
+    await this.rooms.joinGuildRooms(user, client);
     ws.io
       .to(client.id)
       .emit('GUILD_JOIN', { guild } as Args.GuildJoin);
@@ -53,11 +55,5 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
     (invite.options?.maxUses && invite.uses >= invite.options.maxUses)
       ? await invite.deleteOne()
       : await invite.save();
-  }
-
-  public async joinGuildRooms(client: Socket, guild: GuildDocument) {
-    await client.join(guild.id);
-    for (const channel of guild.channels)
-      await client.join(channel._id);
   }
 }

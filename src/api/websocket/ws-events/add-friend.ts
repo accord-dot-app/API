@@ -19,6 +19,10 @@ export default class implements WSEvent<'ADD_FRIEND'> {
     const sender = await this.users.getSelf(senderId);
     const friend = await this.users.getByUsername(username);
 
+    const isBlocking = friend.ignored.userIds.includes(sender._id);
+    if (isBlocking)
+      throw new TypeError('This user is blocking you');
+
     ws.io
       .to(senderId)
       .to(friend._id)

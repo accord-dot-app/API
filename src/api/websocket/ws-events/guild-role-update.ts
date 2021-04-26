@@ -10,10 +10,9 @@ export default class implements WSEvent<'GUILD_ROLE_UPDATE'> {
   on = 'GUILD_ROLE_UPDATE' as const;
 
   constructor(
-    private guard = Deps.get<WSGuard>(WSGuard)
+    private guard = Deps.get<WSGuard>(WSGuard),
   ) {}
 
-  // TODO: validate all role values
   public async invoke(ws: WebSocket, client: Socket, { roleId, partialRole, guildId }: Params.GuildRoleUpdate) {
     await this.guard.can(client, guildId, PermissionTypes.General.MANAGE_ROLES);
 

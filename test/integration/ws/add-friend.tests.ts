@@ -3,20 +3,21 @@ import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import { Mock } from '../../mock/mock';
 import { expect } from 'chai';
-import { User, UserDocument } from '../../../src/data/models/user';
+import { SelfUserDocument, User, UserDocument } from '../../../src/data/models/user';
 import { Channel } from '../../../src/data/models/channel';
 
-describe('add-friend', () => {
+describe.only('add-friend', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: AddFriend;
   let ws: WebSocket;
 
-  let sender: UserDocument;
-  let friend: UserDocument;
+  let sender: SelfUserDocument;
+  let friend: SelfUserDocument;
 
   beforeEach(async () => {
-    ({ event, ws, user: sender } = await Mock.defaultSetup(client, AddFriend));
-    friend = await Mock.user();
+    ({ event, ws, user: sender as any } = await Mock.defaultSetup(client, AddFriend));
+
+    friend = await Mock.self();
   });
 
   afterEach(async () => await Mock.afterEach(ws));
@@ -30,6 +31,13 @@ describe('add-friend', () => {
     friend.username = sender.username;
 
     await expect(addFriend()).to.be.rejectedWith('You cannot add yourself as a friend');
+  });
+
+  it('user adds blocking user, rejected', async () => {
+    friend.ignored.userIds.push(sender._id);
+    await friend.updateOne(friend);
+
+    await expect(addFriend()).to.be.rejectedWith('This user is blocking you');
   });
 
   it('user adds non existing user, rejected', async () => {
@@ -50,8 +58,8 @@ describe('add-friend', () => {
     await addFriend();
     await returnFriend();
 
-    friend = await User.findById(friend.id);
-    sender = await User.findById(sender.id);    
+    friend = await User.findById(friend.id) as any;
+    sender = await User.findById(sender.id) as any;    
 
     expect(friend.friendRequestIds).to.be.empty;
     expect(sender.friendRequestIds).to.be.empty;
@@ -61,8 +69,8 @@ describe('add-friend', () => {
     await addFriend();
     await returnFriend();
 
-    friend = await User.findById(friend.id);
-    sender = await User.findById(sender.id);
+    friend = await User.findById(friend.id) as any;
+    sender = await User.findById(sender.id) as any;
 
     expect(friend.friendIds.length).to.equal(1);
     expect(sender.friendIds.length).to.equal(1);

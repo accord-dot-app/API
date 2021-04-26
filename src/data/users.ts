@@ -40,12 +40,17 @@ export default class Users extends DBWrapper<string, UserDocument> {
       user.guilds = (await this
         .populateGuilds(user)).guilds
         .map(g => new Guild(g).toJSON()) as Lean.Guild[];
+    
     return user;
   }
 
   private async populateGuilds(user: UserDocument) {
-    for (let i = 0; i < user.guilds.length; i++)
-      user.guilds[i] = (await this.guilds.get(user.guilds[i] as string, false));
+    const guilds: Lean.Guild[] = [];
+    for (const id of user.guilds) {
+      const guild = await this.guilds.get(id as string, true); 
+      guilds.push(guild);
+    }
+    user.guilds = guilds as any;
     return user;
   }
 

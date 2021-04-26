@@ -35,7 +35,6 @@ function binary64(val: string) {
       .toString(2)
       .padStart(64, '0')}`;
   } catch (e) {
-    console.log(e);
     return '';    
   }
 }

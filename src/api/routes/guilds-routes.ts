@@ -1,10 +1,9 @@
 import { Router } from 'express';
 import Deps from '../../utils/deps';
-import { updateGuild, updateUser, validateGuildExists, validateGuildOwner, validateHasPermission, validateUser } from '../modules/middleware';
+import { updateGuild, updateUser, validateHasPermission, validateUser } from '../modules/middleware';
 import Users from '../../data/users';
 import Guilds from '../../data/guilds';
 import { WebSocket } from '../websocket/websocket';
-import { GuildDocument } from '../../data/models/guild';
 import { Args } from '../websocket/ws-events/ws-event';
 import { PermissionTypes } from '../../data/types/entity-types';
 
@@ -15,34 +14,26 @@ const users = Deps.get<Users>(Users);
 const ws = Deps.get<WebSocket>(WebSocket);
 
 router.get('/', updateUser, validateUser, async (req, res) => {
-  try {
-    const user = await users.getSelf(res.locals.user._id); 
-    res.json(user.guilds);
-  } catch (err) {
-    res.json({ code: 400, message: err?.message });
-  }
+  const user = await users.getSelf(res.locals.user._id, true);    
+  res.json(user.guilds);
 });
 
 router.get('/:id/authorize/:botId',
   updateUser, validateUser, updateGuild,
   validateHasPermission(PermissionTypes.General.MANAGE_GUILD),
   async (req, res) => {
-  try {
-    const guild = await guilds.get(req.params.id);
-    const bot = await users.get(req.params.botId);
-    const member = await guilds.join(bot, res.locals.guild);
+  const guild = await guilds.get(req.params.id);
+  const bot = await users.get(req.params.botId);
+  const member = await guilds.join(bot, res.locals.guild);
 
-    ws.io
-      .to(guild.id)
-      .emit('GUILD_MEMBER_ADD', { member } as Args.GuildMemberAdd);
-    ws.io
-      .to(bot.id)
-      .emit('GUILD_JOIN', { guild } as Args.GuildJoin);
+  ws.io
+    .to(guild.id)
+    .emit('GUILD_MEMBER_ADD', { member } as Args.GuildMemberAdd);
+  ws.io
+    .to(bot.id)
+    .emit('GUILD_JOIN', { guild } as Args.GuildJoin);
 
-    res.json({ message: 'Success' });
-  } catch (err) {    
-    res.json({ code: 400, message: err?.message });
-  }
+  res.json({ message: 'Success' });
 });
 
 router.get('/:id/invites',
