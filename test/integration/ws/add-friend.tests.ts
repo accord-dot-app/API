@@ -6,7 +6,7 @@ import { expect } from 'chai';
 import { SelfUserDocument, User, UserDocument } from '../../../src/data/models/user';
 import { Channel } from '../../../src/data/models/channel';
 
-describe.only('add-friend', () => {
+describe('add-friend', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: AddFriend;
   let ws: WebSocket;
@@ -46,12 +46,12 @@ describe.only('add-friend', () => {
     await expect(addFriend()).to.be.rejectedWith('User Not Found');
   });
 
-  it('both users add each other, creates dm channel', async () => {
+  it('both users add each other, creates one dm channel', async () => {
     await addFriend();
     await returnFriend();
 
-    const exists = await Channel.exists({ memberIds: sender.id }); 
-    expect(exists).to.be.true;
+    const exists = await Channel.countDocuments({ memberIds: sender.id }); 
+    expect(exists).to.equal(1);
   });
 
   it('both users add each other, friend request removed', async () => {

@@ -10,6 +10,10 @@ export default class Channels extends DBWrapper<string, ChannelDocument> {
     return channel;
   }
 
+  public async getDMByMembers(...memberIds: string[]) {
+    return await Channel.findOne({ memberIds }) as DMChannelDocument;
+  }
+
   public async getDM(id: string) {
     return await Channel.findById(id) as DMChannelDocument;
   }

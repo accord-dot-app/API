@@ -43,7 +43,8 @@ export default class implements WSEvent<'ADD_FRIEND'> {
     if (friendReturnedRequest) return {
       friend: await this.acceptRequest(friend, sender),
       sender: await this.acceptRequest(sender, friend),
-      dmChannel: await this.channels.createDM(sender._id, friend._id),
+      dmChannel: await this.channels.getDMByMembers(sender._id, friend._id)
+        ?? await this.channels.createDM(sender._id, friend._id),
     }
     return { sender, friend };
   }
