@@ -49,8 +49,8 @@ export default class Users extends DBWrapper<string, UserDocument> {
     return user;
   }
 
-  public async getByUsername(username: string) {
-    const user = await User.findOne({ username });
+  public async getByUsername(username: string): Promise<SelfUserDocument> {
+    const user = await User.findOne({ username }) as SelfUserDocument;
     if (!user)
       throw new APIError(404, 'User Not Found');
     return user;
@@ -86,7 +86,6 @@ export default class Users extends DBWrapper<string, UserDocument> {
         username,
         friendIds: [],
         guilds: [],
-        voice: new UserTypes.VoiceState,
       });
   }
 
@@ -118,7 +117,6 @@ export default class Users extends DBWrapper<string, UserDocument> {
       email: `${generateSnowflake()}@avoid-mongodb-error.com`, // FIXME
       friends: [],
       status: 'ONLINE',
-      voice: new UserTypes.VoiceState(),
     }, password);
   }
 

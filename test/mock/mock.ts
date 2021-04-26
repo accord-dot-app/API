@@ -90,7 +90,6 @@ export class Mock {
       guilds: guildIds,
       status: 'ONLINE',
       username: `mock-user-${generateSnowflake()}`,
-      voice: new UserTypes.VoiceState(),
     } as any);
   }
 
@@ -110,7 +109,6 @@ export class Mock {
       guilds: guildIds,
       status: 'ONLINE',
       username: `mock-bot-${generateSnowflake()}`,
-      voice: new UserTypes.VoiceState(),
     } as any) as SelfUserDocument;    
   }
 

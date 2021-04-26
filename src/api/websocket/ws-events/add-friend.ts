@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import Channels from '../../../data/channels';
-import { UserDocument } from '../../../data/models/user';
+import { SelfUserDocument, UserDocument } from '../../../data/models/user';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
@@ -16,7 +16,7 @@ export default class implements WSEvent<'ADD_FRIEND'> {
 
   public async invoke(ws: WebSocket, client: Socket, { username }: Params.AddFriend) {
     const senderId = ws.sessions.userId(client);
-    const sender = await this.users.get(senderId);
+    const sender = await this.users.getSelf(senderId);
     const friend = await this.users.getByUsername(username);
 
     ws.io
@@ -25,7 +25,7 @@ export default class implements WSEvent<'ADD_FRIEND'> {
       .emit('ADD_FRIEND', await this.handle(sender, friend) as Args.AddFriend);
   }
 
-  private async handle(sender: UserDocument, friend: UserDocument): Promise<Args.AddFriend> {
+  private async handle(sender: SelfUserDocument, friend: SelfUserDocument): Promise<Args.AddFriend> {
     if (sender._id === friend._id)
       throw new TypeError('You cannot add yourself as a friend');
       
@@ -44,7 +44,7 @@ export default class implements WSEvent<'ADD_FRIEND'> {
     return { sender, friend };
   }
 
-  private async sendRequest(sender: UserDocument, friend: UserDocument) {
+  private async sendRequest(sender: SelfUserDocument, friend: UserDocument) {
     const alreadyPending = sender.friendRequestIds.includes(friend._id);
     return (!alreadyPending)
       ? await sender.update(

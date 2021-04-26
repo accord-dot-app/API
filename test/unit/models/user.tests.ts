@@ -33,8 +33,6 @@ test(createUser, () => {
   given({ username: 'ADAM JR' }).expect('Invalid username');
   given({ username: 'a' }).expect('Invalid username');
   given({ username: 'ADAM-JR' }).expect(true);
-  given({ voice: null }).expect('Voice State is required');
-  given({ voice: new UserTypes.VoiceState() }).expect(true);
 
   it('email is taken, rejected', async () => {
     const user = await Mock.self();
@@ -72,7 +70,6 @@ function createUser(user: any) {
     guilds: [generateSnowflake()],
     status: 'ONLINE',
     username: `mock-user-${generateSnowflake()}`,
-    voice: new UserTypes.VoiceState(),
     ...user,
   }).validateSync();
 
