@@ -6,7 +6,6 @@ import { User, UserDocument } from '../../../src/data/models/user';
 import { expect } from 'chai';
 import Deps from '../../../src/utils/deps';
 import Users from '../../../src/data/users';
-import { generateSnowflake } from '../../../src/data/snowflake-entity';
 
 describe('user-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
@@ -40,10 +39,10 @@ describe('user-update', () => {
   });
 
   it('client is impostor, rejected', async () => {
-    user._id = generateSnowflake();
+    user._id = '23u8123u12hg31873g183y21ufg321yt3';
     await regenToken();
 
-    await expect(updateUser()).to.be.rejectedWith('Unauthorized');
+    await expect(updateUser()).to.be.rejectedWith('User Not Found');
   });
 
   async function updateUser() {
