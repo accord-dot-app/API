@@ -17,7 +17,7 @@ export interface WSEventParams {
   /** Accept a guild invite. */
   'GUILD_MEMBER_ADD': Params.GuildMemberAdd;
   /** Remove a member from a guild. */
-  'GUILD_MEMBER_DELETE': Params.GuildMemberDelete;
+  'GUILD_MEMBER_REMOVE': Params.GuildMemberRemove;
   /** Update a members roles or other properties on a member. */
   'GUILD_MEMBER_UPDATE': Params.GuildMemberUpdate;
   /** Create a role in a guild. */
@@ -52,6 +52,54 @@ export interface WSEventParams {
   /** Manually disconnect from the websocket; logout. */
   'disconnect': any;
 }
+
+export interface WSEventAsyncArgs {
+  /** Called after you sent an outgoing friend request, or of an incoming friend request. */
+  'ADD_FRIEND': Args.AddFriend;
+  /** Called when a guild channel is created. */
+  'CHANNEL_CREATE': Args.ChannelCreate;
+  /** Callled when a guild channel is deleted. */
+  'CHANNEL_DELETE': Args.ChannelDelete;
+  /** Called when a guild is deleted. */
+  'GUILD_DELETE': Args.GuildDelete;
+  /** Called when the client joins a guild. */
+  'GUILD_JOIN': Args.GuildJoin;
+  /** Called when the client leaves a guild. */
+  'GUILD_LEAVE': Args.GuildLeave;
+  /** Called when someone joins a guild by an invite, or a bot is added. */
+  'GUILD_MEMBER_ADD': Args.GuildMemberAdd;
+  /** Called when member roles are updated, or other properties. */
+  'GUILD_MEMBER_UPDATE': Args.GuildMemberUpdate;
+  /** Called when a guild role is created. */
+  'GUILD_ROLE_CREATE': Args.GuildRoleCreate;
+  /** Called when a guild role is deleted. */
+  'GUILD_ROLE_DELETE': Args.GuildRoleDelete;
+  /** Called when properties on a guild role are updated. */
+  'GUILD_ROLE_UPDATE': Args.GuildRoleUpdate;
+  /** Called when guild settings are updated. */
+  'GUILD_UPDATE': Args.GuildUpdate;
+  /** Called when a guild invite is created. */
+  'INVITE_CREATE': Args.InviteCreate;
+  /** Called when an existing guild invite is deleted. */
+  'INVITE_DELETE': Args.InviteDelete;
+  /** Called when a message is created in a text-based channel. */
+  'MESSAGE_CREATE': Args.MessageCreate;
+  /** Called when a message is deleted in a text-based channel. */
+  'MESSAGE_DELETE': Args.MessageDelete;
+  /** Called when an existing message is updated in a text-based channel. */
+  'MESSAGE_UPDATE': Args.MessageUpdate;
+  'PING': Args.Ping;
+  'PRESENCE_UPDATE': Args.PresenceUpdate;
+  /** Called when the websocket accepts that you are ready. */
+  'READY': Args.Ready;
+  /** Called when you are removed as a friend, or you remove a friend request, or an existing friend. */
+  'REMOVE_FRIEND': Args.RemoveFriend;
+  /** Called when someone is typing in a text-based channel. */
+  'TYPING_START': Args.TypingStart;
+  /** Called the client user settings are updated. */
+  'USER_UPDATE': Args.UserUpdate;
+}
+
 /** WS Args are what is received from the websocket. */
 export interface WSEventArgs {
   /** Called after you sent an outgoing friend request, or of an incoming friend request. */
@@ -115,6 +163,7 @@ export namespace Params {
     channelId: string;
   }
   export interface GuildCreate {
+    /** Properties with the guild. */
     partialGuild: Partial.Guild;
   }
   export interface GuildDelete {
@@ -123,7 +172,7 @@ export namespace Params {
   export interface GuildMemberAdd {
     inviteCode: string;
   }
-  export interface GuildMemberDelete {
+  export interface GuildMemberRemove {
     guildId: string;
     userId: string;
   }
@@ -212,45 +261,67 @@ export namespace Args {
     /** ID of the guild that was left. */
     guildId: string;
   }
-  export interface GuildDelete {}
+  export interface GuildDelete {
+    /** ID of the guild. */
+    guildId: string;
+  }
   /** Called when a member accepts an invite, or a bot was added to a guild. */
   export interface GuildMemberAdd {
+    /** ID of the guild. */
+    guildId: string;
     /** Full object of the member that was added to the guild. */
     member: Lean.GuildMember;
   }
-  export interface GuildMemberDelete {
-    userId: string;
+  export interface GuildMemberRemove {
+    /** ID of the guild. */
+    guildId: string;
+    /** ID of member that was removed. */
+    memberId: string;
   }
   export interface GuildMemberUpdate {
+    /** ID of the guild. */
+    guildId: string;
     /** Properties of updated guild member. */
     partialMember: Lean.GuildMember;
     /** ID of the guild member. Not the same as a user ID. */
     memberId: string;
   }
   export interface GuildRoleCreate {
+    /** ID of the guild. */
+    guildId: string;
     /** Full object of the role that was created. */
     role: Lean.Role;
   }
   export interface GuildRoleDelete {
+    /** ID of the guild. */
+    guildId: string;
     /** The ID of the role that was deleted. */
     roleId: string;
   }
   export interface GuildRoleUpdate {
+    /** Guild ID associated with role. */
+    guildId: string;
     /** Properties to update the role. */
     partialRole: Partial.Role;
     /** The ID of the role that was updated. */
     roleId: string;
   }
   export interface GuildUpdate {
+    /** ID of the guild. */
+    guildId: string;
     /** Properties to update a guild. */
     partialGuild: Partial.Guild;
   }
   export interface InviteCreate {
+    /** ID of the guild. */
+    guildId: string;
     /** Full object of the invite. */
     invite: Lean.Invite;
   }
   /** Called when a guild invite is delted. */
   export interface InviteDelete {
+    /** ID of the guild. */
+    guildId: string;
     /** The ID or the code of the invite. */
     inviteCode: string;
   }
@@ -282,6 +353,7 @@ export namespace Args {
   export interface TypingStart {
     userId: string;
   }
+  /** PRIVATE - contains private data */
   export interface UserUpdate {
     partialUser: Partial.User;
   }

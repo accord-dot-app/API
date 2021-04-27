@@ -21,6 +21,9 @@ export default class implements WSEvent<'INVITE_CREATE'> {
 
     ws.io
       .to(params.guildId)
-      .emit('INVITE_CREATE', { invite } as Args.InviteCreate);
+      .emit('INVITE_CREATE', {
+        guildId: params.guildId,
+        invite,
+      } as Args.InviteCreate);
   }
 }

@@ -34,7 +34,7 @@ export const Role = model<RoleDocument>('role', new Schema({
     default: everyoneColor,
     validate: {
       validator: function(this: RoleDocument, val: string) {
-        return this.name !== '@everyone'
+        return this?.name !== '@everyone'
           || val === everyoneColor
           || !val;
       },

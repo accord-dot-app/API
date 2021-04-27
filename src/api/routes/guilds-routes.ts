@@ -28,7 +28,7 @@ router.get('/:id/authorize/:botId',
 
   ws.io
     .to(guild.id)
-    .emit('GUILD_MEMBER_ADD', { member } as Args.GuildMemberAdd);
+    .emit('GUILD_MEMBER_ADD', { guildId: guild._id, member } as Args.GuildMemberAdd);
   ws.io
     .to(bot.id)
     .emit('GUILD_JOIN', { guild } as Args.GuildJoin);
