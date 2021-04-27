@@ -1,12 +1,10 @@
 import { Socket } from 'socket.io';
 import { PermissionTypes } from '../../../data/types/entity-types';
-import { Channel, TextChannelDocument } from '../../../data/models/channel';
-import { Guild } from '../../../data/models/guild';
-import { generateSnowflake } from '../../../data/snowflake-entity';
+import { TextChannelDocument } from '../../../data/models/channel';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import { WSEvent, Args, Params, WSEventParams } from './ws-event';
+import { WSEvent, Args, Params } from './ws-event';
 import Channels from '../../../data/channels';
 
 export default class implements WSEvent<'CHANNEL_DELETE'> {

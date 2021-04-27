@@ -3,10 +3,10 @@ import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import { Mock } from '../../mock/mock';
 import { expect } from 'chai';
-import { SelfUserDocument, User, UserDocument } from '../../../src/data/models/user';
+import { SelfUserDocument, User } from '../../../src/data/models/user';
 import { Channel } from '../../../src/data/models/channel';
 
-describe('add-friend', () => {
+describe.only('add-friend', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: AddFriend;
   let ws: WebSocket;
@@ -83,6 +83,7 @@ describe('add-friend', () => {
   async function returnFriend() {
     ws.sessions.set(client.id, friend.id);
     await event.invoke(ws, client, { username: sender.username });
+
     ws.sessions.set(client.id, sender.id);
   }
 });

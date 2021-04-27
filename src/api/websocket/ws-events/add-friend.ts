@@ -35,7 +35,7 @@ export default class implements WSEvent<'ADD_FRIEND'> {
       
     const hasSentRequest = sender.friendRequestIds.includes(friend._id);
     if (!hasSentRequest) return {
-      friend: await this.sendRequest(friend, sender),
+      friend,//: await this.sendRequest(friend, sender),
       sender: await this.sendRequest(sender, friend),
     }
 
@@ -50,13 +50,10 @@ export default class implements WSEvent<'ADD_FRIEND'> {
   }
 
   private async sendRequest(sender: SelfUserDocument, friend: UserDocument) {
-    const alreadyPending = sender.friendRequestIds.includes(friend._id);
-    return (!alreadyPending)
-      ? await sender.update(
-          { $push: { friendRequestIds: friend._id } },
-          { runValidators: true, context: 'query' },
-        )
-      : sender;
+    return await sender.updateOne(
+      { $push: { friendRequestIds: friend._id } },
+      { runValidators: true, context: 'query' },
+    );
   }
 
   private async acceptRequest(sender: UserDocument, friend: UserDocument) {

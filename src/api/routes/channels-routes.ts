@@ -25,7 +25,7 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
     .map(m => {
       const isIgnored = user.ignored.userIds.includes(m.authorId);
       if (isIgnored)
-        m.content = 'This user is blocked, and the message content has been hidden';
+        m.content = 'This user is blocked, and the message content has been hidden.';
       return m;
     });
 
