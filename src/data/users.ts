@@ -68,13 +68,21 @@ export default class Users extends DBWrapper<string, UserDocument> {
 
   public async getKnown(userId: string) {
     const user = await this.getSelf(userId);
-    return await User.find({ _id: this.getKnownIds(user) as any }) as UserDocument[];
+    return await User.find({
+      _id: await this.getKnownIds(user) as any,
+    }) as UserDocument[];
   }
 
-  public getKnownIds(user: UserTypes.Self) {
+  public async getKnownIds(user: UserTypes.Self) {
+    const incomingUsers = await User.find({
+      friendIds: user._id,
+      friendRequestIds: user._id,
+    });
+    const incomingUserIds = incomingUsers.map(u => u._id);
     return [
       user._id,
       this.systemUser?._id,
+      ...incomingUsers,
       ...user.friendRequestIds,
       ...user.friendIds,
     ];

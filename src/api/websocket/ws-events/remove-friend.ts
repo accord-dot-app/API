@@ -24,7 +24,7 @@ export default class implements WSEvent<'REMOVE_FRIEND'> {
       .to(senderId)
       .to(friendId)
       .emit('REMOVE_FRIEND', {
-        sender: this.users.secure(friend),
+        sender: this.users.secure(sender),
         friend: this.users.secure(friend),
       } as Args.RemoveFriend);
   }

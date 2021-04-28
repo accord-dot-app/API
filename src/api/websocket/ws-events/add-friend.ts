@@ -17,19 +17,19 @@ export default class implements WSEvent<'ADD_FRIEND'> {
   public async invoke(ws: WebSocket, client: Socket, { username }: Params.AddFriend) {
     const senderId = ws.sessions.userId(client);
     let sender = await this.users.getSelf(senderId);
-    let friend = await this.users.getByUsername(username);
+    let friend = await this.users.getByUsername(username.toLowerCase());
 
     const isBlocking = friend.ignored.userIds.includes(sender._id);
     if (isBlocking)
       throw new TypeError('This user is blocking you');
     
-    ({ sender, friend } = await this.handle(sender, friend) as any);
+    ({ sender, friend } = await this.handle(sender, friend) as any);    
 
     ws.io
       .to(senderId)
       .to(friend._id)
       .emit('ADD_FRIEND', {
-        sender: this.users.secure(friend),
+        sender: this.users.secure(sender),
         friend: this.users.secure(friend),
       } as Args.AddFriend);
   }
@@ -44,8 +44,11 @@ export default class implements WSEvent<'ADD_FRIEND'> {
       sender: await this.sendRequest(sender, friend),
     }
 
-    const friendReturnedRequest = friend.friendRequestIds.includes(sender._id);
-    if (friendReturnedRequest) return {
+    console.log(sender.friendRequestIds);
+    console.log(friend.friendRequestIds);
+    
+    const hasReturnedRequest = friend.friendRequestIds.includes(sender._id);    
+    if (hasReturnedRequest) return {
       friend: await this.acceptRequest(friend, sender),
       sender: await this.acceptRequest(sender, friend),
       dmChannel: await this.channels.getDMByMembers(sender._id, friend._id)
@@ -62,7 +65,7 @@ export default class implements WSEvent<'ADD_FRIEND'> {
 
   private async acceptRequest(sender: SelfUserDocument, friend: SelfUserDocument) {
     const friendExists = sender.friendIds.includes(friend._id);
-    if (!friendExists) return friend;
+    if (friendExists) return friend;
     
     const index = sender.friendRequestIds.indexOf(friend._id);
     sender.friendRequestIds.splice(index, 1);

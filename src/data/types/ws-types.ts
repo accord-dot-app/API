@@ -152,6 +152,7 @@ export interface WSEventArgs {
 
 export namespace Params {
   export interface AddFriend {
+    /** Username of user (case insensitive). */
     username: string;
   }
   export interface ChannelCreate {

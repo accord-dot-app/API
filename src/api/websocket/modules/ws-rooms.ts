@@ -14,7 +14,7 @@ export class WSRooms {
     const alreadyJoinedRooms = client.rooms.size > 1;
     if (alreadyJoinedRooms) return;
 
-    await client.join(this.users.getKnownIds(user));
+    await client.join(await this.users.getKnownIds(user));
     
     await this.joinGuildRooms(user, client);
     await this.joinDMRooms(user, client);
