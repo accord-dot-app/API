@@ -16,17 +16,22 @@ export default class implements WSEvent<'ADD_FRIEND'> {
 
   public async invoke(ws: WebSocket, client: Socket, { username }: Params.AddFriend) {
     const senderId = ws.sessions.userId(client);
-    const sender = await this.users.getSelf(senderId);
-    const friend = await this.users.getByUsername(username);
+    let sender = await this.users.getSelf(senderId);
+    let friend = await this.users.getByUsername(username);
 
     const isBlocking = friend.ignored.userIds.includes(sender._id);
     if (isBlocking)
       throw new TypeError('This user is blocking you');
+    
+    ({ sender, friend } = await this.handle(sender, friend) as any);
 
     ws.io
       .to(senderId)
       .to(friend._id)
-      .emit('ADD_FRIEND', await this.handle(sender, friend) as Args.AddFriend);
+      .emit('ADD_FRIEND', {
+        sender: this.users.secure(friend),
+        friend: this.users.secure(friend),
+      } as Args.AddFriend);
   }
 
   private async handle(sender: SelfUserDocument, friend: SelfUserDocument): Promise<Args.AddFriend> {
@@ -35,7 +40,7 @@ export default class implements WSEvent<'ADD_FRIEND'> {
       
     const hasSentRequest = sender.friendRequestIds.includes(friend._id);
     if (!hasSentRequest) return {
-      friend,//: await this.sendRequest(friend, sender),
+      friend,
       sender: await this.sendRequest(sender, friend),
     }
 
@@ -46,23 +51,22 @@ export default class implements WSEvent<'ADD_FRIEND'> {
       dmChannel: await this.channels.getDMByMembers(sender._id, friend._id)
         ?? await this.channels.createDM(sender._id, friend._id),
     }
+
     return { sender, friend };
   }
 
   private async sendRequest(sender: SelfUserDocument, friend: UserDocument) {
-    return await sender.updateOne(
-      { $push: { friendRequestIds: friend._id } },
-      { runValidators: true, context: 'query' },
-    );
+    sender.friendRequestIds.push(friend._id);
+    return sender.save();
   }
 
-  private async acceptRequest(sender: UserDocument, friend: UserDocument) {
+  private async acceptRequest(sender: SelfUserDocument, friend: SelfUserDocument) {
     const friendExists = sender.friendIds.includes(friend._id);
-    return (!friendExists)
-      ? sender.update({
-          $pull: { friendRequestIds: friend._id },
-          $push: { friendIds: friend._id },
-        }, { runValidators: true, context: 'query' })
-      : sender;
+    if (!friendExists) return friend;
+    
+    const index = sender.friendRequestIds.indexOf(friend._id);
+    sender.friendRequestIds.splice(index, 1);
+    sender.friendIds.push(friend._id);
+    return sender.save();
   }
 }

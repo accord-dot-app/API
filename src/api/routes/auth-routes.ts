@@ -72,7 +72,7 @@ router.get('/verify-email', async (req, res) => {
 });
 
 router.post('/change-password', async (req, res) => {
-  const user = await User.findOne({ email: req.body.email, verified: true, }) as any;
+  const user = await User.findOne({ email: req.body.email, verified: true }) as any;
   if (!user)
     throw new APIError(400, 'User Not Found');
 

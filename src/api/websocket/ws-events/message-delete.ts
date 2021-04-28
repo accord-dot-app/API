@@ -31,6 +31,9 @@ export default class implements WSEvent<'MESSAGE_DELETE'> {
 
     ws.io
       .to(message.channelId)
-      .emit('MESSAGE_DELETE', { messageId: messageId } as Args.MessageDelete);
+      .emit('MESSAGE_DELETE', {
+        channelId: message.channelId,
+        messageId: messageId,
+      } as Args.MessageDelete);
   }
 }

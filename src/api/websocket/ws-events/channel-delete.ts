@@ -24,6 +24,9 @@ export default class implements WSEvent<'CHANNEL_DELETE'> {
 
     ws.io
       .to(channel.guildId)
-      .emit('CHANNEL_DELETE', { channelId: channel._id } as Args.ChannelDelete);
+      .emit('CHANNEL_DELETE', {
+        channelId: channel._id,
+        guildId: channel.guildId,
+      } as Args.ChannelDelete);
   }
 }

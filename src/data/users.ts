@@ -27,8 +27,13 @@ export default class Users extends DBWrapper<string, UserDocument> {
     if (!user)
       throw new APIError(404, 'User Not Found');
 
+    return this.secure(user);
+  }
+
+  public secure(user: UserDocument): UserDocument {
     delete user['email'];
-    delete user['friendRequestIds'];
+    // FIXME: required for displaying users -> replace w/ WS scopes
+    // delete user['friendRequestIds'];
     delete user['ignored'];
     return user;
   }

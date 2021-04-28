@@ -45,13 +45,15 @@ export class API {
 
   private setupRoutes() {
     this.app.use(`${this.prefix}`, express.static(resolve('./assets')));
-    this.app.use(`${this.prefix}`, apiRoutes, authRoutes,);
-  
+    this.app.use(`${this.prefix}`, apiRoutes, authRoutes);
+    
     this.app.use(`${this.prefix}/invites`, invitesRoutes);
     this.app.use(`${this.prefix}/developers`, developersRoutes);
     this.app.use(`${this.prefix}/channels`, channelsRoutes);
     this.app.use(`${this.prefix}/guilds`, guildsRoutes);
     this.app.use(`${this.prefix}/users`, usersRoutes);
+
+    this.app.use(`/api/v([0-9])`, () => { throw new TypeError('Invalid API version number') });
   } 
 
   private setupErrorHandling() {
