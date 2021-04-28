@@ -49,33 +49,30 @@ router.get('/send-verify-email', updateUser, validateUser, async (req, res) => {
   await sendEmail.verifyEmail(email, res.locals.user);
 
   await User.updateOne(
+    { _id: res.locals.user._id },
     { email },
-    { email },
-    { runValidators: true },
+    { runValidators: true, context: 'query' },
   );
 
   return res.status(200).json({ verify: true })
 });
 
 router.get('/verify-email', async (req, res) => {
-  const email = verification.getEmailFromCode(req.query.code as any);  
+  const email = verification.getEmailFromCode(req.query.code as string);  
   if (!email)
     throw new APIError(400, 'Invalid code');
 
   await User.updateOne(
     { email },
     { verified: true },
-    { runValidators: true },
+    { runValidators: true, context: 'query' },
   );
 
   res.redirect(`${process.env.WEBSITE_URL}/channels/@me?success=Successfully verified your email.`);
 });
 
 router.post('/change-password', async (req, res) => {
-  const user = await User.findOne({
-    email: req.body.email,
-    verified: true,
-  }) as any;
+  const user = await User.findOne({ email: req.body.email, verified: true, }) as any;
   if (!user)
     throw new APIError(400, 'User Not Found');
 

@@ -23,6 +23,7 @@ router.get('/check-username', async (req, res) => {
   });
   res.json(exists);
 });
+
 router.get('/check-email', async (req, res) => {
   const email = req.query.value?.toString().toLowerCase();
   const exists = await User.exists({
