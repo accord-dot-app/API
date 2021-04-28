@@ -17,7 +17,7 @@ export default class implements WSEvent<'CHANNEL_DELETE'> {
 
   public async invoke(ws: WebSocket, client: Socket, { channelId }: Params.ChannelDelete) {
     const channel = await this.channels.get(channelId) as TextChannelDocument;
-    await this.guard.can(client, channel.guildId, PermissionTypes.General.MANAGE_CHANNELS);
+    await this.guard.validateCan(client, channel.guildId, PermissionTypes.General.MANAGE_CHANNELS);
     
     await client.leave(channel.id);
     await channel.deleteOne();

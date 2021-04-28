@@ -18,7 +18,7 @@ export default class implements WSEvent<'GUILD_ROLE_CREATE'> {
   ) {}
 
   public async invoke(ws: WebSocket, client: Socket, { guildId, partialRole }: Params.GuildRoleCreate) {
-    await this.guard.can(client, guildId, PermissionTypes.General.MANAGE_ROLES);
+    await this.guard.validateCan(client, guildId, PermissionTypes.General.MANAGE_ROLES);
     
     const role = await Role.create({
       ...partialRole,

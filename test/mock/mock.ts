@@ -184,7 +184,7 @@ export class Mock {
     await Role.updateOne(
       { _id: guild.roles[0]._id },
       { permissions: PermissionTypes.General.ADMINISTRATOR },
-    );
+    )
   }
 
   public static async cleanDB() {

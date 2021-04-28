@@ -197,7 +197,7 @@ describe('ws-guard', () => {
     await GuildMember.deleteOne({ userId: user.id });
 
     await expect(
-      guard.can(client, guild.id, PermissionTypes.Text.SEND_MESSAGES)
+      guard.validateCan(client, guild.id, PermissionTypes.Text.SEND_MESSAGES)
     ).to.be.rejectedWith('Member Not Found');
   });
 
@@ -205,7 +205,7 @@ describe('ws-guard', () => {
     await guild.deleteOne();
 
     await expect(
-      guard.can(client, guild.id, PermissionTypes.Text.SEND_MESSAGES)
+      guard.validateCan(client, guild.id, PermissionTypes.Text.SEND_MESSAGES)
     ).to.be.rejectedWith('Guild Not Found');
   });
 
@@ -213,13 +213,13 @@ describe('ws-guard', () => {
     await Mock.clearRolePerms(guild);
 
     await expect(
-      guard.can(client, guild.id, PermissionTypes.Text.SEND_MESSAGES)
+      guard.validateCan(client, guild.id, PermissionTypes.Text.SEND_MESSAGES)
     ).to.be.rejectedWith('Missing Permissions');
   });
 
   it('can, send messages, default perms, fulfilled', async () => {
     await expect(
-      guard.can(client, guild.id, PermissionTypes.Text.SEND_MESSAGES)
+      guard.validateCan(client, guild.id, PermissionTypes.Text.SEND_MESSAGES)
     ).to.be.fulfilled;
   });
 
@@ -227,7 +227,7 @@ describe('ws-guard', () => {
     await makeGuildOwner();
 
     await expect(
-      guard.can(client, guild.id, PermissionTypes.Text.SEND_MESSAGES)
+      guard.validateCan(client, guild.id, PermissionTypes.Text.SEND_MESSAGES)
     ).to.be.fulfilled;
   });
 

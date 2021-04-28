@@ -2,7 +2,7 @@ import cluster from 'cluster';
 
 let inc = 0;
 let lastSnowflake: string;
-export const accordEpoch = 1577836800000;
+const accordEpoch = 1577836800000;
 
 export function generateSnowflake() {
   const msSince = (new Date().getTime() - accordEpoch)

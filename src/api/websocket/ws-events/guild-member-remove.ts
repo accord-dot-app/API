@@ -4,6 +4,7 @@ import { GuildDocument } from '../../../data/models/guild';
 import { GuildMember } from '../../../data/models/guild-member';
 import { User } from '../../../data/models/user';
 import Deps from '../../../utils/deps';
+import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
 import { WSEvent, Args, Params } from './ws-event';
 
@@ -12,18 +13,25 @@ export default class implements WSEvent<'GUILD_MEMBER_REMOVE'> {
 
   constructor(
     private guilds = Deps.get<Guilds>(Guilds),
+    private guard = Deps.get<WSGuard>(WSGuard),
   ) {}
 
-  public async invoke(ws: WebSocket, client: Socket, { guildId, userId }: Params.GuildMemberRemove) {
+  public async invoke(ws: WebSocket, client: Socket, { guildId, memberId }: Params.GuildMemberRemove) {
     const guild = await this.guilds.get(guildId, true);
-    const member = guild.members.find(m => m.userId === userId);
+    const member = guild.members.find(m => m._id === memberId);    
     if (!member)
       throw new TypeError('Member does not exist');
+
+    const selfUserId = ws.sessions.get(member.userId);
+    if (guild.ownerId === selfUserId)
+      throw new TypeError('You cannot leave a guild you own');
+    else if (member.userId !== selfUserId)
+      await this.guard.validateCan(client, guildId, 'KICK_MEMBERS');
     
-    await GuildMember.deleteOne({ userId });
+    await GuildMember.deleteOne({ _id: memberId });
     await User.updateOne(
-      { _id: userId },
-      { guilds: { $pull: guildId } as any },
+      { _id: member.userId },
+      { $pull: { guilds: guildId } },
       { runValidators: true },
     );
     await this.leaveGuildRooms(client, guild);

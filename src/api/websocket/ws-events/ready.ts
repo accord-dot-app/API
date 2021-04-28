@@ -1,8 +1,7 @@
 import { Socket } from 'socket.io';
-import { SelfUserDocument, User } from '../../../data/models/user';
+import { User } from '../../../data/models/user';
 import { Lean } from '../../../data/types/entity-types';
 import Users from '../../../data/users';
-import { SystemBot } from '../../../system/bot';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WSRooms } from '../modules/ws-rooms';

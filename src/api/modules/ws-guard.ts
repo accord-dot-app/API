@@ -45,13 +45,13 @@ export class WSGuard {
       const perms = (!withUse)
         ? PermissionTypes.Text.READ_MESSAGES 
         : PermissionTypes.Text.READ_MESSAGES | PermissionTypes.Text.SEND_MESSAGES;
-      await this.can(client, channel.guildId, perms);
+      await this.validateCan(client, channel.guildId, perms);
       return;
     } else if (channel.type === 'VOICE') {
       const perms = (!withUse)
         ? PermissionTypes.Voice.CONNECT 
         : PermissionTypes.Voice.CONNECT | PermissionTypes.Voice.SPEAK;
-      await this.can(client, channel.guildId, perms);
+      await this.validateCan(client, channel.guildId, perms);
       return;
     }
     const inGroup = channel.memberIds?.includes(userId);
@@ -59,7 +59,7 @@ export class WSGuard {
       throw new TypeError('Not DM Member');
   }
 
-  public async can(client: Socket, guildId: string | undefined, permission: PermissionTypes.Permission) {
+  public async validateCan(client: Socket, guildId: string | undefined, permission: PermissionTypes.PermissionString) {
     const userId = this.userId(client);
     const member = await GuildMember.findOne({ guildId, userId });
     if (!member)
@@ -68,12 +68,13 @@ export class WSGuard {
     const guild = await Guild.findById(guildId);
     if (!guild)
       throw new TypeError('Guild Not Found');
-      
+
+    const perm = PermissionTypes.All[permission as string];
     const can = await this.roles
-      .hasPermission(member, permission) || guild.ownerId === userId;
-    this.validateCan(can, permission);
+      .hasPermission(member, perm) || guild.ownerId === userId;
+    this.validate(can, perm);
   }  
-  private validateCan(can: boolean, permission: PermissionTypes.Permission) {
+  private validate(can: boolean, permission: PermissionTypes.Permission) {
     if (!can)
       throw new TypeError(`Missing Permissions - ${PermissionTypes.General[permission]
         || PermissionTypes.Text[permission]

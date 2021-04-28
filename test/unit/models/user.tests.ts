@@ -28,6 +28,7 @@ test(createUser, () => {
   given({ ignored: { channelIds: [] } }).expect(true);
   given({ ignored: { guildIds: [] } }).expect(true);
   given({ ignored: { userIds: [] } }).expect(true);
+  given({ _id: '123', ignored: { userIds: ['123'] } }).expect('Cannot block self');
   given({ username: '' }).expect('Username is required');
   given({ username: 'ADAMJR' }).expect(true);
   given({ username: 'ADAM JR' }).expect('Invalid username');

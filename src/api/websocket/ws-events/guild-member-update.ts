@@ -21,9 +21,8 @@ export default class implements WSEvent<'GUILD_MEMBER_UPDATE'> {
   public async invoke(ws: WebSocket, client: Socket, { memberId, partialMember }: Params.GuildMemberUpdate) {
     const selfMember = await this.guildMembers.get(memberId);
     const member = await this.guildMembers.get(memberId);
-    this.guard.can(client, member.guildId, PermissionTypes.General.MANAGE_ROLES);
+    this.guard.validateCan(client, member.guildId, 'MANAGE_ROLES');
 
-    // if role is equal or higher than client
     const isHigher = await this.roles.isHigher(selfMember.roleIds, member.roleIds);
     if (!isHigher)
       throw new TypeError('Member has higher roles than you');
