@@ -35,7 +35,7 @@ export default class implements WSEvent<'READY'> {
       .emit('READY');
     
     ws.io
-      .to(this.users.getKnownIds(user))
+      .to(await this.users.getKnownIds(user))
       .emit('PRESENCE_UPDATE', {
         userId,
         status: user.status

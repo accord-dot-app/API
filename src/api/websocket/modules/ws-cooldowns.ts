@@ -7,14 +7,14 @@ export class WSCooldowns {
   public readonly active = new Map<string, EventLog[]>();
 
   public handle(clientId: string, eventName: keyof WSEventParams) {
+    this.prune(clientId);
     this.add(clientId, eventName);
 
     const clientEvents = this.get(clientId).length;
-    const maxEvents = 100;
+    const maxEvents = 60;
+        
     if (clientEvents > maxEvents)
       throw new TypeError('You are doing too many things at once!');
-
-    this.prune(clientId);
   }
 
   private get(clientId: string) {
@@ -35,7 +35,7 @@ export class WSCooldowns {
     const lastLog = logs[logs.length - 1];
 
     const timeToDelete = 60 * 1000;
-    const expirationMs = lastLog.timestamp + timeToDelete;
+    const expirationMs = lastLog?.timestamp + timeToDelete;
     if (new Date().getTime() < expirationMs) return;
 
     this.active.delete(clientId);

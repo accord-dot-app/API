@@ -43,7 +43,10 @@ router.post('/', async (req, res) => {
 
     const user = await users.create(req.body.username, req.body.password); 
     const dm = await channels.createDM(bot.self._id, user._id);
-    await bot.message(dm, 'Hello there new user :smile:!');
+    await bot.message(dm,
+      'Hello there new user :smile:!\n' +
+      '**Alpha Testing Info** - https://docs.accord.app/legal/alpha'
+    );
     
     res.status(201).json(users.createToken(user.id));
   } catch (err) {

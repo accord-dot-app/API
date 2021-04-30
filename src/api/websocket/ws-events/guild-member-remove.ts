@@ -22,7 +22,7 @@ export default class implements WSEvent<'GUILD_MEMBER_REMOVE'> {
     if (!member)
       throw new TypeError('Member does not exist');
 
-    const selfUserId = ws.sessions.get(member.userId);
+    const selfUserId = ws.sessions.get(client.id);
     if (guild.ownerId === selfUserId)
       throw new TypeError('You cannot leave a guild you own');
     else if (member.userId !== selfUserId)

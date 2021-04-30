@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io';
 import Channels from '../../../data/channels';
-import { SelfUserDocument, UserDocument } from '../../../data/models/user';
+import { DMChannelDocument } from '../../../data/models/channel';
+import { SelfUserDocument, User, UserDocument } from '../../../data/models/user';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WebSocket } from '../websocket';
@@ -23,7 +24,11 @@ export default class implements WSEvent<'ADD_FRIEND'> {
     if (isBlocking)
       throw new TypeError('This user is blocking you');
     
-    ({ sender, friend } = await this.handle(sender, friend) as any);    
+    let dmChannel: DMChannelDocument;
+    ({ sender, friend, dmChannel } = await this.handle(sender, friend) as any);
+    
+    if (dmChannel)    
+      await client.join(dmChannel._id);
 
     ws.io
       .to(senderId)
@@ -43,9 +48,6 @@ export default class implements WSEvent<'ADD_FRIEND'> {
       friend,
       sender: await this.sendRequest(sender, friend),
     }
-
-    console.log(sender.friendRequestIds);
-    console.log(friend.friendRequestIds);
     
     const hasReturnedRequest = friend.friendRequestIds.includes(sender._id);    
     if (hasReturnedRequest) return {
