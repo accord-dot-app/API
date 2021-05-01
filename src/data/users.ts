@@ -79,15 +79,20 @@ export default class Users extends DBWrapper<string, UserDocument> {
       friendIds: user._id,
       friendRequestIds: user._id,
     });
-    const incomingUserIds = incomingUsers.map(u => u._id);    
+    const incomingUserIds = incomingUsers.map(u => u._id);
 
-    return [
+    const guildIds = user.guilds.map(g => g._id);
+    const guildUserIds = user.guilds
+      .flatMap(g => g.members.map(g => g.userId));
+
+    return Array.from(new Set([
       user._id,
       this.systemUser?._id,
+      ...guildUserIds,
       ...incomingUserIds,
       ...user.friendRequestIds,
       ...user.friendIds,
-    ];
+    ]));
   }
 
   public async getDMChannels(userId: string) {
