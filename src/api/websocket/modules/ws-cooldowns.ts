@@ -6,11 +6,11 @@ import { WSEventParams } from '../ws-events/ws-event';
 export class WSCooldowns {
   public readonly active = new Map<string, EventLog[]>();
 
-  public handle(clientId: string, eventName: keyof WSEventParams) {
-    this.prune(clientId);
-    this.add(clientId, eventName);
+  public handle(userId: string, eventName: keyof WSEventParams) {
+    this.prune(userId);
+    this.add(userId, eventName);
 
-    const clientEvents = this.get(clientId).length;
+    const clientEvents = this.get(userId).length;
     const maxEvents = 60;
         
     if (clientEvents > maxEvents)

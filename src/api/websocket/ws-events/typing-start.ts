@@ -10,6 +10,7 @@ export default class implements WSEvent<'TYPING_START'> {
       .to(channelId)
       .emit('TYPING_START', {
         userId: ws.sessions.userId(client),
+        channelId,
       } as Args.TypingStart);
   }
 }

@@ -12,7 +12,10 @@ const bot = Deps.get<SystemBot>(SystemBot);
 const channels = Deps.get<Channels>(Channels);
 const users = Deps.get<Users>(Users);
 
-router.get('/', updateUser, async (req, res) => res.json(res.locals.user));
+router.get('/', updateUser, async (req, res) => {
+  const knownUsers = await users.getKnown(res.locals.user._id);
+  res.json(knownUsers);  
+});
 
 router.get('/check-username', async (req, res) => {
   const username = req.query.value?.toString().toLowerCase();
@@ -23,6 +26,8 @@ router.get('/check-username', async (req, res) => {
   });
   res.json(exists);
 });
+
+router.get('/self', updateUser, async (req, res) => res.json(res.locals.user));
 
 router.get('/check-email', async (req, res) => {
   const email = req.query.value?.toString().toLowerCase();
@@ -36,40 +41,23 @@ router.get('/check-email', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  try {
-    const userCount = await User.countDocuments();
-    if (userCount >= 25)
-      throw new TypeError('Max alpha tester limit reached');
+  const userCount = await User.countDocuments();
+  if (userCount >= 25)
+    throw new TypeError('Max alpha tester limit reached');
 
-    const user = await users.create(req.body.username, req.body.password); 
-    const dm = await channels.createDM(bot.self._id, user._id);
-    await bot.message(dm,
-      'Hello there new user :smile:!\n' +
-      '**Alpha Testing Info** - https://docs.accord.app/legal/alpha'
-    );
-    
-    res.status(201).json(users.createToken(user.id));
-  } catch (err) {
-    res.json({ code: 400, message: err?.message });
-  }
-});
-
-router.get('/known', updateUser, async (req, res) => {
-  try {
-    const knownUsers = await users.getKnown(res.locals.user._id);
-    res.json(knownUsers);
-  } catch (err) {
-    res.json({ code: 400, message: err?.message });
-  }
+  const user = await users.create(req.body.username, req.body.password); 
+  const dm = await channels.createDM(bot.self._id, user._id);
+  await bot.message(dm,
+    'Hello there new user :smile:!\n' +
+    '**Alpha Testing Info** - https://docs.accord.app/legal/alpha'
+  );
+  
+  res.status(201).json(users.createToken(user.id));
 });
 
 router.get('/dm-channels', updateUser, async (req, res) => {
-  try {
-    const dmChannels = await channels.getDMChannels(res.locals.user._id);        
-    res.json(dmChannels);
-  } catch (err) {
-    res.json({ code: 400, message: err?.message });
-  }
+  const dmChannels = await channels.getDMChannels(res.locals.user._id);
+  res.json(dmChannels);
 });
 
 router.get('/bots', async (req, res) => {

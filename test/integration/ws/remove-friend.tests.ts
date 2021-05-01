@@ -4,19 +4,19 @@ import io from 'socket.io-client';
 import { Mock } from '../../mock/mock';
 import { expect } from 'chai';
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
-import { User, UserDocument } from '../../../src/data/models/user';
+import { SelfUserDocument, User, UserDocument } from '../../../src/data/models/user';
 
 describe('remove-friend', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: RemoveFriend;
   let ws: WebSocket;
 
-  let sender: UserDocument;
-  let friend: UserDocument;
+  let sender: SelfUserDocument;
+  let friend: SelfUserDocument;
 
   beforeEach(async () => {
-    ({ event, ws, user: sender } = await Mock.defaultSetup(client, RemoveFriend));
-    friend = await Mock.user();
+    ({ event, ws, user: sender as any } = await Mock.defaultSetup(client, RemoveFriend));
+    friend = await Mock.self();
   });
 
   afterEach(async () => await Mock.afterEach(ws));
@@ -41,7 +41,7 @@ describe('remove-friend', () => {
   it('sender cancels request, friend request removed', async () => {
     await removeFriend();
 
-    sender = await User.findById(sender.id);   
+    sender = await User.findById(sender.id) as any;   
 
     expect(sender.friendRequestIds).to.be.empty;
   });
@@ -49,8 +49,8 @@ describe('remove-friend', () => {
   it('sender removes friend, friend removed on both users', async () => {
     await removeFriend();
 
-    friend = await User.findById(friend.id);
-    sender = await User.findById(sender.id);
+    friend = await User.findById(friend.id) as any;
+    sender = await User.findById(sender.id) as any;
 
     expect(friend.friendIds.length).to.equal(0);
     expect(sender.friendIds.length).to.equal(0);

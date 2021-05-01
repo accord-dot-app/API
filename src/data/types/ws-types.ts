@@ -358,6 +358,7 @@ export namespace Args {
     sender: Lean.User;
   }
   export interface TypingStart {
+    channelId: string;
     userId: string;
   }
   /** PRIVATE - contains private data */

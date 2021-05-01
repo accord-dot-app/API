@@ -4,7 +4,6 @@ import io from 'socket.io-client';
 import { Mock } from '../../mock/mock';
 import { GuildDocument } from '../../../src/data/models/guild';
 import { expect } from 'chai';
-import Guilds from '../../../src/data/guilds';
 import { GuildMemberDocument } from '../../../src/data/models/guild-member';
 
 describe.only('guild-member-remove', () => {

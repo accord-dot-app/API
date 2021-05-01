@@ -46,8 +46,10 @@ export class WebSocket {
       for (const event of this.events.values())
         client.on(event.on, async (data: any) => {
           try {
-            this.cooldowns.handle(client.id, event.on);
             await event.invoke.bind(event)(this, client, data);
+            
+            const userId = this.sessions.userId(client);
+            this.cooldowns.handle(userId, event.on);
           } catch (error) {
             client.send(`Server error on executing: ${event.on}\n${error.message}`);
           }

@@ -1,5 +1,6 @@
 import DBWrapper from './db-wrapper';
 import { Channel, ChannelDocument, DMChannelDocument, TextChannelDocument, VoiceChannelDocument } from './models/channel';
+import { SelfUserDocument } from './models/user';
 import { generateSnowflake } from './snowflake-entity';
 
 export default class Channels extends DBWrapper<string, ChannelDocument> {
@@ -26,6 +27,12 @@ export default class Channels extends DBWrapper<string, ChannelDocument> {
 
   public async getDMChannels(userId: string): Promise<DMChannelDocument[]> {
     return await Channel.find({ memberIds: userId }) as DMChannelDocument[];
+  }
+  public async getGuildsChannels(user: SelfUserDocument): Promise<ChannelDocument[]> {
+    const guildIds = user.guilds.map(c => c._id);
+    return await Channel.find({
+      guildId: { $in: guildIds },
+    }) as ChannelDocument[];
   }
 
   public createDM(senderId: string, friendId: string) {
