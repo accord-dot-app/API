@@ -12,12 +12,12 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
   }
 
   public async isHigher(firstRoleIds: string[], secondRoleIds: string[]) {
-    const uniqueIds = new Set(firstRoleIds.concat(secondRoleIds));
+    const uniqueIds = Array.from(new Set(firstRoleIds.concat(secondRoleIds)));
     const highestRole: Lean.Role = (await Role
       .find({ _id: { $in: uniqueIds } }))
       .sort((a, b) => (a.position > b.position) ? 1 : -1)[0];
 
-    return firstRoleIds.includes(highestRole._id);
+    return firstRoleIds.includes(highestRole?._id);
   }
 
   public async hasPermission(member: Lean.GuildMember, permission: PermissionTypes.Permission) {

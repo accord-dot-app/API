@@ -123,7 +123,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
   }
   public verifyToken(token: string): string {
     const key: any = jwt.verify(token, 'secret');   
-    return key._id;
+    return key?._id;
   }
 
   public create(username: string, password: string, bot = false): Promise<UserDocument> {

@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 import GuildMembers from '../../../data/guild-members';
+import { GuildMember } from '../../../data/models/guild-member';
 import Roles from '../../../data/roles';
 import { PermissionTypes } from '../../../data/types/entity-types';
 import Users from '../../../data/users';
@@ -27,10 +28,18 @@ export default class implements WSEvent<'GUILD_MEMBER_UPDATE'> {
     if (!isHigher)
       throw new TypeError('Member has higher roles than you');
     
-    await member.updateOne(partialMember);
+    await GuildMember.updateOne(
+      { _id: memberId },
+      partialMember,
+      { runValidators: true }
+    );    
     
     ws.io
       .to(member.guildId)
-      .emit('GUILD_MEMBER_UPDATE', { memberId, partialMember } as Args.GuildMemberUpdate);
+      .emit('GUILD_MEMBER_UPDATE', {
+        guildId: member.guildId,
+        memberId,
+        partialMember,
+      } as Args.GuildMemberUpdate);
   }
 }
