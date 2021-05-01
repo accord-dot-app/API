@@ -9,7 +9,7 @@ import { User } from '../../../data/models/user';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
-import { WSEvent, Params } from './ws-event';
+import { WSEvent, Params, Args } from './ws-event';
 
 export default class implements WSEvent<'GUILD_DELETE'> {
   on = 'GUILD_DELETE' as const;
@@ -37,6 +37,6 @@ export default class implements WSEvent<'GUILD_DELETE'> {
 
     ws.io
       .to(guildId)
-      .emit('GUILD_DELETE');
+      .emit('GUILD_DELETE', { guildId } as Args.GuildDelete);
   }
 }

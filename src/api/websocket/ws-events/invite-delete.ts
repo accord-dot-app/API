@@ -23,6 +23,9 @@ export default class implements WSEvent<'INVITE_DELETE'> {
 
     ws.io
       .to(invite.guildId)
-      .emit('INVITE_DELETE', { inviteCode } as Args.InviteDelete);
+      .emit('INVITE_DELETE', {
+        guildId: invite.guildId,
+        inviteCode,
+      } as Args.InviteDelete);
   }
 }

@@ -5,6 +5,7 @@ import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
 import { WebSocket } from '../websocket';
 import { WSEvent, Args, Params } from './ws-event';
+import { GuildMember } from '../../../data/models/guild-member';
 
 export default class implements WSEvent<'GUILD_ROLE_DELETE'> {
   on = 'GUILD_ROLE_DELETE' as const;
@@ -17,9 +18,14 @@ export default class implements WSEvent<'GUILD_ROLE_DELETE'> {
     await this.guard.validateCan(client, guildId, PermissionTypes.General.MANAGE_ROLES);
 
     await Role.deleteOne({ _id: roleId });
+    await GuildMember.updateMany(
+      { guildId },
+      { $pull: { roleIds: roleId } },
+      { runValidators: true },
+    );
 
     ws.io
       .to(guildId)
-      .emit('GUILD_ROLE_DELETE', { roleId } as Args.GuildRoleDelete);
+      .emit('GUILD_ROLE_DELETE', { guildId, roleId } as Args.GuildRoleDelete);
   }
 }
