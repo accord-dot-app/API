@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { User } from '../../data/models/user';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
-import { updateUser } from '../modules/middleware';
+import { updateUser, validateUser } from '../modules/middleware';
 import Channels from '../../data/channels';
 import { SystemBot } from '../../system/bot';
 
@@ -12,7 +12,7 @@ const bot = Deps.get<SystemBot>(SystemBot);
 const channels = Deps.get<Channels>(Channels);
 const users = Deps.get<Users>(Users);
 
-router.get('/', updateUser, async (req, res) => {
+router.get('/', updateUser, validateUser, async (req, res) => {
   const knownUsers = await users.getKnown(res.locals.user._id);
   res.json(knownUsers);  
 });

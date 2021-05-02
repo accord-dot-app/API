@@ -70,8 +70,8 @@ export class WSGuard {
       throw new TypeError('Guild Not Found');
 
     const perm = PermissionTypes.All[permission as string];
-    const can = await this.roles
-      .hasPermission(member, perm) || guild.ownerId === userId;
+    const can = await this.roles.hasPermission(member, perm)
+      || guild.ownerId === userId;
     this.validate(can, perm);
   }  
   private validate(can: boolean, permission: PermissionTypes.Permission) {
