@@ -47,11 +47,11 @@ export class WebSocket {
         client.on(event.on, async (data: any) => {
           try {
             await event.invoke.bind(event)(this, client, data);
-            
-            const userId = this.sessions.userId(client);
-            this.cooldowns.handle(userId, event.on);
           } catch (error) {
             client.send(`Server error on executing: ${event.on}\n${error.message}`);
+          } finally {
+            const userId = this.sessions.userId(client);
+            this.cooldowns.handle(userId, event.on);
           }
         });
     });

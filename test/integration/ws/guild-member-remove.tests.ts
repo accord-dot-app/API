@@ -5,37 +5,46 @@ import { Mock } from '../../mock/mock';
 import { GuildDocument } from '../../../src/data/models/guild';
 import { expect } from 'chai';
 import { GuildMemberDocument } from '../../../src/data/models/guild-member';
+import { User, UserDocument } from '../../../src/data/models/user';
 
-describe.only('guild-member-remove', () => {
+describe('guild-member-remove', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
 
   let event: GuildMemberRemove;
   let ws: WebSocket;
+  let user: UserDocument;
   let member: GuildMemberDocument;
   let guild: GuildDocument;
 
   beforeEach(async() => {
-    ({ event, ws, guild, member } = await Mock.defaultSetup(client, GuildMemberRemove));
+    ({ event, ws, guild, member, user } = await Mock.defaultSetup(client, GuildMemberRemove));
   });
 
   afterEach(async () => await Mock.afterEach(ws));
   after(async () => await Mock.after(client));
 
   it('leaves guild that is member of, fulfilled', async () => {
-    await expect(guildMemberAdd()).to.be.fulfilled;
+    await expect(guildMemberRemove()).to.be.fulfilled;
   });
 
   it('leaves guild that is member of, fulfilled', async () => {
-    await expect(guildMemberAdd()).to.be.fulfilled;
+    await expect(guildMemberRemove()).to.be.fulfilled;
   });
 
   it('cannot leave owned guild, rejected', async () => {
     makeGuildOwner();
 
-    await expect(guildMemberAdd()).to.be.rejectedWith('Cannot leave a guild you own');
+    await expect(guildMemberRemove()).to.be.rejectedWith('You cannot leave a guild you own');
   });
 
-  function guildMemberAdd() {
+  it('leaves guild, removed from user guilds', async () => {
+    await guildMemberRemove();
+
+    user = await User.findById(user._id);
+    expect(user.guilds).to.not.include(guild._id);
+  });
+
+  function guildMemberRemove() {
     return event.invoke(ws, client, {
       guildId: guild._id,
       memberId: member._id,

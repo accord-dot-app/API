@@ -28,12 +28,13 @@ export default class implements WSEvent<'GUILD_MEMBER_REMOVE'> {
     else if (member.userId !== selfUserId)
       await this.guard.validateCan(client, guildId, 'KICK_MEMBERS');
     
-    await GuildMember.deleteOne({ _id: memberId });
     await User.updateOne(
       { _id: member.userId },
       { $pull: { guilds: guildId } },
       { runValidators: true },
     );
+    await GuildMember.deleteOne({ _id: memberId });
+
     await this.leaveGuildRooms(client, guild);
 
     ws.io

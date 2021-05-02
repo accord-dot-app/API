@@ -50,6 +50,10 @@ export class Mock {
       for (const arg of args)
         client.rooms.set(arg, arg);
     };
+    client.leave = async (...args) => {
+      for (const arg of args)
+        client.rooms.delete(arg);
+    };
   }
 
   public static async message(author: Lean.User, channelId: string) {

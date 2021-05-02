@@ -81,7 +81,6 @@ export default class Users extends DBWrapper<string, UserDocument> {
     });
     const incomingUserIds = incomingUsers.map(u => u._id);
 
-    const guildIds = user.guilds.map(g => g._id);
     const guildUserIds = user.guilds
       .flatMap(g => g.members.map(g => g.userId));
 
