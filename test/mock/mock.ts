@@ -18,7 +18,7 @@ export class Mock {
   private static guilds = Deps.get<Guilds>(Guilds);
   private static guildMembers = Deps.get<GuildMembers>(GuildMembers);
 
-  public static async defaultSetup(client: any, eventType: any) {
+  public static async defaultSetup(client: any, eventType = function() {}) {
     Deps.get<API>(API);
 
     const event = new (eventType as any)();

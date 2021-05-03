@@ -13,36 +13,25 @@ import { Lean, PermissionTypes } from '../../../src/data/types/entity-types';
 import { GuildMember } from '../../../src/data/models/guild-member';
 import { Role } from '../../../src/data/models/role';
 import Users from '../../../src/data/users';
+import { TextChannelDocument, VoiceChannelDocument } from '../../../src/data/models/channel';
 
-describe('ws-guard', () => {
-  let client: any;
+describe.only('ws-guard', () => {
+  const client = io(`http://localhost:${process.env.PORT}`) as any;
+  
   let guard: WSGuard;
-
   let guild: GuildDocument;
   let user: UserDocument;
   let ws: WebSocket;
-  let textChannelId: string;
-  let voiceChannelId: string;
+  let textChannel: TextChannelDocument;
+  let voiceChannel: VoiceChannelDocument;
 
   beforeEach(async () => {
-    Deps.get<API>(API);
+    ({ ws, guild, user } = await Mock.defaultSetup(client));
 
-    client = io(`http://localhost:${process.env.PORT}`) as any;
-    ws = new WebSocket();
-    guard = new WSGuard(
-      new Channels(),
-      new Roles(),
-      new Users(),
-      ws,
-    );    
+    textChannel = guild.channels[0] as any;
+    voiceChannel = guild.channels[1] as any;
 
-    guild = await Mock.guild();
-    user = await User.findById(guild.members[1].userId);
-
-    textChannelId = guild.channels[0]._id;
-    voiceChannelId = guild.channels[1]._id;
-
-    ws.sessions.set(client.id, user.id);
+    guard = Deps.get<WSGuard>(WSGuard); 
   });
 
   afterEach(async () => await Mock.afterEach(ws));
@@ -74,7 +63,7 @@ describe('ws-guard', () => {
 
   it('can access text channel, default perms, fulfilled', async () => {
     await expect(
-      guard.canAccessChannel(client, textChannelId)
+      guard.canAccessChannel(client, textChannel.id)
     ).to.be.fulfilled;
   });
 
@@ -82,7 +71,7 @@ describe('ws-guard', () => {
     await Mock.clearRolePerms(guild);
 
     await expect(
-      guard.canAccessChannel(client, textChannelId)
+      guard.canAccessChannel(client, textChannel.id)
     ).to.be.rejectedWith('Missing Permissions');
   });
 
@@ -92,7 +81,7 @@ describe('ws-guard', () => {
     await updateEveryoneRole(PermissionTypes.Text.READ_MESSAGES);
 
     await expect(
-      guard.canAccessChannel(client, textChannelId)
+      guard.canAccessChannel(client, textChannel.id)
     ).to.be.fulfilled;
   });
 
@@ -102,7 +91,7 @@ describe('ws-guard', () => {
     await updateEveryoneRole(PermissionTypes.Text.READ_MESSAGES);
 
     await expect(
-      guard.canAccessChannel(client, textChannelId)
+      guard.canAccessChannel(client, textChannel.id)
     ).to.be.fulfilled;
   });
 
@@ -113,7 +102,7 @@ describe('ws-guard', () => {
       | PermissionTypes.Text.SEND_MESSAGES);
 
     await expect(
-      guard.canAccessChannel(client, textChannelId)
+      guard.canAccessChannel(client, textChannel.id)
     ).to.be.fulfilled;
   });
 
@@ -121,7 +110,7 @@ describe('ws-guard', () => {
     await Mock.giveEveryoneAdmin(guild);
 
     await expect(
-      guard.canAccessChannel(client, textChannelId)
+      guard.canAccessChannel(client, textChannel.id)
     ).to.be.fulfilled;
   });
 
@@ -129,7 +118,7 @@ describe('ws-guard', () => {
     await makeGuildOwner();
 
     await expect(
-      guard.canAccessChannel(client, textChannelId)
+      guard.canAccessChannel(client, textChannel.id)
     ).to.be.fulfilled;
   });
 
@@ -137,7 +126,7 @@ describe('ws-guard', () => {
     await Mock.clearRolePerms(guild);
 
     await expect(
-      guard.canAccessChannel(client, voiceChannelId)
+      guard.canAccessChannel(client, voiceChannel.id)
     ).to.be.rejectedWith('Missing Permissions');
   });
 
@@ -146,7 +135,7 @@ describe('ws-guard', () => {
     await updateEveryoneRole(PermissionTypes.Voice.CONNECT);
 
     await expect(
-      guard.canAccessChannel(client, voiceChannelId)
+      guard.canAccessChannel(client, voiceChannel.id)
     ).to.be.fulfilled;
   });
 
@@ -157,13 +146,13 @@ describe('ws-guard', () => {
       | PermissionTypes.Voice.SPEAK);
 
     await expect(
-      guard.canAccessChannel(client, voiceChannelId)
+      guard.canAccessChannel(client, voiceChannel.id)
     ).to.be.fulfilled;
   });
 
   it('can access voice channel, default perms, fulfilled', async () => {
     await expect(
-      guard.canAccessChannel(client, voiceChannelId)
+      guard.canAccessChannel(client, voiceChannel.id)
     ).to.be.fulfilled;
   });
 
@@ -171,7 +160,7 @@ describe('ws-guard', () => {
     await makeGuildOwner();
 
     await expect(
-      guard.canAccessChannel(client, voiceChannelId)
+      guard.canAccessChannel(client, voiceChannel.id)
     ).to.be.fulfilled;
   });
 

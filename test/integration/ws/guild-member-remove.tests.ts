@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { GuildMemberDocument } from '../../../src/data/models/guild-member';
 import { User, UserDocument } from '../../../src/data/models/user';
 
-describe.only('guild-member-remove', () => {
+describe('guild-member-remove', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
 
   let event: GuildMemberRemove;

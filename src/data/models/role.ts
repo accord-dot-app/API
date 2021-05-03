@@ -10,15 +10,6 @@ export function hasPermission(current: PermissionTypes.Permission, required: Per
 
 const everyoneColor = '#ffffff';
 
-export const defaultPermissions =
-  PermissionTypes.General.VIEW_CHANNELS
-  | PermissionTypes.General.CREATE_INVITE
-  | PermissionTypes.Text.SEND_MESSAGES
-  | PermissionTypes.Text.READ_MESSAGES
-  | PermissionTypes.Text.ADD_REACTIONS
-  | PermissionTypes.Voice.CONNECT
-  | PermissionTypes.Voice.SPEAK;
-
 export interface RoleDocument extends Document, Lean.Role {
   _id: string;
   createdAt: never;
@@ -68,7 +59,7 @@ export const Role = model<RoleDocument>('role', new Schema({
   },
   permissions: {
     type: Number,
-    default: defaultPermissions,
+    default: PermissionTypes.defaultPermissions,
     required: [true, 'Permissions is required'],
     validate: {
       validator: (val: number) => Number.isInteger(val) && val >= 0,
