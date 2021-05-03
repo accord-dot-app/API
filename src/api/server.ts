@@ -41,7 +41,6 @@ export class API {
     this.app.use(bodyParser.json());
     this.app.use(passport.initialize());
     this.app.use(cors());
-    // this.app.use(helmet());
     this.app.use(rateLimiter);
   }
 
@@ -54,14 +53,14 @@ export class API {
     this.app.use(`${this.prefix}/channels`, channelsRoutes);
     this.app.use(`${this.prefix}/guilds`, guildsRoutes);
     this.app.use(`${this.prefix}/users`, usersRoutes);
-
-    this.app.use(`/api/v([0-9])`, () => {
-      throw new TypeError('Invalid API version number');
-    });
   } 
 
   private setupErrorHandling() {
     this.app.all(`${this.prefix}/*`, (req, res, next) => next(new APIError(404)));
+
+    this.app.use(`/api`, () => {
+      throw new TypeError('Invalid API version number');
+    });
     
     this.app.use((error: APIError, req: Request, res: Response, next: NextFunction) => {
       if (res.headersSent)
