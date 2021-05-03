@@ -35,7 +35,7 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
       throw new TypeError('Bot users cannot accept invites');
 
     await this.handleInvite(invite);
-    const member = await this.members.create(guild.id, user.id);
+    const member = await this.members.create(guild, user);
 
     ws.io
       .to(guild._id)
