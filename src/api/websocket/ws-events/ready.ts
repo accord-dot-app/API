@@ -31,8 +31,9 @@ export default class implements WSEvent<'READY'> {
     user.status = 'ONLINE';
     await user.save();
      
+    const guildIds = user.guilds.map(g => g._id);
     ws.io
-      .to(Array.from(client.rooms))
+      .to(guildIds)
       .emit('PRESENCE_UPDATE', {
         userId,
         status: user.status

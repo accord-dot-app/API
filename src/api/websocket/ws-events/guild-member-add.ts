@@ -42,7 +42,7 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
       .emit('GUILD_MEMBER_ADD', { guildId: guild._id, member } as Args.GuildMemberAdd);
 
     ws.io
-      .to(client.id)
+      .to(user.id)
       .emit('GUILD_JOIN', { guild } as Args.GuildJoin);
   }
 

@@ -32,8 +32,9 @@ export default class implements WSEvent<'disconnect'> {
     user.status = 'OFFLINE';
     await user.save();
 
+    const guildIds = user.guilds.map(g => g._id);
     ws.io
-      .to(Array.from(client.rooms))
+      .to(guildIds)
       .emit('PRESENCE_UPDATE', {
         userId: user.id,
         status: user.status
