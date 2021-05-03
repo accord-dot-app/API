@@ -41,7 +41,7 @@ export class API {
     this.app.use(bodyParser.json());
     this.app.use(passport.initialize());
     this.app.use(cors());
-    this.app.use(helmet());
+    // this.app.use(helmet());
     this.app.use(rateLimiter);
   }
 
