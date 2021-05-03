@@ -22,17 +22,20 @@ export default class implements WSEvent<'GUILD_MEMBER_UPDATE'> {
   public async invoke(ws: WebSocket, client: Socket, { memberId, partialMember }: Params.GuildMemberUpdate) {
     const selfMember = await this.guildMembers.get(memberId);
     const member = await this.guildMembers.get(memberId);
-    this.guard.validateCan(client, member.guildId, 'MANAGE_ROLES');
 
-    const isHigher = await this.roles.isHigher(selfMember.roleIds, member.roleIds);
-    if (!isHigher)
+    await this.guard.validateCan(client, member.guildId, 'MANAGE_ROLES');
+
+    const selfIsHigher = await this.roles.isHigher(selfMember.roleIds, member.roleIds);
+    const isSelf = selfMember._id === memberId;    
+
+    if (!isSelf && !selfIsHigher)
       throw new TypeError('Member has higher roles than you');
     
     await GuildMember.updateOne(
       { _id: memberId },
       partialMember,
       { runValidators: true }
-    );    
+    );
     
     ws.io
       .to(member.guildId)
