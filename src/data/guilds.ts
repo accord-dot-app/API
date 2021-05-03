@@ -5,7 +5,7 @@ import Deps from '../utils/deps';
 import Channels from './channels';
 import GuildMembers from './guild-members';
 import Roles from './roles';
-import {  UserDocument } from './models/user';
+import { UserDocument } from './models/user';
 import { Invite } from './models/invite';
 import { APIError } from '../api/modules/api-error';
 
@@ -23,6 +23,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
         ?.populate('members')
         .populate('roles')
         .populate('channels')
+        .exec()
       : await Guild.findById(id);
     if (!guild)
       throw new APIError(404, 'Guild Not Found');
@@ -34,34 +35,25 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
     return await Guild.findOne({ channels: { $in: id } as any });
   }
 
-  public async create(name: string, ownerId: string) {    
+  public async create(name: string, owner: UserDocument): Promise<GuildDocument> {    
     const guildId = generateSnowflake();
     const everyoneRole = await this.roles.create('@everyone', guildId);
 
-    return await Guild.create({
+    const guild = await Guild.create({
       _id: guildId,
       name,
-      ownerId,
+      ownerId: owner.id,
       roles: [ everyoneRole ],
-      members: [
-        await this.members.create(guildId, ownerId, everyoneRole),
-      ],
+      members: [],
       channels: [
         await this.channels.createText(guildId),
         await this.channels.createVoice(guildId),
       ],
     });
-  }
 
-  public async join(user: UserDocument, guild: GuildDocument) {
-    user.guilds.push(guild.id);
-    await user.save();
+    await this.members.create(guild, owner, everyoneRole);
 
-    const member = await this.members.create(guild.id, user.id);
-    guild.members.push(member.id);
-    await guild.save();
-
-    return member;
+    return guild;
   }
 
   public async invites(guildId: string) {

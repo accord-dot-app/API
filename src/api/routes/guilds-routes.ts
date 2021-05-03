@@ -6,9 +6,11 @@ import Guilds from '../../data/guilds';
 import { WebSocket } from '../websocket/websocket';
 import { Args } from '../websocket/ws-events/ws-event';
 import { PermissionTypes } from '../../data/types/entity-types';
+import GuildMembers from '../../data/guild-members';
 
 export const router = Router();
 
+const members = Deps.get<GuildMembers>(GuildMembers);
 const guilds = Deps.get<Guilds>(Guilds);
 const users = Deps.get<Users>(Users);
 const ws = Deps.get<WebSocket>(WebSocket);
@@ -22,9 +24,9 @@ router.get('/:id/authorize/:botId',
   updateUser, validateUser, updateGuild,
   validateHasPermission(PermissionTypes.General.MANAGE_GUILD),
   async (req, res) => {
-  const guild = await guilds.get(req.params.id);
+  const guild = res.locals.guild;
   const bot = await users.get(req.params.botId);
-  const member = await guilds.join(bot, res.locals.guild);
+  const member = await members.create(guild, bot);
 
   ws.io
     .to(guild.id)

@@ -1,6 +1,8 @@
 import DBWrapper from './db-wrapper';
+import { GuildDocument } from './models/guild';
 import { GuildMember, GuildMemberDocument } from './models/guild-member';
 import { Role } from './models/role';
+import { UserDocument } from './models/user';
 import { generateSnowflake } from './snowflake-entity';
 import { Lean } from './types/entity-types';
 
@@ -19,15 +21,26 @@ export default class GuildMembers extends DBWrapper<string, GuildMemberDocument>
     return member;
   }
 
-  public async create(guildId: string, userId: string, ...roles: Lean.Role[]) {
-    return GuildMember.create({
+  public async create(guild: GuildDocument, user: UserDocument, ...roles: Lean.Role[]) {    
+    const member = await GuildMember.create({
       _id: generateSnowflake(),
-      guildId,
-      userId,
+      guildId: guild.id,
+      userId: user.id,
       roleIds: (roles.length > 0)
         ? roles.map(r => r._id) 
-        : [await this.getEveryoneRoleId(guildId) as string], 
-    });
+        : [await this.getEveryoneRoleId(guild.id) as string], 
+    });    
+    await this.joinGuild(user, guild, member);
+
+    return member;
+  }
+
+  private async joinGuild(user: UserDocument, guild: GuildDocument, member: GuildMemberDocument) {
+    user.guilds.push(guild as any);
+    await user.save();
+
+    guild.members.push(member as any);
+    await guild.save();
   }
 
   private async getEveryoneRoleId(guildId: string) {

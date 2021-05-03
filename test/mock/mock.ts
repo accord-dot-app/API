@@ -69,16 +69,13 @@ export class Mock {
     const owner = await Mock.user();
     const memberUser = await Mock.user();
     
-    const guild = await this.guilds.create('Mock Guild', owner.id);
+    const guild = await this.guilds.create('Mock Guild', owner);
     
     owner.guilds.push(guild.id);
-    await owner.save();
-    memberUser.guilds.push(guild.id);
-    await memberUser.save();
+    await owner.save();    
 
-    const member = await Mock.guildMember(memberUser.id, guild.id);
-    guild.members.push(member);
-    return guild.save();
+    await this.guildMembers.create(guild, memberUser, guild.roles[0] as any); 
+    return guild;
   }
 
   public static async user(guildIds: string[] = []): Promise<UserDocument> {
@@ -116,8 +113,8 @@ export class Mock {
     } as any) as SelfUserDocument;    
   }
 
-  public static async guildMember(userId: string, guildId: string): Promise<GuildMemberDocument> {
-    return this.guildMembers.create(guildId, userId);
+  public static async guildMember(user: UserDocument, guild: GuildDocument): Promise<GuildMemberDocument> {    
+    return await this.guildMembers.create(guild, user);
   }
 
   public static async channel(type: ChannelTypes.Type, guildId?: string): Promise<ChannelDocument> {

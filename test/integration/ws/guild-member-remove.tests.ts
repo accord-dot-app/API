@@ -2,7 +2,7 @@ import GuildMemberRemove from '../../../src/api/websocket/ws-events/guild-member
 import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import { Mock } from '../../mock/mock';
-import { GuildDocument } from '../../../src/data/models/guild';
+import { Guild, GuildDocument } from '../../../src/data/models/guild';
 import { expect } from 'chai';
 import { GuildMemberDocument } from '../../../src/data/models/guild-member';
 import { User, UserDocument } from '../../../src/data/models/user';
@@ -44,7 +44,13 @@ describe.only('guild-member-remove', () => {
     expect(user.guilds).to.not.include(guild._id);
   });
 
-  it('kick noob member, as guild member, removed from user guilds', async () => {
+  it('kick noob member, as noob member, removed from user guilds', async () => {
+    await makeAnotherNoob();
+
+    await expect(guildMemberRemove()).to.be.rejectedWith('Missing Permissions');
+  });
+
+  it('kick noob member, as guild owner, removed from user guilds', async () => {
     makeGuildOwner();
 
     member = guild.members[1] as GuildMemberDocument;
@@ -64,5 +70,9 @@ describe.only('guild-member-remove', () => {
   function makeGuildOwner() {
     member = guild.members[0] as GuildMemberDocument;
     ws.sessions.set(client.id, guild.ownerId);
+  }
+    
+  async function makeAnotherNoob() {
+    member = await Mock.guildMember(user, guild);
   }
 });

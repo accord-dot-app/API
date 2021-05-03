@@ -98,6 +98,12 @@ export namespace ChannelTypes {
   }
 }
 
+export namespace GeneralTypes {
+  export interface SnowflakeEntity {
+    _id: string;
+  }
+}
+
 export namespace InviteTypes {
   export interface Options {
     expiresAt?: Date;
@@ -126,20 +132,20 @@ export namespace PermissionTypes {
     MANAGE_ROLES = 8,
     MANAGE_GUILD = 4,
     VIEW_AUDIT_LOG = 2,
-    ADMINISTRATOR = 1,
+    ADMINISTRATOR = 1
   }
   export enum Text {
     ADD_REACTIONS = 2048 * 16,
     MENTION_EVERYONE = 2048 * 8,
     READ_MESSAGES = 2048 * 4,
     MANAGE_MESSAGES = 2048 * 2,
-    SEND_MESSAGES = 2048,
+    SEND_MESSAGES = 2048
   }
   export enum Voice {
     MOVE_MEMBERS = 32768 * 8,
     MUTE_MEMBERS = 32768 * 4,
     SPEAK = 32768 * 2,
-    CONNECT = 32768,
+    CONNECT = 32768
   }
   export const All = {
     ...General,
@@ -181,6 +187,6 @@ export const patterns = {
   password: /(?=.*[a-zA-Z0-9!@#$%^&*])/,
   snowflake: /^\d{18}$/,
   status: /^ONLINE|^BUSY$|^AFK$|^OFFLINE$/,
-  textChannelName: /^[A-Za-z\-\d]+$/,
+  textChannelName: /^[A-Za-z\-\d]{2,32}$/,
   username: /(^(?! |^everyone$|^here$|^me$|^someone$|^discordtag$)[A-Za-z\d\-\_]{2,32}(?<! )$)/,
 }

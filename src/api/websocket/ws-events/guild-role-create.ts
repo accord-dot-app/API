@@ -14,7 +14,6 @@ export default class implements WSEvent<'GUILD_ROLE_CREATE'> {
 
   constructor(
     private guard = Deps.get<WSGuard>(WSGuard),
-    private roles = Deps.get<Roles>(Roles),
   ) {}
 
   public async invoke(ws: WebSocket, client: Socket, { guildId, partialRole }: Params.GuildRoleCreate) {
@@ -33,6 +32,6 @@ export default class implements WSEvent<'GUILD_ROLE_CREATE'> {
 
     ws.io
       .to(guildId)
-      .emit('GUILD_ROLE_CREATE', { role } as Args.GuildRoleCreate);
+      .emit('GUILD_ROLE_CREATE', { guildId, role } as Args.GuildRoleCreate);
   }
 }
