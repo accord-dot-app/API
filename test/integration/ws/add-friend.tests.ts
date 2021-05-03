@@ -55,14 +55,14 @@ describe('add-friend', () => {
   });
 
   it('both users add each other, friend request removed', async () => {
-    await addFriend();
+    await addFriend();    
     await returnFriend();
 
+    sender = await User.findById(sender.id) as any;
     friend = await User.findById(friend.id) as any;
-    sender = await User.findById(sender.id) as any;    
 
-    expect(friend.friendRequestIds).to.be.empty;
     expect(sender.friendRequestIds).to.be.empty;
+    expect(friend.friendRequestIds).to.be.empty;
   });
 
   it('both users add each other, friend added', async () => {
