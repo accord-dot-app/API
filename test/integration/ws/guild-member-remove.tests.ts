@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { GuildMemberDocument } from '../../../src/data/models/guild-member';
 import { User, UserDocument } from '../../../src/data/models/user';
 
-describe('guild-member-remove', () => {
+describe.only('guild-member-remove', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
 
   let event: GuildMemberRemove;
@@ -41,6 +41,16 @@ describe('guild-member-remove', () => {
     await guildMemberRemove();
 
     user = await User.findById(user._id);
+    expect(user.guilds).to.not.include(guild._id);
+  });
+
+  it('kick noob member, as guild member, removed from user guilds', async () => {
+    makeGuildOwner();
+
+    member = guild.members[1] as GuildMemberDocument;
+    await guildMemberRemove();
+
+    user = await User.findById(member.userId);
     expect(user.guilds).to.not.include(guild._id);
   });
 

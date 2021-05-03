@@ -1,18 +1,19 @@
 import { WSEventParams } from '../ws-events/ws-event';
 
-// if bot user:
+// if bot user -> users should not be too fast
+// for guild events:
 // -> separate cooldowns for each guild / room ID
 
 export class WSCooldowns {
   public readonly active = new Map<string, EventLog[]>();
 
+  // TODO: handle(userId, eventName, guildId)
   public handle(userId: string, eventName: keyof WSEventParams) {
     this.prune(userId);
     this.add(userId, eventName);
 
     const clientEvents = this.get(userId).length;
-    const maxEvents = 60;
-        
+    const maxEvents = 60;        
     if (clientEvents > maxEvents)
       throw new TypeError('You are doing too many things at once!');
   }

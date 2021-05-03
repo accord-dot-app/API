@@ -1,7 +1,9 @@
 import { Socket } from 'socket.io';
 import Guilds from '../../../data/guilds';
 import { User } from '../../../data/models/user';
+import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
+import { WSRooms } from '../modules/ws-rooms';
 import { WebSocket } from '../websocket';
 import { WSEvent, Params } from './ws-event';
 
@@ -10,19 +12,19 @@ export default class implements WSEvent<'GUILD_CREATE'> {
 
   constructor(
     private guilds = Deps.get<Guilds>(Guilds),
+    private rooms = Deps.get<WSRooms>(WSRooms),
+    private users = Deps.get<Users>(Users),
   ) {}
 
   public async invoke(ws: WebSocket, client: Socket, { partialGuild }: Params.GuildCreate) {
     const userId = ws.sessions.userId(client);
     const guild = await this.guilds.create(partialGuild.name, userId);
 
-    await User.updateOne(
-      { _id: userId },
-      { $push: { guilds: guild } },
-      { runValidators: true },
-    );
+    const user = await this.users.getSelf(userId, true);
+    user.guilds.push(guild);
+    await user.save();
 
-    await client.join(guild.id);
+    await this.rooms.joinGuildRooms(user, client);
 
     ws.io
       .to(userId)

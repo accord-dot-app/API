@@ -23,15 +23,14 @@ export default class implements WSEvent<'GUILD_MEMBER_REMOVE'> {
       throw new TypeError('Member does not exist');
 
     const selfUserId = ws.sessions.get(client.id);
-    if (guild.ownerId === selfUserId)
+    if (guild.ownerId === member.userId)
       throw new TypeError('You cannot leave a guild you own');
-    else if (member.userId !== selfUserId)
+    else if (selfUserId !== member.userId)
       await this.guard.validateCan(client, guildId, 'KICK_MEMBERS');
     
     await User.updateOne(
       { _id: member.userId },
       { $pull: { guilds: guildId } },
-      { runValidators: true },
     );
     await GuildMember.deleteOne({ _id: memberId });
 

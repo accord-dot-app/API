@@ -1,5 +1,5 @@
 import { Server } from 'http';
-import { Server as SocketServer, Socket } from 'socket.io';
+import { Server as SocketServer } from 'socket.io';
 import Log from '../../utils/log';
 import { WSEvent, WSEventParams } from './ws-events/ws-event';
 import { resolve } from 'path';
