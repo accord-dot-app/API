@@ -40,20 +40,22 @@ export default class Users extends DBWrapper<string, UserDocument> {
 
   public async getSelf(id: string | undefined, populateGuilds = true): Promise<SelfUserDocument> {
     const user = await this.get(id) as SelfUserDocument;
-
     if (populateGuilds)
-      user.guilds = (await this
-        .populateGuilds(user)).guilds
-        .map(g => new Guild(g).toJSON()) as Lean.Guild[];
-    
+      user.guilds = (await this.populateGuilds(user)).guilds as Lean.Guild[];
+
     return user;
   }
 
   private async populateGuilds(user: UserDocument) {
     const guilds: Lean.Guild[] = [];
     for (const id of user.guilds) {
-      const guild = await this.guilds.get(id as string, true); 
-      guilds.push(guild);
+      const isDuplicate = guilds.some(g => g._id === id);
+      if (isDuplicate) continue;
+
+      try {
+        const guild = await this.guilds.get(id as string, true); 
+        guilds.push(new Guild(guild).toJSON());
+      } catch {}
     }
     user.guilds = guilds as any;
     return user;

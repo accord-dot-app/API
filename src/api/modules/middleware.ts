@@ -12,10 +12,15 @@ const guilds = Deps.get<Guilds>(Guilds);
 const roles = Deps.get<Roles>(Roles);
 const users = Deps.get<Users>(Users);
 
-export function validateUser(req: Request, res: Response, next: NextFunction) {  
-  if (res.locals.user)
+export async function updateUser(req: Request, res: Response, next: NextFunction) {
+  try {
+    const key = req.get('Authorization') as string;    
+    const id = users.idFromAuth(key);    
+
+    res.locals.user = await users.getSelf(id);
+  } finally {
     return next();
-  throw new APIError(401);
+  }
 }
 
 export async function updateUsername(req: Request, res: Response, next: NextFunction) {
@@ -26,15 +31,10 @@ export async function updateUsername(req: Request, res: Response, next: NextFunc
   return next();
 }
 
-export async function updateUser(req: Request, res: Response, next: NextFunction) {
-  try {
-    const key = req.get('Authorization') as string;
-    const id = users.idFromAuth(key);
-
-    res.locals.user = await users.getSelf(id);    
-  } finally {
+export function validateUser(req: Request, res: Response, next: NextFunction) {  
+  if (res.locals.user)
     return next();
-  }
+  throw new APIError(401, 'User not logged in');
 }
 
 export async function updateGuild(req: Request, res: Response, next: NextFunction) {

@@ -13,7 +13,7 @@ const channels = Deps.get<Channels>(Channels);
 const users = Deps.get<Users>(Users);
 
 router.get('/', updateUser, validateUser, async (req, res) => {
-  const knownUsers = await users.getKnown(res.locals.user._id);
+  const knownUsers = await users.getKnown(res.locals.user._id);  
   res.json(knownUsers);  
 });
 
