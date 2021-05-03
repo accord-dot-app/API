@@ -14,7 +14,7 @@ export default class GuildMembers extends DBWrapper<string, GuildMemberDocument>
     return member;
   }
 
-  public async getInGuild(guildId: string, userId: string) {
+  public async getInGuild(guildId: string | undefined, userId: string | undefined) {
     const member = await GuildMember.findOne({ guildId, userId });
     if (!member)
       throw new TypeError('Guild Member Not Found');

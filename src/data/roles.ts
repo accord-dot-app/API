@@ -20,12 +20,12 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
     return firstRoleIds.includes(highestRole?._id);
   }
 
-  public async hasPermission(member: Lean.GuildMember, permission: PermissionTypes.Permission) {
+  public async hasPermission(member: Lean.GuildMember, permission: PermissionTypes.PermissionString) {
     const totalPerms = (await Role
       .find({ _id: { $in: member.roleIds } }))
       .reduce((acc, value) => value.permissions | acc, 0);    
       
-    return hasPermission(totalPerms, permission);
+    return hasPermission(totalPerms, PermissionTypes.All[permission as string]);
   }
 
   public create(name: string, guildId: string) {

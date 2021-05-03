@@ -2,7 +2,6 @@ import { Socket } from 'socket.io';
 import GuildMembers from '../../../data/guild-members';
 import Guilds from '../../../data/guilds';
 import Invites from '../../../data/invites';
-import { GuildDocument } from '../../../data/models/guild';
 import { InviteDocument } from '../../../data/models/invite';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';

@@ -8,10 +8,14 @@ import Channels from '../../data/channels';
 import Roles from '../../data/roles';
 import { Lean, PermissionTypes } from '../../data/types/entity-types';
 import Users from '../../data/users';
+import Guilds from '../../data/guilds';
+import GuildMembers from '../../data/guild-members';
 
 export class WSGuard {
   constructor(
     private channels = Deps.get<Channels>(Channels),
+    private guilds = Deps.get<Guilds>(Guilds),
+    private guildMembers = Deps.get<GuildMembers>(GuildMembers),
     private roles = Deps.get<Roles>(Roles),
     private users = Deps.get<Users>(Users),
     private ws = Deps.get<WebSocket>(WebSocket),
@@ -61,24 +65,21 @@ export class WSGuard {
 
   public async validateCan(client: Socket, guildId: string | undefined, permission: PermissionTypes.PermissionString) {
     const userId = this.userId(client);
-    const member = await GuildMember.findOne({ guildId, userId });
-    if (!member)
-      throw new TypeError('Member Not Found');
-  
-    const guild = await Guild.findById(guildId);
-    if (!guild)
-      throw new TypeError('Guild Not Found');
 
-    const perm = PermissionTypes.All[permission as string];
-    const can = await this.roles.hasPermission(member, perm)
+    const member = await this.guildMembers.getInGuild(guildId, userId);
+    const guild = await this.guilds.get(guildId);
+
+    const can = await this.roles.hasPermission(member, permission)
       || guild.ownerId === userId;
-    this.validate(can, perm);
+    this.validate(can, permission);
   }  
-  private validate(can: boolean, permission: PermissionTypes.Permission) {
-    if (!can)
-      throw new TypeError(`Missing Permissions - ${PermissionTypes.General[permission]
+  private validate(can: boolean, permission: PermissionTypes.PermissionString) {
+    if (!can) {
+      const perm = PermissionTypes.General[permission]
         || PermissionTypes.Text[permission]
-        || PermissionTypes.Voice[permission]}`);
+        || PermissionTypes.Voice[permission];
+      throw new TypeError(`Missing Permissions - ${perm}`);
+    }
   }
 
   public async decodeKey(key: string) {
