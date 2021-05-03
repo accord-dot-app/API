@@ -3,7 +3,7 @@ import { Guild, GuildDocument } from '../../src/data/models/guild';
 import { GuildMember, GuildMemberDocument } from '../../src/data/models/guild-member';
 import { User, SelfUserDocument, UserDocument } from '../../src/data/models/user';
 import { generateSnowflake } from '../../src/data/snowflake-entity';
-import { defaultPermissions, Role, RoleDocument } from '../../src/data/models/role';
+import { Role, RoleDocument } from '../../src/data/models/role';
 import { ChannelTypes, InviteTypes, Lean, PermissionTypes, UserTypes } from '../../src/data/types/entity-types';
 import { Message } from '../../src/data/models/message';
 import { Invite } from '../../src/data/models/invite';
@@ -18,7 +18,7 @@ export class Mock {
   private static guilds = Deps.get<Guilds>(Guilds);
   private static guildMembers = Deps.get<GuildMembers>(GuildMembers);
 
-  public static async defaultSetup(client: any, eventType = function() {}) {
+  public static async defaultSetup(client: any, eventType: any = function() {}) {
     Deps.get<API>(API);
 
     const event = new (eventType as any)();
@@ -142,12 +142,12 @@ export class Mock {
       hoisted: false,
       mentionable: true,
       name: 'Mock Role',
-      permissions: permissions ?? defaultPermissions,
+      permissions: permissions ?? PermissionTypes.defaultPermissions,
       position: 0,
     });
   }
 
-  public static async everyoneRole(guildId: string, permissions = defaultPermissions) {
+  public static async everyoneRole(guildId: string, permissions = PermissionTypes.defaultPermissions) {
     return await Role.create({
       _id: generateSnowflake(),
       guildId,

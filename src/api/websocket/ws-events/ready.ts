@@ -25,20 +25,24 @@ export default class implements WSEvent<'READY'> {
  
     ws.sessions.set(client.id, userId);
 
-    const user = await this.users.getSelf(userId);    
-    if (user.status === 'OFFLINE')
+    const user = await this.users.getSelf(userId);
+    await this.rooms.join(client, user); 
+   
+    if (user.status === 'OFFLINE') {
+      // not being sent to guild member ?
+      console.log(Array.from(client.rooms));
+      
+      ws.io
+        .to(Array.from(client.rooms))
+        .emit('PRESENCE_UPDATE', {
+          userId,
+          status: user.status
+        } as Args.PresenceUpdate);
+    }
       await User.updateOne({ _id: userId }, { status: 'ONLINE' });
-    await this.rooms.join(client, user);
 
     ws.io
       .to(client.id)
       .emit('READY');
-    
-    ws.io
-      .to(await this.users.getKnownIds(user))
-      .emit('PRESENCE_UPDATE', {
-        userId,
-        status: user.status
-      } as Args.PresenceUpdate);
   }
 }

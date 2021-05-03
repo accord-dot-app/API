@@ -2,20 +2,16 @@ import Deps from '../../../src/utils/deps';
 import io from 'socket.io-client';
 import { Mock } from '../../mock/mock';
 import { GuildDocument } from '../../../src/data/models/guild';
-import { User, UserDocument } from '../../../src/data/models/user';
-import { API } from '../../../src/api/server';
+import { UserDocument } from '../../../src/data/models/user';
 import { WSGuard } from '../../../src/api/modules/ws-guard';
 import { expect } from 'chai';
 import { WebSocket } from '../../../src/api/websocket/websocket';
-import Channels from '../../../src/data/channels';
-import Roles from '../../../src/data/roles';
-import { Lean, PermissionTypes } from '../../../src/data/types/entity-types';
+import { PermissionTypes } from '../../../src/data/types/entity-types';
 import { GuildMember } from '../../../src/data/models/guild-member';
 import { Role } from '../../../src/data/models/role';
-import Users from '../../../src/data/users';
 import { TextChannelDocument, VoiceChannelDocument } from '../../../src/data/models/channel';
 
-describe.only('ws-guard', () => {
+describe('ws-guard', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   
   let guard: WSGuard;

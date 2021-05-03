@@ -18,24 +18,22 @@ export default class implements WSEvent<'disconnect'> {
   public async invoke(ws: WebSocket, client: Socket) {    
     const userId = ws.sessions.get(client.id);
     const user = await this.users.get(userId);
-
+    
+    ws.sessions.delete(client.id);
     await this.setOfflineStatus(ws, user);
 
-    for (const id in client.rooms) {
-      ws.io
-        .to(id)
-        .emit('PRESENCE_UPDATE', {
-          userId,
-          status: user.status
-        } as Args.PresenceUpdate);      
-    }
+    ws.io
+      .to(Array.from(client.rooms))
+      .emit('PRESENCE_UPDATE', {
+        userId,
+        status: user.status
+    } as Args.PresenceUpdate); 
 
-    ws.sessions.delete(client.id);
     client.rooms.clear();
   }
 
   public async setOfflineStatus(ws: WebSocket, user: UserDocument) {
-    const userConnected = ws.connectedUserIds.includes(user._id);
+    const userConnected = ws.connectedUserIds.includes(user._id);    
     if (userConnected) return;
 
     user.status = 'OFFLINE';

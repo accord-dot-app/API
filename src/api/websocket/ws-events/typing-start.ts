@@ -6,9 +6,6 @@ export default class implements WSEvent<'TYPING_START'> {
   on = 'TYPING_START' as const;
 
   public async invoke(ws: WebSocket, client: Socket, { channelId }: Params.TypingStart) {    
-    if (!client.rooms.has(channelId))
-      await client.join(channelId);
-    
     ws.io
       .to(channelId)
       .emit('TYPING_START', {

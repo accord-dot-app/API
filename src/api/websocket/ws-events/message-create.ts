@@ -21,9 +21,6 @@ export default class implements WSEvent<'MESSAGE_CREATE'> {
     const userId = ws.sessions.userId(client);
     const message = await this.messages.create(userId, channelId, partialMessage);
 
-    if (!client.rooms.has(channelId))
-      await client.join(channelId);
-
     ws.io
       .to(channelId)
       .emit('MESSAGE_CREATE', { message } as Args.MessageCreate);

@@ -21,7 +21,7 @@ describe('ws-cooldowns', () => {
   });
 
   it('handle, exceeds max cooldowns, throws error', () => {
-    for (let i = 0; i < 100; i++)
+    for (let i = 0; i < 60; i++)
       handle();
 
     expect(handle).to.throw('You are doing too many things at once!');

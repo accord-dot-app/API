@@ -106,6 +106,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
       ?? await User.create({
         _id: generateSnowflake(),
         avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/bot.png`,
+        friendRequestIds: [],
         badges: [],
         bot: true,
         status: 'ONLINE',

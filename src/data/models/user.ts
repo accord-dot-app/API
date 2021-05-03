@@ -75,7 +75,7 @@ export const User = model<UserDocument>('user', new Schema({
     default: new UserTypes.Ignored(),
     validate: {
       validator: function (this: UserDocument, val) {
-        return !val.userIds.includes(this._id);
+        return !val || !val.userIds?.includes(this._id);
       },
       message: 'Cannot block self',
     },
