@@ -15,12 +15,12 @@ export default class implements WSEvent<'disconnect'> {
     private users = Deps.get<Users>(Users),
   ) {}
 
-  public async invoke(ws: WebSocket, client: Socket) {    
+  public async invoke(ws: WebSocket, client: Socket) {   
     const userId = ws.sessions.get(client.id);
     const user = await this.users.get(userId);
     
     ws.sessions.delete(client.id);
-    await this.setOfflineStatus(ws, user);
+    await this.setOfflineStatus(ws, user);   
 
     ws.io
       .to(Array.from(client.rooms))
@@ -40,5 +40,3 @@ export default class implements WSEvent<'disconnect'> {
     await user.save();
   }
 }
-
-
