@@ -18,7 +18,7 @@ export default class implements WSEvent<'ADD_FRIEND'> {
   public async invoke(ws: WebSocket, client: Socket, { username }: Params.AddFriend) {
     const senderId = ws.sessions.userId(client);
     let sender = await this.users.getSelf(senderId);
-    let friend = await this.users.getByUsername(username.toLowerCase());
+    let friend = await this.users.getByUsername(username);
 
     const isBlocking = friend.ignored.userIds.includes(sender._id);
     if (isBlocking)
