@@ -61,7 +61,7 @@ describe.only('ws-guard', () => {
     expect(result).to.not.throw;
   });
 
-  it('can access text channel, default perms, fulfilled', async () => {
+  it('can access text channel, default perms, fulfilled', async () => {    
     await expect(
       guard.canAccessChannel(client, textChannel.id)
     ).to.be.fulfilled;

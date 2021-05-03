@@ -70,7 +70,7 @@ export class WSGuard {
     const guild = await this.guilds.get(guildId);
 
     const can = await this.roles.hasPermission(member, permission)
-      || guild.ownerId === userId;
+      || guild.ownerId === userId;    
     this.validate(can, permission);
   }  
   private validate(can: boolean, permission: PermissionTypes.PermissionString) {

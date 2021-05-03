@@ -1,6 +1,6 @@
 import DBWrapper from './db-wrapper';
 import { Lean, PermissionTypes } from './types/entity-types';
-import { defaultPermissions, hasPermission, Role, RoleDocument } from './models/role';
+import { hasPermission, Role, RoleDocument } from './models/role';
 import { generateSnowflake } from './snowflake-entity';
 
 export default class Roles extends DBWrapper<string, RoleDocument> {
@@ -23,9 +23,12 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
   public async hasPermission(member: Lean.GuildMember, permission: PermissionTypes.PermissionString) {
     const totalPerms = (await Role
       .find({ _id: { $in: member.roleIds } }))
-      .reduce((acc, value) => value.permissions | acc, 0);    
-      
-    return hasPermission(totalPerms, PermissionTypes.All[permission as string]);
+      .reduce((acc, value) => value.permissions | acc, 0);
+    
+    const permNumber = (typeof permission === 'string')
+      ? PermissionTypes.All[PermissionTypes.All[permission as string]]
+      : permission;    
+    return hasPermission(totalPerms, permNumber as any);
   }
 
   public create(name: string, guildId: string) {
@@ -36,7 +39,7 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
       hoisted: false,
       name,
       position: 1,
-      permissions: defaultPermissions
+      permissions: PermissionTypes.defaultPermissions
     });
   }
 }

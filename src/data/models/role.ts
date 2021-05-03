@@ -3,7 +3,7 @@ import { checkForDuplicates, createdAtToDate } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns, PermissionTypes } from '../types/entity-types';
 
-export function hasPermission(current: PermissionTypes.Permission, required: PermissionTypes.Permission) {
+export function hasPermission(current: number, required: number) {  
   return Boolean(current & required)
     || Boolean(current & PermissionTypes.General.ADMINISTRATOR);
 }
