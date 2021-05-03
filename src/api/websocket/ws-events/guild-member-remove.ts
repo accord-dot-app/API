@@ -28,21 +28,22 @@ export default class implements WSEvent<'GUILD_MEMBER_REMOVE'> {
       
     else if (selfUserId !== member.userId)
       await this.guard.validateCan(client, guildId, 'KICK_MEMBERS');
-    
-    await User.updateOne(
-      { _id: member.userId },
-      { $pull: { guilds: guildId } },
-    );
+      
+    const user = await User.findById(member.userId) as any;
+    const index = user.guilds.indexOf(guildId);
+    user.guilds.splice(index, 1);
+    await user.save();
+
     await GuildMember.deleteOne({ _id: memberId });
 
     await this.leaveGuildRooms(client, guild);
 
     ws.io
-      .to(guildId)
-      .emit('GUILD_MEMBER_REMOVE', { guildId, memberId: member._id } as Args.GuildMemberRemove);
-    ws.io
       .to(member.userId)
       .emit('GUILD_LEAVE', { guildId } as Args.GuildLeave);
+    ws.io
+      .to(guildId)
+      .emit('GUILD_MEMBER_REMOVE', { guildId, memberId: member._id } as Args.GuildMemberRemove);
   }
 
   private async leaveGuildRooms(client: Socket, guild: GuildDocument) {

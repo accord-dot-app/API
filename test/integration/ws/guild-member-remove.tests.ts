@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { GuildMemberDocument } from '../../../src/data/models/guild-member';
 import { User, UserDocument } from '../../../src/data/models/user';
 
-describe('guild-member-remove', () => {
+describe.only('guild-member-remove', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
 
   let event: GuildMemberRemove;
@@ -44,7 +44,7 @@ describe('guild-member-remove', () => {
     expect(user.guilds).to.not.include(guild._id);
   });
 
-  it('kick noob member, as noob member, removed from user guilds', async () => {
+  it('kick noob member, as noob member, missing permissions', async () => {
     await makeAnotherNoob();
 
     await expect(guildMemberRemove()).to.be.rejectedWith('Missing Permissions');
@@ -73,6 +73,7 @@ describe('guild-member-remove', () => {
   }
     
   async function makeAnotherNoob() {
+    const user = await Mock.user();
     member = await Mock.guildMember(user, guild);
   }
 });

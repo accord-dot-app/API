@@ -35,12 +35,12 @@ export default class implements WSEvent<'GUILD_MEMBER_ADD'> {
 
     await this.handleInvite(invite);
     const member = await this.members.create(guild, user);
-
+    await this.rooms.joinGuildRooms(user, client);
+    
     ws.io
       .to(guild._id)
       .emit('GUILD_MEMBER_ADD', { guildId: guild._id, member } as Args.GuildMemberAdd);
-    
-    await this.rooms.joinGuildRooms(user, client);
+
     ws.io
       .to(client.id)
       .emit('GUILD_JOIN', { guild } as Args.GuildJoin);

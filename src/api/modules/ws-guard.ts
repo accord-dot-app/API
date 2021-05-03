@@ -74,12 +74,8 @@ export class WSGuard {
     this.validate(can, permission);
   }  
   private validate(can: boolean, permission: PermissionTypes.PermissionString) {
-    if (!can) {
-      const perm = PermissionTypes.General[permission]
-        || PermissionTypes.Text[permission]
-        || PermissionTypes.Voice[permission];
-      throw new TypeError(`Missing Permissions - ${perm}`);
-    }
+    if (!can)
+      throw new TypeError(`Missing Permissions - ${PermissionTypes.All[permission]}`);
   }
 
   public async decodeKey(key: string) {
