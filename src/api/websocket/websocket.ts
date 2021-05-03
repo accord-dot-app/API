@@ -50,8 +50,10 @@ export class WebSocket {
           } catch (error) {
             client.send(`Server error on executing: ${event.on}\n${error.message}`);
           } finally {
-            const userId = this.sessions.userId(client);
-            this.cooldowns.handle(userId, event.on);
+            try {
+              const userId = this.sessions.userId(client);
+              this.cooldowns.handle(userId, event.on);
+            } catch {}
           }
         });
     });
