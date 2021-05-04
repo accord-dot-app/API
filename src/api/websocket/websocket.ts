@@ -22,11 +22,13 @@ export class WebSocket {
   public async init(server: Server) {
     this.io = new SocketServer(server, {
       cors: {
-        origin: `http://localhost:4200`,
+        origin: process.env.WEBSITE_URL,
         methods: ['GET', 'POST'],
         allowedHeaders: ['Authorization'],
         credentials: true,
-      }
+      },
+      path: '/ws',
+      serveClient: false,
     });
 
     const dir = resolve(`${__dirname}/ws-events`);
