@@ -20,7 +20,7 @@ export default class implements WSEvent<'disconnect'> {
     const user = await this.users.get(userId);
     
     ws.sessions.delete(client.id);
-    setInterval(() => this.setOfflineStatus(ws, client, user), 5 * 1000); 
+    setTimeout(() => this.setOfflineStatus(ws, client, user), 5 * 1000); 
 
     client.rooms.clear();
   }
