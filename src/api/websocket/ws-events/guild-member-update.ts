@@ -23,7 +23,7 @@ export default class implements WSEvent<'GUILD_MEMBER_UPDATE'> {
     const selfMember = await this.guildMembers.get(memberId);
     const member = await this.guildMembers.get(memberId);
 
-    await this.guard.validateCan(client, member.guildId, 'MANAGE_ROLES');
+    await this.guard.validateCan(client, member.guildId, PermissionTypes.General.MANAGE_ROLES);
 
     const selfIsHigher = await this.roles.isHigher(selfMember.roleIds, member.roleIds);
     const isSelf = selfMember._id === memberId;    

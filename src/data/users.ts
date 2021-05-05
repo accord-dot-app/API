@@ -5,11 +5,11 @@ import { generateSnowflake } from './snowflake-entity';
 import { readdirSync } from 'fs';
 import { resolve } from 'path';
 import { Lean, UserTypes } from './types/entity-types';
-import { Channel } from './models/channel';
 import { Guild } from './models/guild';
 import { APIError } from '../api/modules/api-error';
 import Deps from '../utils/deps';
 import Guilds from './guilds';
+import { Channel } from './models/channel';
 
 export default class Users extends DBWrapper<string, UserDocument> {
   private avatarNames: string[] = [];
@@ -86,9 +86,13 @@ export default class Users extends DBWrapper<string, UserDocument> {
     const guildUserIds = user.guilds
       .flatMap(g => g.members.map(g => g.userId));
 
+    const dmUsers = await Channel.find({ memberIds: user._id });
+    const dmUserIds = dmUsers.flatMap(u => u.memberIds);
+
     return Array.from(new Set([
       user._id,
       this.systemUser?._id,
+      ...dmUserIds,
       ...guildUserIds,
       ...incomingUserIds,
       ...user.friendRequestIds,
