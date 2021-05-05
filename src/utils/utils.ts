@@ -32,3 +32,7 @@ export function generateUsername() {
 export function checkForDuplicates(array: any[]) {
   return new Set(array).size !== array.length
 }
+
+export const array = {
+  ascending: (a, b) => (a > b) ? 1 : -1,
+};

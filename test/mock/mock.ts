@@ -25,10 +25,10 @@ export class Mock {
     const ws = Deps.get<WebSocket>(WebSocket);
 
     const guild = await Mock.guild();
-    const member = await GuildMember.findById(guild.members[1]._id);
-    const role = await Role.findById(guild.roles[0]._id);
+    const member = new GuildMember(guild.members[1]);
+    const role = new Role(guild.roles[0]);
     const user = await User.findById(member.userId);
-    const channel = await Channel.findById(guild.channels[0]._id);
+    const channel = new Channel(guild.channels[0]);
 
     Mock.ioClient(client);
     
