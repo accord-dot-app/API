@@ -34,7 +34,7 @@ export default class implements WSEvent<'MESSAGE_CREATE'> {
       .to(channelId)
       .emit('MESSAGE_CREATE', { message } as Args.MessageCreate);
 
-    const self = await this.users.getSelf(channelId, false);
+    const self = await this.users.getSelf(userId, false);
     const channel = await this.channels.get(channelId);
     const ignored = this.pings.isIgnored(self, channel, message);
 
