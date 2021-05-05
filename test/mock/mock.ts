@@ -37,11 +37,11 @@ export class Mock {
     return { event, guild, user, member, ws, role, channel };
   }
   public static async afterEach(ws) {
-    ws.sessions.clear();    
+    ws.sessions.clear();  
+    await Mock.cleanDB();  
   }
   public static async after(client) {
     client.disconnect();
-    await Mock.cleanDB();
   }
 
   public static ioClient(client: any) {

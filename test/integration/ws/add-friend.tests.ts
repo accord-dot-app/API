@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { SelfUserDocument, User } from '../../../src/data/models/user';
 import { Channel } from '../../../src/data/models/channel';
 
-describe.only('add-friend', () => {
+describe('add-friend', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: AddFriend;
   let ws: WebSocket;
@@ -21,7 +21,7 @@ describe.only('add-friend', () => {
     friend = await Mock.self();
   });
 
-  afterEach(async () => await Mock.cleanDB());
+  afterEach(async () => await Mock.afterEach(ws));
   after(async () => await Mock.after(client));
 
   it('user sends request, fulfilled', async () => {

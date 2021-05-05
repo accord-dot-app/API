@@ -63,7 +63,7 @@ export class WSGuard {
       throw new TypeError('Not DM Member');
   }
 
-  public async validateCan(client: Socket, guildId: string | undefined, permission: PermissionTypes.PermissionString) {
+  public async validateCan(client: Socket, guildId: string | undefined, permission: PermissionTypes.Permission) {
     const userId = this.userId(client);
 
     const member = await this.guildMembers.getInGuild(guildId, userId);
