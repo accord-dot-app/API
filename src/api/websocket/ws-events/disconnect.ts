@@ -20,7 +20,7 @@ export default class implements WSEvent<'disconnect'> {
     const user = await this.users.get(userId);
     
     ws.sessions.delete(client.id);
-    setTimeout(() => this.setOfflineStatus(ws, client, user), 5 * 1000); 
+    await this.setOfflineStatus(ws, client, user);
 
     client.rooms.clear();
   }
@@ -33,8 +33,10 @@ export default class implements WSEvent<'disconnect'> {
     await user.save();
 
     const guildIds = user.guilds.map(g => g._id);
+    const friendIds = user.friendIds;
+
     ws.io
-      .to(guildIds)
+      .to(guildIds.concat(friendIds))
       .emit('PRESENCE_UPDATE', {
         userId: user.id,
         status: user.status

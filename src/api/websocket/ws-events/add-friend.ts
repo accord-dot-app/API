@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import Channels from '../../../data/channels';
-import { DMChannelDocument } from '../../../data/models/channel';
+import { Channel, DMChannelDocument } from '../../../data/models/channel';
 import { SelfUserDocument, User, UserDocument } from '../../../data/models/user';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
@@ -42,7 +42,7 @@ export default class implements WSEvent<'ADD_FRIEND'> {
   private async handle(sender: SelfUserDocument, friend: SelfUserDocument): Promise<Args.AddFriend> {
     if (sender._id === friend._id)
       throw new TypeError('You cannot add yourself as a friend');
-    
+      
     const hasReturnedRequest = friend.friendRequestIds.includes(sender._id);
     if (hasReturnedRequest) return {
       friend: await this.acceptRequest(friend, sender),

@@ -32,8 +32,10 @@ export default class implements WSEvent<'READY'> {
     await user.save();
      
     const guildIds = user.guilds.map(g => g._id);
+    const friendIds = user.friendIds;
+
     ws.io
-      .to(guildIds)
+      .to(guildIds.concat(friendIds))
       .emit('PRESENCE_UPDATE', {
         userId,
         status: user.status

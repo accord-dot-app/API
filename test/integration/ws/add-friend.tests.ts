@@ -1,4 +1,5 @@
 import AddFriend from '../../../src/api/websocket/ws-events/add-friend';
+import RemoveFriend from '../../../src/api/websocket/ws-events/remove-friend';
 import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
 import { Mock } from '../../mock/mock';
@@ -6,7 +7,7 @@ import { expect } from 'chai';
 import { SelfUserDocument, User } from '../../../src/data/models/user';
 import { Channel } from '../../../src/data/models/channel';
 
-describe('add-friend', () => {
+describe.only('add-friend', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: AddFriend;
   let ws: WebSocket;
@@ -20,7 +21,7 @@ describe('add-friend', () => {
     friend = await Mock.self();
   });
 
-  afterEach(async () => await Mock.afterEach(ws));
+  afterEach(async () => await Mock.cleanDB());
   after(async () => await Mock.after(client));
 
   it('user sends request, fulfilled', async () => {
@@ -54,6 +55,19 @@ describe('add-friend', () => {
     expect(exists).to.equal(1);
   });
 
+  it('user add, remove, then re-add each other, reuses old dm channel', async () => {
+    await addFriend();
+    await returnFriend();
+
+    await removeFriend();
+
+    await addFriend();
+    await returnFriend();
+
+    const docs = await Channel.countDocuments({ type: 'DM' }); 
+    expect(docs).to.equal(1);
+  });
+
   it('both users add each other, friend request removed', async () => {
     await addFriend();    
     await returnFriend();
@@ -85,5 +99,9 @@ describe('add-friend', () => {
     await event.invoke(ws, client, { username: sender.username });
 
     ws.sessions.set(client.id, sender.id);
+  }
+
+  async function removeFriend() {
+    await new RemoveFriend().invoke(ws, client, { friendId: friend._id });
   }
 });
