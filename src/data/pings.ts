@@ -8,8 +8,9 @@ export default class Pings {
   }
 
   public isIgnored(self: UserTypes.Self, channel: Lean.Channel, message: Lean.Message) {
-    return self.ignored.channelIds.includes(channel._id)
+    return self._id == message.authorId
+      && (self.ignored.channelIds.includes(channel._id)
       || self.ignored.guildIds.includes(channel.guildId as string)
-      || self.ignored.userIds.includes(message.authorId);
+      || self.ignored.userIds.includes(message.authorId));
   }
 }
