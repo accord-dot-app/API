@@ -90,6 +90,11 @@ describe('add-friend', () => {
     expect(sender.friendIds.length).to.equal(1);
   });
 
+  it('user adds friends twice, rejected', async () => {
+    await addFriend();
+    await expect(addFriend()).to.be.rejectedWith('Friend request already sent');
+  });
+
   async function addFriend() {
     return event.invoke(ws, client, { username: friend.username });
   }

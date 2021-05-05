@@ -30,6 +30,9 @@ export default class implements WSEvent<'READY'> {
 
     user.status = 'ONLINE';
     await user.save();
+
+    console.log('online');
+    
      
     const guildIds = user.guilds.map(g => g._id);
     const friendIds = user.friendIds;

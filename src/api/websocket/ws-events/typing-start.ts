@@ -9,7 +9,7 @@ export default class implements WSEvent<'TYPING_START'> {
     if (!client.rooms.has(channelId))
       await client.join(channelId);
     
-    ws.io
+    client.broadcast
       .to(channelId)
       .emit('TYPING_START', {
         userId: ws.sessions.userId(client),

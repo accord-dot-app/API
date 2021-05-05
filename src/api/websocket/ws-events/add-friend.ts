@@ -20,6 +20,9 @@ export default class implements WSEvent<'ADD_FRIEND'> {
     let sender = await this.users.getSelf(senderId);
     let friend = await this.users.getByUsername(username);
 
+    if (sender.friendRequestIds.includes(friend.id))
+      throw new TypeError('Friend request already sent');
+
     const isBlocking = friend.ignored.userIds.includes(sender._id);
     if (isBlocking)
       throw new TypeError('This user is blocking you');
@@ -52,10 +55,8 @@ export default class implements WSEvent<'ADD_FRIEND'> {
     }
       
     const hasSentRequest = sender.friendRequestIds.includes(friend._id);
-    if (!hasSentRequest) return {
-      friend,
-      sender: await this.sendRequest(sender, friend),
-    }
+    if (!hasSentRequest)
+      await this.sendRequest(sender, friend);
 
     return { sender, friend };
   }
