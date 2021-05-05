@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { SelfUserDocument, User } from '../../../src/data/models/user';
 import { Channel } from '../../../src/data/models/channel';
 
-describe('add-friend', () => {
+describe.only('add-friend', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: AddFriend;
   let ws: WebSocket;
@@ -93,6 +93,13 @@ describe('add-friend', () => {
   it('user adds friends twice, rejected', async () => {
     await addFriend();
     await expect(addFriend()).to.be.rejectedWith('Friend request already sent');
+  });
+
+  it('user already friends, rejected', async () => {
+    await addFriend();
+    await returnFriend();
+
+    await expect(addFriend()).to.be.rejectedWith('You are already friends');
   });
 
   async function addFriend() {
