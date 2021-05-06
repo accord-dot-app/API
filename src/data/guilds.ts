@@ -28,9 +28,6 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
     if (!guild)
       throw new APIError(404, 'Guild Not Found');
 
-    const ascending = (a, b) => (a.position > b.position) ? 1 : -1;
-    guild.roles.sort(ascending);
-
     return guild;
   }
 

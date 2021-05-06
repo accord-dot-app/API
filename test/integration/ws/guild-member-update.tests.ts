@@ -8,7 +8,7 @@ import { GuildMember, GuildMemberDocument } from '../../../src/data/models/guild
 import { Role, RoleDocument } from '../../../src/data/models/role';
 import { PermissionTypes } from '../../../src/data/types/entity-types';
 
-describe('guild-member-update', () => {
+describe.only('guild-member-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
 
   let event: GuildMemberUpdate;
@@ -29,31 +29,31 @@ describe('guild-member-update', () => {
   });
 
   it('is role manager, fulfilled', async () => {
-    await makeGuildManager();
+    await makeAllManager();
     await expect(guildMemberUpdate()).to.be.fulfilled;
   });
 
   it('is role manager, fulfilled', async () => {
-    await makeGuildManager();
+    await makeAllManager();
     await expect(guildMemberUpdate()).to.be.fulfilled;
   });
 
   it('managed has same roles, rejected', async () => {
     member = await Mock.guildMember(await Mock.user(), guild);
-    await makeGuildManager();
+    await makeAllManager();
 
     await expect(guildMemberUpdate()).to.be.rejectedWith('Member has higher roles');
   });
 
   it('managed is owner, rejected', async () => {
     member = new GuildMember(guild.members[0]);
-    await makeGuildManager();
+    await makeAllManager();
     
     await expect(guildMemberUpdate()).to.be.rejectedWith('Member has higher roles');
   });
 
-  it('roles changed, still has @everyone role', async () => {
-    await makeGuildManager();
+  it('roles updated, still has @everyone role', async () => {
+    await makeAllManager();
     await guildMemberUpdate();
 
     member = await GuildMember.findById(member._id);
@@ -62,8 +62,31 @@ describe('guild-member-update', () => {
     expect(role.name).to.equal('@everyone');
   });
 
-  function makeGuildManager() {
-    return Mock.giveEveryonePerms(role, PermissionTypes.General.MANAGE_ROLES);
+  it('is guild owner, updates guild manager', async () => {
+    makeGuildOwner();
+    await makeAllManager();
+
+    await expect(guildMemberUpdate()).to.be.fulfilled;
+  });
+
+  it('is role manager, updates noob member, fulfilled', async () => {
+    await makeRoleManager();
+    await expect(guildMemberUpdate()).to.be.fulfilled;
+  });
+
+  async function makeRoleManager() {
+    const manager = await Mock.guildMember(await Mock.user(), guild);
+    await Mock.givePerm(manager, PermissionTypes.General.MANAGE_ROLES);
+
+    ws.sessions.set(client.id, manager.userId);
+  }
+
+  function makeGuildOwner() {
+    ws.sessions.set(client.id, guild.ownerId);
+  }
+
+  function makeAllManager() {
+    return Mock.giveRolePerms(role, PermissionTypes.General.MANAGE_ROLES);
   }
 
   function guildMemberUpdate() {

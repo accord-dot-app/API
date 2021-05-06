@@ -12,13 +12,12 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
     return role;
   }
 
-  public async isHigher(guild: Lean.Guild, member: Lean.GuildMember, roleIds: string[]) {
-    const highestRole: Lean.Role = guild.roles
-      .sort((a, b) => (a.position > b.position) ? 1 : -1)[0];
+  public async isHigher(guild: Lean.Guild, selfMember: Lean.GuildMember, roleIds: string[]) {
+    const highestRole: Lean.Role = guild.roles[guild.roles.length - 1];
 
-    return member.userId === guild?.ownerId
-      && member.roleIds.includes(highestRole?._id)
-      && !roleIds.includes(highestRole._id);
+    return selfMember.userId === guild?.ownerId
+      || (selfMember.roleIds.includes(highestRole?._id)
+      && !roleIds.includes(highestRole._id));
   }
 
   public async hasPermission(guild: Lean.Guild, member: Lean.GuildMember, permission: PermissionTypes.PermissionString) {

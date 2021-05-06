@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io';
+import { patterns } from '../../../data/types/entity-types';
 
 export class SessionManager extends Map<string, string> {
   public get(key: string): string  {
@@ -6,8 +7,7 @@ export class SessionManager extends Map<string, string> {
     if (!userId)
       throw new TypeError('User Not Logged In');
 
-    const snowflakeRegex = /\d{18}/;
-    if (!snowflakeRegex.test(userId))
+    if (!patterns.snowflake.test(userId))
       throw new TypeError('Spoofed ID Not Allowed');
     return userId;
   }

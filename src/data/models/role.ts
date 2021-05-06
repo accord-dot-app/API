@@ -48,15 +48,6 @@ export const Role = model<RoleDocument>('role', new Schema({
     required: [true, 'Name is required'],
     maxlength: [32, 'Name too long'],
   },
-  position: {
-    type: Number,
-    required: [true, 'Position is required'],
-    min: [0, 'Position must be greater than 0'],
-    unique: async function(this: RoleDocument) {
-      const roles = await Role.find({ guildId: this.guildId });
-      return checkForDuplicates(roles);
-    }
-  },
   permissions: {
     type: Number,
     default: PermissionTypes.defaultPermissions,

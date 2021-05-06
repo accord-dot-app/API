@@ -18,8 +18,6 @@ test(createRole, () => {
   given({ permissions: null }).expect('Permissions is required');
   given({ permissions: defaultPermissions }).expect(true);
   given({ permissions: 0 }).expect(true);
-  given({ position: -1 }).expect('Position must be greater than 0');
-  given({ position: 0 }).expect(true);
 });
 
 function createRole(guild: any) {

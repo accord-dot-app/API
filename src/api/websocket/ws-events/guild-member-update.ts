@@ -2,8 +2,9 @@ import { Socket } from 'socket.io';
 import GuildMembers from '../../../data/guild-members';
 import Guilds from '../../../data/guilds';
 import { GuildMember } from '../../../data/models/guild-member';
+import { Role } from '../../../data/models/role';
 import Roles from '../../../data/roles';
-import { PermissionTypes } from '../../../data/types/entity-types';
+import { Lean, PermissionTypes } from '../../../data/types/entity-types';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { array } from '../../../utils/utils';
@@ -30,18 +31,18 @@ export default class implements WSEvent<'GUILD_MEMBER_UPDATE'> {
     await this.guard.validateCan(client, member.guildId, PermissionTypes.General.MANAGE_ROLES);
 
     const guild = await this.guilds.get(member.guildId);
-    const selfIsHigher = await this.roles.isHigher(guild, member, member.roleIds);
+    const selfIsHigher = await this.roles.isHigher(guild, selfMember, member.roleIds);
     
-    const isSelf = selfMember._id === memberId;    
+    const isSelf = selfMember._id === memberId;
     if (!isSelf && !selfIsHigher)
-      throw new TypeError('Member has higher roles');
+      throw new TypeError('Member has higher roles'); 
     
-    const everyoneRoleId = member.roleIds.sort(array.ascending)[0];
+    const everyoneRole = guild.roles.find(r => r.name === '@everyone') as Lean.Role;
     await GuildMember.updateOne(
       { _id: memberId },
       {
         ...partialMember,
-        roleIds: [everyoneRoleId].concat(partialMember.roleIds ?? []),
+        roleIds: [everyoneRole._id].concat(partialMember.roleIds ?? []),
       },
       { runValidators: true },
     );

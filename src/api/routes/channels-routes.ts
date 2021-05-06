@@ -42,7 +42,7 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
       return m;
     });
 
-  const index = Math.max(slicedMsgs.length - 1, 0);
+  const index = slicedMsgs.length - 1;
   const lastMessage = slicedMsgs[index];
   if (lastMessage)
     await pings.markAsRead(user, lastMessage);
