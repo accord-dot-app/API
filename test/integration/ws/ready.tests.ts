@@ -1,6 +1,7 @@
 import Deps from '../../../src/utils/deps';
 import { API } from '../../../src/api/server';
-import ChannelCreate from '../../../src/api/websocket/ws-events/ready';
+import Ready from '../../../src/api/websocket/ws-events/ready';
+import Disconnect from '../../../src/api/websocket/ws-events/disconnect';
 import { User, UserDocument } from '../../../src/data/models/user';
 import { expect } from 'chai';
 import Users from '../../../src/data/users';
@@ -13,7 +14,7 @@ import { GuildDocument } from '../../../src/data/models/guild';
 describe('ready', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   
-  let event: ChannelCreate;
+  let event: Ready;
   let users: Users;
   let key: string;
   let user: UserDocument;
@@ -21,7 +22,7 @@ describe('ready', () => {
   let ws: WebSocket;
 
   beforeEach(async () => {
-    ({ event, user, ws, guild } = await Mock.defaultSetup(client, ChannelCreate));
+    ({ event, user, ws, guild } = await Mock.defaultSetup(client, Ready));
 
     users = new Users();
     key = users.createToken(user.id);
@@ -29,6 +30,11 @@ describe('ready', () => {
 
   afterEach(async () => await Mock.afterEach(ws));
   after(async () => await Mock.after(client));
+
+  it('user already logged in, fulfilled', async () => {
+    await ready();
+    await expect(ready()).to.be.fulfilled;
+  });
 
   it('user already logged in, fulfilled', async () => {
     await ready();
@@ -82,9 +88,30 @@ describe('ready', () => {
     expect(rooms()).to.contain(newChannel._id);
   });
 
+  it('ready, user is online', async () => {
+    await ready();
+
+    user = await User.findById(user.id);
+    expect(user.status).to.equal('ONLINE');
+  });
+
+  it('ready, user is online', async () => {
+    await ready();    
+    
+    await disconnect();
+    await ready();
+
+    user = await User.findById(user.id);
+    expect(user.status).to.equal('ONLINE');
+  });
+
   function ready() {
     return event.invoke(ws, client, { key });
   }
+  function disconnect() {
+    return new Disconnect().invoke(ws, client);
+  }
+
   function rooms() {
     return (Array
       .from(client.rooms.values()) as any)

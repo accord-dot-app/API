@@ -89,7 +89,7 @@ export class Mock {
       email: `${generateSnowflake()}@gmail.com`,
       verified: true,
       guilds: guildIds,
-      status: 'ONLINE',
+      status: 'OFFLINE',
       username: `mock-user-${generateSnowflake()}`,
     } as any);
   }

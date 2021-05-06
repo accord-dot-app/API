@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { User } from '../../../data/models/user';
-import { Lean } from '../../../data/types/entity-types';
+import { Lean, UserTypes } from '../../../data/types/entity-types';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
@@ -29,13 +29,12 @@ export default class implements WSEvent<'READY'> {
     await this.rooms.join(client, user); 
 
     user.status = 'ONLINE';
-    await user.save();    
+    await user.save();
      
     const guildIds = user.guilds.map(g => g._id);
-    const friendIds = user.friendIds;
 
     ws.io
-      .to(guildIds.concat(friendIds))
+      .to(guildIds.concat(user.friendIds))
       .emit('PRESENCE_UPDATE', {
         userId,
         status: user.status
@@ -43,6 +42,6 @@ export default class implements WSEvent<'READY'> {
 
     ws.io
       .to(client.id)
-      .emit('READY');
+      .emit('READY', { user } as Args.Ready);
   }
 }
