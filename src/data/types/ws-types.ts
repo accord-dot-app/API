@@ -70,6 +70,8 @@ export interface WSEventAsyncArgs {
   'GUILD_MEMBER_ADD': Args.GuildMemberAdd;
   /** Called when member roles are updated, or other properties. */
   'GUILD_MEMBER_UPDATE': Args.GuildMemberUpdate;
+  /** Called when a guild member is removed, or leaves the guild. */
+  'GUILD_MEMBER_REMOVE': Args.GuildMemberRemove;
   /** Called when a guild role is created. */
   'GUILD_ROLE_CREATE': Args.GuildRoleCreate;
   /** Called when a guild role is deleted. */
@@ -88,7 +90,9 @@ export interface WSEventAsyncArgs {
   'MESSAGE_DELETE': Args.MessageDelete;
   /** Called when an existing message is updated in a text-based channel. */
   'MESSAGE_UPDATE': Args.MessageUpdate;
+  /** Called when a message is sent in a channel you are not ignoring. */
   'PING': Args.Ping;
+  /** Called when a user goes online or offline. */
   'PRESENCE_UPDATE': Args.PresenceUpdate;
   /** Called when the websocket accepts that you are ready. */
   'READY': Args.Ready;
@@ -116,6 +120,8 @@ export interface WSEventArgs {
   'GUILD_LEAVE': (args: Args.GuildLeave) => any;
   /** Called when someone joins a guild by an invite, or a bot is added. */
   'GUILD_MEMBER_ADD': (args: Args.GuildMemberAdd) => any;
+  /** Called when a guild member is removed, or leaves the guild. */
+  'GUILD_MEMBER_REMOVE': (args: Args.GuildMemberRemove) => any;
   /** Called when member roles are updated, or other properties. */
   'GUILD_MEMBER_UPDATE': (args: Args.GuildMemberUpdate) => any;
   /** Called when a guild role is created. */
@@ -136,7 +142,9 @@ export interface WSEventArgs {
   'MESSAGE_DELETE': (args: Args.MessageDelete) => any;
   /** Called when an existing message is updated in a text-based channel. */
   'MESSAGE_UPDATE': (args: Args.MessageUpdate) => any;
+  /** Called when a message is sent in a channel you are not ignoring. */
   'PING': (args: Args.Ping) => any;
+  /** Called when a user goes online or offline. */
   'PRESENCE_UPDATE': (params: Args.PresenceUpdate) => any;
   /** Called when the websocket accepts that you are ready. */
   'READY': () => any;
@@ -152,7 +160,7 @@ export interface WSEventArgs {
 
 export namespace Params {
   export interface AddFriend {
-    /** Username of user (case sensitive). */
+    /** Username of user (case insensitive). */
     username: string;
   }
   export interface ChannelCreate {

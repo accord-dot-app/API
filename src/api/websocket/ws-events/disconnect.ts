@@ -30,9 +30,7 @@ export default class implements WSEvent<'disconnect'> {
     if (userConnected) return;
 
     user.status = 'OFFLINE';
-    await user.save();
-
-    console.log('offline');    
+    await user.save(); 
 
     const guildIds = user.guilds.map(g => g._id);
     const friendIds = user.friendIds;

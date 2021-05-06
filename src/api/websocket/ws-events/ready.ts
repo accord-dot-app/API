@@ -29,10 +29,7 @@ export default class implements WSEvent<'READY'> {
     await this.rooms.join(client, user); 
 
     user.status = 'ONLINE';
-    await user.save();
-
-    console.log('online');
-    
+    await user.save();    
      
     const guildIds = user.guilds.map(g => g._id);
     const friendIds = user.friendIds;

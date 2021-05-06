@@ -13,6 +13,12 @@ connect(process.env.MONGO_URI, {
   useNewUrlParser: true, 
   useFindAndModify: false,
   useCreateIndex: true,
+  server: {
+    socketOptions: {
+      socketTimeoutMS: 0,
+      connectionTimeout: 0
+    }
+  }
 }, (error) => error
   ? Log.error(error.message, 'db')
   : Log.info('Connected to database.'));
