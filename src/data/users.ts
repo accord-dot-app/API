@@ -76,6 +76,19 @@ export default class Users extends DBWrapper<string, UserDocument> {
     }) as UserDocument[];
   }
 
+  public async getRoomIds(user: UserTypes.Self) {
+    const dmUsers = await Channel.find({ memberIds: user._id });
+    const dmUserIds = dmUsers.flatMap(u => u.memberIds);
+
+    return Array.from(new Set([
+      user._id,
+      this.systemUser?._id,
+      ...dmUserIds,
+      ...user.friendRequestIds,
+      ...user.friendIds,
+    ]));
+  }
+
   public async getKnownIds(user: UserTypes.Self) {
     const incomingUsers = await User.find({
       friendIds: user._id,
