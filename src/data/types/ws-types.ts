@@ -397,11 +397,10 @@ export namespace Partial {
   /** Properties to update a role. */
   export interface Role {
     name: string;
-    color?: string;
-    hoisted?: boolean;
-    mentionable?: boolean;
-    permissions?: number;
-    position?: number;
+    color: string;
+    hoisted: boolean;
+    mentionable: boolean;
+    permissions: number;
   }
   /** Properties to update a user. */
   export interface User {
