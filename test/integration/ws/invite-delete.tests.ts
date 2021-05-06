@@ -38,13 +38,13 @@ describe('invite-delete', () => {
   });
 
   it('guild member, has manage guild perms, fulfilled', async () => {
-    await Mock.giveEveryonePerms(role, PermissionTypes.General.MANAGE_GUILD);
+    await Mock.giveRolePerms(role, PermissionTypes.General.MANAGE_GUILD);
 
     await expect(inviteDelete()).to.be.fulfilled;
   });
 
   it('invite deleted from db', async () => {
-    await Mock.giveEveryonePerms(role, PermissionTypes.General.MANAGE_GUILD);
+    await Mock.giveRolePerms(role, PermissionTypes.General.MANAGE_GUILD);
     await inviteDelete();
 
     invite = await Invite.findById(guild.id);

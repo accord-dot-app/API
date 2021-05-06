@@ -23,7 +23,7 @@ describe('invite-create', () => {
   after(async () => await Mock.after(client));
 
   it('member with create invite perms, fulfilled', async () => {
-    await Mock.giveEveryonePerms(role, PermissionTypes.General.CREATE_INVITE);    
+    await Mock.giveRolePerms(role, PermissionTypes.General.CREATE_INVITE);    
     await expect(inviteCreate()).to.be.fulfilled;
   });
 

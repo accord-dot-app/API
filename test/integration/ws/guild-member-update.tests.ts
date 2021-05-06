@@ -8,7 +8,7 @@ import { GuildMember, GuildMemberDocument } from '../../../src/data/models/guild
 import { Role, RoleDocument } from '../../../src/data/models/role';
 import { PermissionTypes } from '../../../src/data/types/entity-types';
 
-describe.only('guild-member-update', () => {
+describe('guild-member-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
 
   let event: GuildMemberUpdate;
@@ -76,8 +76,8 @@ describe.only('guild-member-update', () => {
 
   async function makeRoleManager() {
     const manager = await Mock.guildMember(await Mock.user(), guild);
-    await Mock.givePerm(manager, PermissionTypes.General.MANAGE_ROLES);
-
+    await Mock.givePerm(guild, manager, PermissionTypes.General.MANAGE_ROLES);
+    
     ws.sessions.set(client.id, manager.userId);
   }
 

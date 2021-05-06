@@ -135,15 +135,19 @@ export class Mock {
     return channel;
   }
 
-  public static async role(guildId: string, permissions?: number): Promise<RoleDocument> {
-    return await Role.create({
+  public static async role(guild: GuildDocument, permissions?: number): Promise<RoleDocument> {
+    const role = await Role.create({
       _id: generateSnowflake(),
-      guildId,
+      guildId: guild.id,
       hoisted: false,
       mentionable: true,
       name: 'Mock Role',
       permissions: permissions ?? PermissionTypes.defaultPermissions,
     });
+    guild.roles.push(role.id);
+    await guild.save();
+
+    return role;
   }
 
   public static async everyoneRole(guildId: string, permissions = PermissionTypes.defaultPermissions) {
@@ -186,9 +190,9 @@ export class Mock {
     );
   }
 
-  public static async givePerm(member: GuildMemberDocument, permissions: PermissionTypes.Permission) {
-    const role = await this.role(member.guildId, permissions);
-    console.log(role.permissions);
+  public static async givePerm(guild: GuildDocument, member: GuildMemberDocument, permissions: PermissionTypes.Permission) {
+    const role = await this.role(guild, permissions);
+    
     
     member.roleIds.push(role.id);    
     await member.save();

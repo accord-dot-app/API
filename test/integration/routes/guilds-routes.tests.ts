@@ -86,7 +86,7 @@ describe('guilds-routes', () => {
     authorization = `Bearer ${users.createToken(guild.members[1].userId)}`;   
 
     const role = await Role.findById(guild.roles[0]._id);
-    await Mock.giveEveryonePerms(role, PermissionTypes.General.MANAGE_GUILD);
+    await Mock.giveRolePerms(role, PermissionTypes.General.MANAGE_GUILD);
 
     await request(app)
       .get(`${endpoint}/${guild.id}/invites`)

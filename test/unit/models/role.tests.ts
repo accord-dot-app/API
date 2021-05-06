@@ -1,7 +1,8 @@
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { test, given } from 'sazerac';
-import { longArray, longString, mongooseError } from '../../test-utils';
-import { defaultPermissions, Role } from '../../../src/data/models/role';
+import { longString, mongooseError } from '../../test-utils';
+import { Role } from '../../../src/data/models/role';
+import { PermissionTypes } from '../../../src/data/types/entity-types';
 
 test(createRole, () => {
   given().expect(true);
@@ -16,7 +17,7 @@ test(createRole, () => {
   given({ permissions: 4 }).expect(true);
   given({ permissions: 1 }).expect(true);
   given({ permissions: null }).expect('Permissions is required');
-  given({ permissions: defaultPermissions }).expect(true);
+  given({ permissions: PermissionTypes.defaultPermissions }).expect(true);
   given({ permissions: 0 }).expect(true);
 });
 
@@ -28,7 +29,7 @@ function createRole(guild: any) {
     hoisted: false,
     mentionable: true,
     name: 'Mock Role',
-    permissions: defaultPermissions,
+    permissions: PermissionTypes.defaultPermissions,
     ...guild,
   }).validateSync();
 

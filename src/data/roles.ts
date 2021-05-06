@@ -23,8 +23,8 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
   public async hasPermission(guild: Lean.Guild, member: Lean.GuildMember, permission: PermissionTypes.PermissionString) {
     const totalPerms = guild.roles
       .filter(r => member.roleIds.includes(r._id))
-      .reduce((acc, value) => value.permissions | acc, 0);
-    
+      .reduce((acc, value) => value.permissions | acc, 0);    
+
     const permNumber = (typeof permission === 'string')
       ? PermissionTypes.All[PermissionTypes.All[permission as string]]
       : permission;    
@@ -38,7 +38,7 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
       mentionable: false,
       hoisted: false,
       name,
-      permissions: PermissionTypes.defaultPermissions
+      permissions: PermissionTypes.defaultPermissions,
     });
   }
 }
