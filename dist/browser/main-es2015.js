@@ -1924,7 +1924,7 @@ const environment = {
     endpoint: 'http://localhost:3000/api/v1',
     rootEndpoint: 'http://localhost:3000',
     githubURL: 'https://github.com/accorddotapp',
-    version: 'v0.1.8a',
+    version: 'v0.1.9a',
 };
 /*
  * For easier debugging in development mode, you can import the following file
