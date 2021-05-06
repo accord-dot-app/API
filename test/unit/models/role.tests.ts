@@ -29,7 +29,6 @@ function createRole(guild: any) {
     mentionable: true,
     name: 'Mock Role',
     permissions: defaultPermissions,
-    position: 0,
     ...guild,
   }).validateSync();
 

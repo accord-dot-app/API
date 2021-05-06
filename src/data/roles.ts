@@ -38,7 +38,6 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
       mentionable: false,
       hoisted: false,
       name,
-      position: 1,
       permissions: PermissionTypes.defaultPermissions
     });
   }

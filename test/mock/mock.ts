@@ -143,7 +143,6 @@ export class Mock {
       mentionable: true,
       name: 'Mock Role',
       permissions: permissions ?? PermissionTypes.defaultPermissions,
-      position: 0,
     });
   }
 
@@ -155,7 +154,6 @@ export class Mock {
       mentionable: true,
       name: '@everyone',
       permissions,
-      position: 0
     });
   }
 
