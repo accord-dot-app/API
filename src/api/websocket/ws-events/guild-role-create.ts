@@ -23,7 +23,7 @@ export default class implements WSEvent<'GUILD_ROLE_CREATE'> {
       ...partialRole,
       _id: generateSnowflake(),
       guildId,
-    });
+    } as any);
     await Guild.updateOne(
       { _id: guildId },
       { $push: { roles: role } },
