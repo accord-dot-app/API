@@ -41,10 +41,7 @@ describe('guild-update', () => {
   });
 
   it('user has MANAGE_GUILD perms, fulfilled', async () => {
-    const role = await Mock.role(guild.id, PermissionTypes.General.MANAGE_GUILD);
-    await member.update({
-      $push: { roleIds: role._id },
-    });
+    await Mock.givePerm(guild, member, PermissionTypes.All.MANAGE_GUILD);
 
     await expect(guildUpdate(guild)).to.be.fulfilled;
   });
