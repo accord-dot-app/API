@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { SelfUserDocument, User } from '../../../src/data/models/user';
 import { Channel } from '../../../src/data/models/channel';
 
-describe.only('add-friend', () => {
+describe('add-friend', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: AddFriend;
   let ws: WebSocket;
@@ -36,7 +36,7 @@ describe.only('add-friend', () => {
 
   it('friend blocked sender, rejected', async () => {
     friend.ignored.userIds.push(sender._id);
-    await friend.save();
+    await friend.updateOne(friend);
 
     await expect(addFriend()).to.be.rejectedWith('This user is blocking you');
   });

@@ -26,6 +26,7 @@ export default class implements WSEvent<'ADD_FRIEND'> {
       throw new TypeError('You are already friends');
 
     const isBlocking = friend.ignored.userIds.includes(sender._id);    
+    console.log(friend.ignored.userIds);
     if (isBlocking)
       throw new TypeError('This user is blocking you');
     
