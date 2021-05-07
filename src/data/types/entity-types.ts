@@ -32,6 +32,7 @@ export namespace Lean {
   }
   export interface GuildMember {
     _id: string;
+    createdAt: Date;
     guildId: string;
     roleIds: string[];
     userId: string;
@@ -74,7 +75,6 @@ export namespace Lean {
     guilds: string[] | Lean.Guild[];
     status: UserTypes.StatusType;
     username: string;
-    verified?: boolean;
   } 
 }
 

@@ -32,8 +32,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
 
   public secure(user: UserDocument): UserDocument {
     delete user['email'];
-    // FIXME: required for displaying users -> replace w/ WS scopes
-    // delete user['friendRequestIds'];
+    delete user['verified'];
     delete user['ignored'];
     return user;
   }

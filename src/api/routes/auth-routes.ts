@@ -18,7 +18,7 @@ router.post('/login',
   updateUsername,
   passport.authenticate('local', { failWithError: true }),
   async (req, res) => {
-  const user = await User.findOne({ username: req.body.username }); 
+  const user = await users.getByUsername(req.body.username);
   if (!user)
     throw new APIError(400, 'Invalid credentials');  
 

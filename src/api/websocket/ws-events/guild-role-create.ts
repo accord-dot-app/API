@@ -13,17 +13,14 @@ export default class implements WSEvent<'GUILD_ROLE_CREATE'> {
   on = 'GUILD_ROLE_CREATE' as const;
 
   constructor(
+    private roles = Deps.get<Roles>(Roles),
     private guard = Deps.get<WSGuard>(WSGuard),
   ) {}
 
   public async invoke(ws: WebSocket, client: Socket, { guildId, partialRole }: Params.GuildRoleCreate) {
     await this.guard.validateCan(client, guildId, PermissionTypes.General.MANAGE_ROLES);
     
-    const role = await Role.create({
-      ...partialRole,
-      _id: generateSnowflake(),
-      guildId,
-    });
+    const role = await this.roles.create(guildId, partialRole);
     await Guild.updateOne(
       { _id: guildId },
       { $push: { roles: role } },

@@ -21,7 +21,7 @@ export default class implements WSEvent<'USER_UPDATE'> {
     await user.updateOne(
       partialUser,
       { runValidators: true, context: 'query' },
-    );    
+    );
 
     client.emit('USER_UPDATE', { partialUser } as Args.UserUpdate);
   }

@@ -25,3 +25,5 @@ connect(process.env.MONGO_URI, {
 
 Deps.get<SystemBot>(SystemBot).init();
 Deps.get<API>(API);
+
+import './reorder-roles';

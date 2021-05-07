@@ -31,14 +31,15 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
     return hasPermission(totalPerms, permNumber as any);
   }
 
-  public create(name: string, guildId: string) {
+  public create(guildId: string, options?: Partial<Lean.Role>) {
     return Role.create({
       _id: generateSnowflake(),
       guildId,
       mentionable: false,
       hoisted: false,
-      name,
+      name: 'New Role',
       permissions: PermissionTypes.defaultPermissions,
+      ...options,
     });
   }
 }
