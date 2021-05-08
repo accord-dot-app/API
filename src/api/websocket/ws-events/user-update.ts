@@ -18,6 +18,7 @@ export default class implements WSEvent<'USER_UPDATE'> {
     const { id: userId } = await this.guard.decodeKey(key);
     const user = await this.users.get(userId);
 
+    // TODO: stop specific things from being updated (i.e. badges, email etc.) 
     await user.updateOne(
       partialUser,
       { runValidators: true, context: 'query' },

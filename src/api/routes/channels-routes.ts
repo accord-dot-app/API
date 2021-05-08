@@ -6,12 +6,15 @@ import Pings from '../../data/pings';
 import { Lean } from '../../data/types/entity-types';
 import Deps from '../../utils/deps';
 import { updateUser, validateUser } from '../modules/middleware';
+import { WebSocket } from '../../api/websocket/websocket';
+import { Args } from '../websocket/ws-events/ws-event';
 
 export const router = Router();
 
 const channels = Deps.get<Channels>(Channels);
 const messages = Deps.get<Messages>(Messages);
 const pings = Deps.get<Pings>(Pings);
+const ws = Deps.get<WebSocket>(WebSocket);
 
 router.get('/', updateUser, validateUser, async (req, res) => {
   const dms: Lean.Channel[] = await channels.getDMChannels(res.locals.user._id);
@@ -44,8 +47,14 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
 
   const index = slicedMsgs.length - 1;
   const lastMessage = slicedMsgs[index];
-  if (lastMessage)
+  if (lastMessage) {
     await pings.markAsRead(user, lastMessage);
+    ws.io
+      .to(user.id)
+      .emit('USER_UPDATE', {
+        partialUser: { lastReadMessages: user.lastReadMessages },
+      } as Args.UserUpdate);
+  }
   
   res.json(slicedMsgs);
 });
