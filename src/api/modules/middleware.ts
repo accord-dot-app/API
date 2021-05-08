@@ -12,12 +12,22 @@ const guilds = Deps.get<Guilds>(Guilds);
 const roles = Deps.get<Roles>(Roles);
 const users = Deps.get<Users>(Users);
 
-export async function updateUser(req: Request, res: Response, next: NextFunction) {
+export async function fullyUpdateUser(req: Request, res: Response, next: NextFunction) {
   try {
     const key = req.get('Authorization') as string;    
     const id = users.idFromAuth(key);    
 
     res.locals.user = await users.getSelf(id);
+  } finally {
+    return next();
+  }
+}
+export async function updateUser(req: Request, res: Response, next: NextFunction) {
+  try {
+    const key = req.get('Authorization') as string;    
+    const id = users.idFromAuth(key);    
+
+    res.locals.user = await users.getSelf(id, false);
   } finally {
     return next();
   }

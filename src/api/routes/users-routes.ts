@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { User } from '../../data/models/user';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
-import { updateUser, validateUser } from '../modules/middleware';
+import { fullyUpdateUser, validateUser } from '../modules/middleware';
 import Channels from '../../data/channels';
 import { SystemBot } from '../../system/bot';
 
@@ -12,7 +12,7 @@ const bot = Deps.get<SystemBot>(SystemBot);
 const channels = Deps.get<Channels>(Channels);
 const users = Deps.get<Users>(Users);
 
-router.get('/', updateUser, validateUser, async (req, res) => {
+router.get('/', fullyUpdateUser, validateUser, async (req, res) => {
   const knownUsers = await users.getKnown(res.locals.user._id);  
   res.json(knownUsers);  
 });
@@ -27,7 +27,7 @@ router.get('/check-username', async (req, res) => {
   res.json(exists);
 });
 
-router.get('/self', updateUser, async (req, res) => res.json(res.locals.user));
+router.get('/self', fullyUpdateUser, async (req, res) => res.json(res.locals.user));
 
 router.get('/check-email', async (req, res) => {
   const email = req.query.value?.toString().toLowerCase();
@@ -55,7 +55,7 @@ router.post('/', async (req, res) => {
   res.status(201).json(users.createToken(user.id));
 });
 
-router.get('/dm-channels', updateUser, async (req, res) => {
+router.get('/dm-channels', fullyUpdateUser, async (req, res) => {
   const dmChannels = await channels.getDMChannels(res.locals.user._id);
   res.json(dmChannels);
 });

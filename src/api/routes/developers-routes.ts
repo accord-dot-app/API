@@ -3,7 +3,7 @@ import { Application } from '../../data/models/application';
 import { generateInviteCode } from '../../data/models/invite';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
-import { updateUser, validateUser } from '../modules/middleware';
+import { fullyUpdateUser, validateUser } from '../modules/middleware';
 
 export const router = Router();
 
@@ -24,7 +24,7 @@ router.get('/applications', async (req, res) => {
   res.json(applications);
 });
 
-router.use(updateUser, validateUser);
+router.use(fullyUpdateUser, validateUser);
 
 router.get('/applications/user', async (req, res) => {
   const applications = await Application.find({ owner: res.locals.user });

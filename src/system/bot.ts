@@ -12,7 +12,7 @@ import Channels from '../data/channels';
 import Invites from '../data/invites';
 
 export class SystemBot {
-  private _self: SelfUserDocument;
+  private _self: UserDocument;
   get self() { return this._self; }
 
   constructor(
@@ -25,17 +25,18 @@ export class SystemBot {
   public async init() {
     if (this.self) return;
 
+    this._self = await this.users.updateSystemUser();
     await this.readyUp();
 
     this.hookWSEvents();
   }
 
   private async readyUp() {
-    const key = this.users.createToken(this.self.id);
+    const key = this.users.createToken(this.self?.id);
     this.ws.emit('READY', { key });
     this.ws.on('READY', ({ user }) => {
-      this._self = new User(user) as SelfUserDocument;
-      console.log('Bot is ready');
+      this._self = user as any;
+      Log.info('Bot is ready');
     });
 
     Log.info('Initialized bot', 'bot');

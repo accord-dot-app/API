@@ -4,7 +4,7 @@ import passport from 'passport';
 import Deps from '../../utils/deps';
 import Users from '../../data/users';
 import { Verification } from '../modules/email/verification';
-import { updateUser, updateUsername, validateUser } from '../modules/middleware';
+import { fullyUpdateUser, updateUsername, validateUser } from '../modules/middleware';
 import { EmailFunctions } from '../modules/email/email-functions';
 import { APIError } from '../modules/api-error';
 
@@ -41,7 +41,7 @@ router.get('/verify-code', async (req, res) => {
   res.status(200).json(users.createToken(user._id));
 });
 
-router.get('/send-verify-email', updateUser, validateUser, async (req, res) => {
+router.get('/send-verify-email', fullyUpdateUser, validateUser, async (req, res) => {
   const email = req.query.email?.toString();
   if (!email)
     throw new APIError(400, 'Email not provided');

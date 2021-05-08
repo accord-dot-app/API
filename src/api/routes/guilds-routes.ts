@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import Deps from '../../utils/deps';
-import { updateGuild, updateUser, validateHasPermission, validateUser } from '../modules/middleware';
+import { updateGuild, fullyUpdateUser, validateHasPermission, validateUser } from '../modules/middleware';
 import Users from '../../data/users';
 import Guilds from '../../data/guilds';
 import { WebSocket } from '../websocket/websocket';
@@ -15,13 +15,13 @@ const guilds = Deps.get<Guilds>(Guilds);
 const users = Deps.get<Users>(Users);
 const ws = Deps.get<WebSocket>(WebSocket);
 
-router.get('/', updateUser, validateUser, async (req, res) => {
+router.get('/', fullyUpdateUser, validateUser, async (req, res) => {
   const user = await users.getSelf(res.locals.user._id, true);    
   res.json(user.guilds);
 });
 
 router.get('/:id/authorize/:botId',
-  updateUser, validateUser, updateGuild,
+  fullyUpdateUser, validateUser, updateGuild,
   validateHasPermission(PermissionTypes.General.MANAGE_GUILD),
   async (req, res) => {
   const guild = res.locals.guild;
@@ -39,7 +39,7 @@ router.get('/:id/authorize/:botId',
 });
 
 router.get('/:id/invites',
-  updateUser, validateUser, updateGuild,
+  fullyUpdateUser, validateUser, updateGuild,
   validateHasPermission(PermissionTypes.General.MANAGE_GUILD),
   async (req, res) => {
   const invites = await guilds.invites(req.params.id);
