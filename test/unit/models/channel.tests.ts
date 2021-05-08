@@ -2,6 +2,7 @@ import { Channel } from '../../../src/data/models/channel';
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { test, given } from 'sazerac';
 import { longArray, longString, mongooseError } from '../../test-utils';
+import { Lean } from '../../../src/data/types/entity-types';
 
 test(createChannel, () => {
   given().expect(true);
@@ -24,9 +25,12 @@ test(createChannel, () => {
   given({ type: 'TEXT' }).expect(true);
   given({ type: 'VOICE' }).expect(true);
   given({ type: 'DM' }).expect(true);
+  given({ lastMessageId: generateSnowflake() }).expect(true);
+  given({ lastMessageId: '' }).expect(true);
+  given({ lastMessageId: '123' }).expect('Invalid Snowflake ID');
 });
 
-function createChannel(channel: any) {
+function createChannel(channel: Partial<Lean.Channel>) {
   const error = new Channel({
     _id: generateSnowflake(),
     name: `mock-channel`,

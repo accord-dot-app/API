@@ -1,7 +1,7 @@
 import { Document, model, Schema } from 'mongoose';
 import { createdAtToDate, validators } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
-import { ChannelTypes } from '../types/entity-types';
+import { ChannelTypes, patterns } from '../types/entity-types';
 
 export interface DMChannelDocument extends Document, ChannelTypes.DM {
   _id: string;
@@ -57,6 +57,13 @@ export const Channel = model<ChannelDocument>('channel', new Schema({
       },
       message: 'Invalid name'
     }
+  },
+  lastMessageId: {
+    type: String,
+    validate: {
+      validator: validators.optionalSnowflake,
+      message: 'Invalid Snowflake ID'
+    },
   },
   summary: {
     type: String,

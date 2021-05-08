@@ -4,7 +4,7 @@ import { Lean, UserTypes } from './types/entity-types';
 export default class Pings {
   public markAsRead(user: SelfUserDocument, message: Lean.Message) {
     user.lastReadMessages[message.channelId] = message._id;
-    return user.save();
+    return user.updateOne(user);
   }
 
   public isIgnored(self: UserTypes.Self, channel: Lean.Channel, message: Lean.Message) {
