@@ -5,19 +5,19 @@ import io from 'socket.io-client';
 import { Mock } from '../../mock/mock';
 import { GuildDocument } from '../../../src/data/models/guild';
 import { Channel, ChannelDocument } from '../../../src/data/models/channel';
-import { UserDocument } from '../../../src/data/models/user';
+import { SelfUserDocument, User, UserDocument } from '../../../src/data/models/user';
 
 describe('message-create', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: MessageCreate;
   let ws: WebSocket;
 
-  let user: UserDocument;
+  let user: SelfUserDocument;
   let channel: ChannelDocument;
   let guild: GuildDocument;
 
   beforeEach(async () => {
-    ({ ws, event, guild, user, channel } = await Mock.defaultSetup(client, MessageCreate)); 
+    ({ ws, event, guild, user: user as any, channel } = await Mock.defaultSetup(client, MessageCreate)); 
   });
 
   afterEach(async () => await Mock.afterEach(ws));
@@ -51,6 +51,14 @@ describe('message-create', () => {
 
     channel = await Channel.findById(channel.id);
     expect(channel.lastMessageId).to.be.a('string');
+  });
+  
+  it('lastReadMessages updated in author', async () => {
+    await messageCreate();
+
+    channel = await Channel.findById(channel.id) as any;
+    user = await User.findById(user.id) as any;
+    expect(user.lastReadMessages[channel.id]).to.equal(channel.lastMessageId);
   });
 
   function messageCreate() {

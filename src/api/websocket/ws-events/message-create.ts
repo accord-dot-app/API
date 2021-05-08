@@ -10,6 +10,7 @@ import Pings from '../../../data/pings';
 import Channels from '../../../data/channels';
 import Users from '../../../data/users';
 import { Channel } from '../../../data/models/channel';
+import { User } from '../../../data/models/user';
 
 export default class implements WSEvent<'MESSAGE_CREATE'> {
   on = 'MESSAGE_CREATE' as const;
@@ -17,13 +18,14 @@ export default class implements WSEvent<'MESSAGE_CREATE'> {
   constructor(
     private messages = Deps.get<Messages>(Messages),
     private guard = Deps.get<WSGuard>(WSGuard),
+    private users = Deps.get<Users>(Users),
   ) {}
 
   public async invoke(ws: WebSocket, client: Socket, { channelId, partialMessage }: Params.MessageCreate) {
     await this.guard.canAccessChannel(client, channelId, true);
       
-    const userId = ws.sessions.userId(client);
-    const message = await this.messages.create(userId, channelId, partialMessage);
+    const authorId = ws.sessions.userId(client);
+    const message = await this.messages.create(authorId, channelId, partialMessage);
 
     if (!client.rooms.has(channelId))
       await client.join(channelId); 
@@ -32,6 +34,13 @@ export default class implements WSEvent<'MESSAGE_CREATE'> {
       { _id: channelId },
       { lastMessageId: message._id }
     );
+
+    const user = await this.users.getSelf(authorId, false);
+    user.lastReadMessages = {
+      ...user.lastReadMessages,
+      [channelId]: message._id,
+    };
+    await user.save();
 
     ws.io
       .to(channelId)

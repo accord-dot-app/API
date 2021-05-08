@@ -30,10 +30,12 @@ export default class Users extends DBWrapper<string, UserDocument> {
     return this.secure(user);
   }
 
+  // TODO: test that this is fully secure
   public secure(user: UserDocument): UserDocument {
     delete user['email'];
     delete user['verified'];
     delete user['ignored'];
+    delete user['lastReadMessages'];
     return user;
   }
 
