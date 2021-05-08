@@ -41,11 +41,6 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
         m.content = 'This user is blocked, and the message content has been hidden.';
       return m;
     });
-
-  const index = slicedMsgs.length - 1;
-  const lastMessage = slicedMsgs[index];
-  if (lastMessage)
-    await pings.markAsRead(user, lastMessage);
   
   res.json(slicedMsgs);
 });

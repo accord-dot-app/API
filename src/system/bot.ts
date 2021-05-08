@@ -1,5 +1,5 @@
 import { Channel } from '../data/models/channel';
-import { UserDocument } from '../data/models/user';
+import { SelfUserDocument, User, UserDocument } from '../data/models/user';
 import { generateSnowflake } from '../data/snowflake-entity';
 import Log from '../utils/log';
 import { Invite } from '../data/models/invite';
@@ -12,7 +12,7 @@ import Channels from '../data/channels';
 import Invites from '../data/invites';
 
 export class SystemBot {
-  private _self: UserDocument;
+  private _self: SelfUserDocument;
   get self() { return this._self; }
 
   constructor(
@@ -24,7 +24,6 @@ export class SystemBot {
 
   public async init() {
     if (this.self) return;
-    this._self = await this.users.updateSystemUser();
 
     await this.readyUp();
 
@@ -34,6 +33,10 @@ export class SystemBot {
   private async readyUp() {
     const key = this.users.createToken(this.self.id);
     this.ws.emit('READY', { key });
+    this.ws.on('READY', ({ user }) => {
+      this._self = new User(user) as SelfUserDocument;
+      console.log('Bot is ready');
+    });
 
     Log.info('Initialized bot', 'bot');
   }
@@ -42,7 +45,7 @@ export class SystemBot {
     this.ws.on('MESSAGE_CREATE', async ({ message }: Args.MessageCreate) => {
       const author = await this.users.get(message.authorId);
       const channel = await this.channels.get(message.channelId);
-      if (!author || channel.type !== 'TEXT' || author.bot) return;
+      if (!author || author.bot) return;      
 
       if (message.content.toLowerCase() === 'hi') {
         await this.message(channel, `Hi, @${author.username}!`)

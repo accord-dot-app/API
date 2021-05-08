@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import io from 'socket.io-client';
 import { Mock } from '../../mock/mock';
 import { GuildDocument } from '../../../src/data/models/guild';
-import { ChannelDocument } from '../../../src/data/models/channel';
+import { Channel, ChannelDocument } from '../../../src/data/models/channel';
 import { UserDocument } from '../../../src/data/models/user';
 
 describe('message-create', () => {
@@ -44,6 +44,13 @@ describe('message-create', () => {
     ws.sessions.set(client.id, guild.ownerId);
 
     await expect(messageCreate()).to.be.fulfilled;
+  });
+  
+  it('lastMessageId in channel is updated', async () => {
+    await messageCreate();
+
+    channel = await Channel.findById(channel.id);
+    expect(channel.lastMessageId).to.be.a('string');
   });
 
   function messageCreate() {

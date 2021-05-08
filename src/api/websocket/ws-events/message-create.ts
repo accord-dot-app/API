@@ -9,6 +9,7 @@ import Messages from '../../../data/messages';
 import Pings from '../../../data/pings';
 import Channels from '../../../data/channels';
 import Users from '../../../data/users';
+import { Channel } from '../../../data/models/channel';
 
 export default class implements WSEvent<'MESSAGE_CREATE'> {
   on = 'MESSAGE_CREATE' as const;
@@ -26,6 +27,11 @@ export default class implements WSEvent<'MESSAGE_CREATE'> {
 
     if (!client.rooms.has(channelId))
       await client.join(channelId); 
+
+    await Channel.updateOne(
+      { _id: channelId },
+      { lastMessageId: message._id }
+    );
 
     ws.io
       .to(channelId)
