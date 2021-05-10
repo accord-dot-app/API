@@ -13,7 +13,7 @@ const channels = Deps.get<Channels>(Channels);
 const users = Deps.get<Users>(Users);
 
 router.get('/', fullyUpdateUser, validateUser, async (req, res) => {
-  const knownUsers = await users.getKnown(res.locals.user._id);  
+  const knownUsers = await users.getKnown(res.locals.user.id);  
   res.json(knownUsers);  
 });
 
@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
     throw new TypeError('Max alpha tester limit reached');
 
   const user = await users.create(req.body.username, req.body.password); 
-  const dm = await channels.createDM(bot.self._id, user._id);
+  const dm = await channels.createDM(bot.self.id, user.id);
   await bot.message(dm,
     'Hello there new user :smile:!\n' +
     '**Alpha Testing Info** - https://docs.accord.app/legal/alpha'
@@ -56,7 +56,7 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/dm-channels', fullyUpdateUser, async (req, res) => {
-  const dmChannels = await channels.getDMChannels(res.locals.user._id);
+  const dmChannels = await channels.getDMChannels(res.locals.user.id);
   res.json(dmChannels);
 });
 

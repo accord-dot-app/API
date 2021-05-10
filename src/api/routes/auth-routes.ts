@@ -38,7 +38,7 @@ router.get('/verify-code', async (req, res) => {
     throw new APIError(400, 'Invalid code');
 
   verification.delete(email);
-  res.status(200).json(users.createToken(user._id));
+  res.status(200).json(users.createToken(user.id));
 });
 
 router.get('/send-verify-email', fullyUpdateUser, validateUser, async (req, res) => {
@@ -49,7 +49,7 @@ router.get('/send-verify-email', fullyUpdateUser, validateUser, async (req, res)
   await sendEmail.verifyEmail(email, res.locals.user);
 
   await User.updateOne(
-    { _id: res.locals.user._id },
+    { _id: res.locals.user.id },
     { email },
     { runValidators: true, context: 'query' },
   );

@@ -50,7 +50,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
   private async populateGuilds(user: UserDocument) {
     const guilds: Lean.Guild[] = [];
     for (const id of user.guilds) {
-      const isDuplicate = guilds.some(g => g._id === id);
+      const isDuplicate = guilds.some(g => g.id === id);
       if (isDuplicate) continue;
 
       try {
@@ -78,12 +78,12 @@ export default class Users extends DBWrapper<string, UserDocument> {
   }
 
   public async getRoomIds(user: UserTypes.Self) {
-    const dmUsers = await Channel.find({ memberIds: user._id });
+    const dmUsers = await Channel.find({ memberIds: user.id });
     const dmUserIds = dmUsers.flatMap(u => u.memberIds);
 
     return Array.from(new Set([
-      user._id,
-      this.systemUser?._id,
+      user.id,
+      this.systemUser?.id,
       ...dmUserIds,
       ...user.friendRequestIds,
       ...user.friendIds,
@@ -92,20 +92,20 @@ export default class Users extends DBWrapper<string, UserDocument> {
 
   public async getKnownIds(user: UserTypes.Self) {
     const incomingUsers = await User.find({
-      friendIds: user._id,
-      friendRequestIds: user._id,
+      friendIds: user.id,
+      friendRequestIds: user.id,
     });
-    const incomingUserIds = incomingUsers.map(u => u._id);
+    const incomingUserIds = incomingUsers.map(u => u.id);
 
     const guildUserIds = user.guilds
       .flatMap(g => g.members.map(g => g.userId));
 
-    const dmUsers = await Channel.find({ memberIds: user._id });
+    const dmUsers = await Channel.find({ memberIds: user.id });
     const dmUserIds = dmUsers.flatMap(u => u.memberIds);
 
     return Array.from(new Set([
-      user._id,
-      this.systemUser?._id,
+      user.id,
+      this.systemUser?.id,
       ...dmUserIds,
       ...guildUserIds,
       ...incomingUserIds,
@@ -147,7 +147,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
     return this.verifyToken(token);
   }
   public verifyToken(token: string): string {
-    const key: any = jwt.verify(token, 'secret');   
+    const key = jwt.verify(token, 'secret') as UserToken;   
     return key?._id;
   }
 
@@ -170,3 +170,5 @@ export default class Users extends DBWrapper<string, UserDocument> {
     return this.avatarNames[randomIndex];
   }
 }
+
+interface UserToken { _id: string };

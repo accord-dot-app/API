@@ -35,7 +35,7 @@ describe('add-friend', () => {
   });
 
   it('friend blocked sender, rejected', async () => {
-    friend.ignored.userIds.push(sender._id);
+    friend.ignored.userIds.push(sender.id);
     await friend.updateOne(friend);
 
     await expect(addFriend()).to.be.rejectedWith('This user is blocking you');
@@ -114,6 +114,6 @@ describe('add-friend', () => {
   }
 
   async function removeFriend() {
-    await new RemoveFriend().invoke(ws, client, { friendId: friend._id });
+    await new RemoveFriend().invoke(ws, client, { friendId: friend.id });
   }
 });

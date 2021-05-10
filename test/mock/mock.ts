@@ -32,7 +32,7 @@ export class Mock {
 
     Mock.ioClient(client);
     
-    ws.sessions.set(client.id, user._id);
+    ws.sessions.set(client.id, user.id);
 
     return { event, guild, user, member, ws, role, channel };
   }
@@ -59,7 +59,7 @@ export class Mock {
   public static async message(author: Lean.User, channelId: string) {
     return await Message.create({
       _id: generateSnowflake(),
-      authorId: author._id,
+      authorId: author.id,
       channelId,
       content: 'hi',
     });
@@ -71,7 +71,7 @@ export class Mock {
     
     const guild = await this.guilds.create('Mock Guild', owner);
     
-    owner.guilds.push(guild.id);
+    owner.guilds.push(guild.id as any);
     await owner.save();    
 
     await this.guildMembers.create(guild, memberUser, guild.roles[0] as any); 
@@ -144,7 +144,7 @@ export class Mock {
       name: 'Mock Role',
       permissions: permissions ?? PermissionTypes.defaultPermissions,
     });
-    guild.roles.push(role.id);
+    guild.roles.push(role.id as any);
     await guild.save();
 
     return role;
@@ -173,7 +173,7 @@ export class Mock {
 
   public static async clearRolePerms(guild: Lean.Guild) {
     await Role.updateOne(
-      { _id: guild.roles?.[0]._id },
+      { _id: guild.roles?.[0].id },
       { permissions: 0 },
     );
   }
@@ -185,7 +185,7 @@ export class Mock {
 
   public static async giveEveryoneAdmin(guild: Lean.Guild) {
     await Role.updateOne(
-      { _id: guild.roles[0]._id },
+      { _id: guild.roles[0].id },
       { permissions: PermissionTypes.General.ADMINISTRATOR },
     );
   }

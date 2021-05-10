@@ -29,7 +29,7 @@ export default class Channels extends DBWrapper<string, ChannelDocument> {
     return await Channel.find({ memberIds: userId }) as DMChannelDocument[];
   }
   public async getGuildsChannels(user: SelfUserDocument): Promise<ChannelDocument[]> {
-    const guildIds = user.guilds.map(c => c._id);
+    const guildIds = user.guilds.map(c => c.id);
     return await Channel.find({
       guildId: { $in: guildIds },
     }) as ChannelDocument[];

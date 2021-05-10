@@ -59,7 +59,7 @@ describe('invite-delete', () => {
 
   function inviteDelete() {
     return event.invoke(ws, client, {
-      inviteCode: invite._id,
+      inviteCode: invite.id,
     });
   }
 });

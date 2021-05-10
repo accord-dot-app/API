@@ -16,7 +16,7 @@ const users = Deps.get<Users>(Users);
 const ws = Deps.get<WebSocket>(WebSocket);
 
 router.get('/', fullyUpdateUser, validateUser, async (req, res) => {
-  const user = await users.getSelf(res.locals.user._id, true);    
+  const user = await users.getSelf(res.locals.user.id, true);    
   res.json(user.guilds);
 });
 
@@ -30,7 +30,7 @@ router.get('/:id/authorize/:botId',
 
   ws.io
     .to(guild.id)
-    .emit('GUILD_MEMBER_ADD', { guildId: guild._id, member } as Args.GuildMemberAdd);
+    .emit('GUILD_MEMBER_ADD', { guildId: guild.id, member } as Args.GuildMemberAdd);
   ws.io
     .to(bot.id)
     .emit('GUILD_JOIN', { guild } as Args.GuildJoin);

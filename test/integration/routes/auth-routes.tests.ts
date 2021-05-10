@@ -183,7 +183,7 @@ describe.skip('auth-routes', () => {
       .set('Authorization', authorization)
       .query({ email: newEmail });
 
-    user = await User.findById(user._id) as SelfUserDocument;
+    user = await User.findById(user.id) as SelfUserDocument;
     expect(user.email).to.equal(newEmail);
   });
 

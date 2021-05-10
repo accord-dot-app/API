@@ -23,8 +23,6 @@ connect(process.env.MONGO_URI, {
   (error)
   ? Log.error(error.message, 'db')
   : Log.info('Connected to database.');
-
-  await import('./reorder-roles');
 });
 
 Deps.get<SystemBot>(SystemBot).init();

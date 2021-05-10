@@ -1,10 +1,11 @@
 import { Document, model, Schema } from 'mongoose';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns } from '../types/entity-types';
-import { createdAtToDate, generateUsername } from '../../utils/utils';
+import { createdAtToDate, generateUsername, useId } from '../../utils/utils';
 
 export interface ApplicationDocument extends Document, Lean.Application {
-  _id: string;
+  _id: string | never;
+  id: string;
   createdAt: never;
   token: string;
 }
@@ -43,5 +44,5 @@ export const Application = model<ApplicationDocument>('application', new Schema(
     ref: 'user',
     required: [true, 'Owner is required'],
     validate: [patterns.snowflake, 'Invalid Snowflake ID'],
-  }
-}, { toJSON: { getters: true } }));
+  },
+}, { toJSON: { getters: true } }).method('toClient', useId));

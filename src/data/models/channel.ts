@@ -1,19 +1,22 @@
 import { Document, model, Schema } from 'mongoose';
-import { createdAtToDate, validators } from '../../utils/utils';
+import { createdAtToDate, useId, validators } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
-import { ChannelTypes, patterns } from '../types/entity-types';
+import { ChannelTypes } from '../types/entity-types';
 
 export interface DMChannelDocument extends Document, ChannelTypes.DM {
-  _id: string;
+  _id: string | never;
+  id: string;
   createdAt: never;
 }
 export interface TextChannelDocument extends Document, ChannelTypes.Text {
-  _id: string;
+  _id: string | never;
+  id: string;
   createdAt: never;
   guildId: string;
 }
 export interface VoiceChannelDocument extends Document, ChannelTypes.Voice {
-  _id: string;
+  _id: string | never;
+  id: string;
   createdAt: never;
   guildId: string;
 }
@@ -74,4 +77,5 @@ export const Channel = model<ChannelDocument>('channel', new Schema({
     required: [true, 'Type is required'],
     validate: [/^TEXT$|^VOICE$|^DM$/, 'Invalid type'],
   },
-}, { toJSON: { getters: true } }));
+}, { toJSON: { getters: true } })
+.method('toClient', useId));

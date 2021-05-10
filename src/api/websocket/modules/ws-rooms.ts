@@ -22,17 +22,17 @@ export class WSRooms {
   }
 
   private async joinDMRooms(user: SelfUserDocument, client: Socket) {
-    const dms = await this.users.getDMChannels(user._id);
+    const dms = await this.users.getDMChannels(user.id);
     if (!dms) return;
 
-    const ids = dms.map(c => c._id);
+    const ids = dms.map(c => c.id);
     await client.join(ids);
   }
 
   public async joinGuildRooms(user: SelfUserDocument, client: Socket) {
     if (!user.guilds) return;
 
-    const guildIds = user.guilds.map(g => g._id);
+    const guildIds = user.guilds.map(g => g.id);
     await client.join(guildIds);
 
     const channelIds = await this.getChannelIds(client, user.guilds as any);
@@ -42,7 +42,7 @@ export class WSRooms {
   private async getChannelIds(client: Socket, guilds: Lean.Guild[]) {
     const ids: string[] = [];
     const channelIds = guilds
-      .flatMap(g => g.channels.map(c => c._id));    
+      .flatMap(g => g.channels.map(c => c.id));    
     
     for (const id of channelIds)
       try {

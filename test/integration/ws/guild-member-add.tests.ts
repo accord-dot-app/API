@@ -48,7 +48,7 @@ describe('guild-member-add', () => {
 
   it('valid invite and code, is bot user, rejected', async () => {
     const bot = await Mock.bot();
-    ws.sessions.set(client.id, bot._id);
+    ws.sessions.set(client.id, bot.id);
 
     await expect(guildMemberAdd()).to.be.rejectedWith('Bot users cannot accept invites');
   });
@@ -73,7 +73,7 @@ describe('guild-member-add', () => {
     await invite.save();
 
     await guildMemberAdd();
-    invite = await Invite.findById(invite._id);
+    invite = await Invite.findById(invite.id);
     expect(invite).to.be.null;
   });
 
@@ -85,7 +85,7 @@ describe('guild-member-add', () => {
   });
 
   it('invalid invite code, rejected', async () => {
-    invite._id = '';
+    invite.id = '';
 
     await expect(guildMemberAdd()).to.be.rejectedWith('Invite Not Found');
   });
@@ -96,10 +96,10 @@ describe('guild-member-add', () => {
     await guildMemberAdd();
 
     guild = await guilds.get(guild.id);
-    expect(to).to.have.been.called.with(guild._id);
+    expect(to).to.have.been.called.with(guild.id);
   });
 
   function guildMemberAdd() {
-    return event.invoke(ws, client, { inviteCode: invite._id });
+    return event.invoke(ws, client, { inviteCode: invite.id });
   }
 });

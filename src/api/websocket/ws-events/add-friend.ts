@@ -25,7 +25,7 @@ export default class implements WSEvent<'ADD_FRIEND'> {
     else if (sender.friendIds.includes(friend.id))
       throw new TypeError('You are already friends');
 
-    const isBlocking = friend.ignored.userIds.includes(sender._id);    
+    const isBlocking = friend.ignored.userIds.includes(sender.id);    
     console.log(friend.ignored.userIds);
     if (isBlocking)
       throw new TypeError('This user is blocking you');
@@ -34,11 +34,11 @@ export default class implements WSEvent<'ADD_FRIEND'> {
     ({ sender, friend, dmChannel } = await this.handle(sender, friend) as any);
     
     if (dmChannel)    
-      await client.join(dmChannel._id);
+      await client.join(dmChannel.id);
 
     ws.io
       .to(senderId)
-      .to(friend._id)
+      .to(friend.id)
       .emit('ADD_FRIEND', {
         sender: this.users.secure(sender),
         friend: this.users.secure(friend),
@@ -46,18 +46,18 @@ export default class implements WSEvent<'ADD_FRIEND'> {
   }
 
   private async handle(sender: SelfUserDocument, friend: SelfUserDocument): Promise<Args.AddFriend> {
-    if (sender._id === friend._id)
+    if (sender.id === friend.id)
       throw new TypeError('You cannot add yourself as a friend');
       
-    const hasReturnedRequest = friend.friendRequestIds.includes(sender._id);
+    const hasReturnedRequest = friend.friendRequestIds.includes(sender.id);
     if (hasReturnedRequest) return {
       friend: await this.acceptRequest(friend, sender),
       sender: await this.acceptRequest(sender, friend),
-      dmChannel: await this.channels.getDMByMembers(sender._id, friend._id)
-        ?? await this.channels.createDM(sender._id, friend._id),
+      dmChannel: await this.channels.getDMByMembers(sender.id, friend.id)
+        ?? await this.channels.createDM(sender.id, friend.id),
     }
       
-    const hasSentRequest = sender.friendRequestIds.includes(friend._id);
+    const hasSentRequest = sender.friendRequestIds.includes(friend.id);
     if (!hasSentRequest)
       await this.sendRequest(sender, friend);
 
@@ -65,17 +65,17 @@ export default class implements WSEvent<'ADD_FRIEND'> {
   }
 
   private async sendRequest(sender: SelfUserDocument, friend: UserDocument) {
-    sender.friendRequestIds.push(friend._id);
+    sender.friendRequestIds.push(friend.id);
     return sender.save();
   }
 
   private async acceptRequest(sender: SelfUserDocument, friend: SelfUserDocument) {    
-    const friendExists = sender.friendIds.includes(friend._id);
+    const friendExists = sender.friendIds.includes(friend.id);
     if (friendExists) return friend;
     
-    const index = sender.friendRequestIds.indexOf(friend._id);
+    const index = sender.friendRequestIds.indexOf(friend.id);
     sender.friendRequestIds.splice(index, 1);
-    sender.friendIds.push(friend._id);
+    sender.friendIds.push(friend.id);
     return sender.save();
   }
 }

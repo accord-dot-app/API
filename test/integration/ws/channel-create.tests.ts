@@ -53,7 +53,7 @@ describe('channel-create', () => {
 
   async function createChannel(partialChannel?: Partial.Channel) {
     return event.invoke(ws, client, {
-      guildId: guild._id,
+      guildId: guild.id,
       partialChannel: partialChannel ?? {
         name: 'chat',
         type: 'TEXT',

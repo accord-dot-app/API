@@ -18,7 +18,7 @@ export const validators = {
 };
 
 export function createdAtToDate(this: Document) {  
-  return snowflakeToDate(this._id);
+  return snowflakeToDate(this.id);
 }
 
 export function generateUsername() {
@@ -27,6 +27,15 @@ export function generateUsername() {
     .replace(/ /, '')}-${hacker
     .noun()
     .replace(/ /, '')}`
+}
+
+export function useId(this: Document) {
+  const obj = this.toObject();
+  
+  this.id = this._id;
+  delete this._id;
+
+  return obj;
 }
 
 export function checkForDuplicates(array: any[]) {

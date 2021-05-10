@@ -24,7 +24,7 @@ describe('message-delete', () => {
   beforeEach(async () => {
     ({ ws, event, user, guild } = await Mock.defaultSetup(client, MessageDelete));
     
-    channelId = guild.channels[0]._id;
+    channelId = guild.channels[0].id;
     message = await Mock.message(user, channelId);
   });
 
@@ -69,7 +69,7 @@ describe('message-delete', () => {
   });
 
   async function deleteMessage() {
-    return event.invoke(ws, client, { messageId: message._id });
+    return event.invoke(ws, client, { messageId: message.id });
   }
   async function makeGuildOwner() {
     ws.sessions.set(client.id, guild.ownerId);

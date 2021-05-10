@@ -19,7 +19,7 @@ export default class implements WSEvent<'GUILD_MEMBER_REMOVE'> {
 
   public async invoke(ws: WebSocket, client: Socket, { guildId, memberId }: Params.GuildMemberRemove) {
     const guild = await this.guilds.get(guildId, true);
-    const member = guild.members.find(m => m._id === memberId);    
+    const member = guild.members.find(m => m.id === memberId);    
     if (!member)
       throw new TypeError('Member does not exist');
 
@@ -45,12 +45,12 @@ export default class implements WSEvent<'GUILD_MEMBER_REMOVE'> {
 
     ws.io
       .to(guildId)
-      .emit('GUILD_MEMBER_REMOVE', { guildId, memberId: member._id } as Args.GuildMemberRemove);
+      .emit('GUILD_MEMBER_REMOVE', { guildId, memberId: member.id } as Args.GuildMemberRemove);
   }
 
   private async leaveGuildRooms(client: Socket, guild: GuildDocument) {
     await client.leave(guild.id);
     for (const channel of guild.channels)
-      await client.leave(channel._id);
+      await client.leave(channel.id);
   }
 }

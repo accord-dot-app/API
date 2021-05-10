@@ -1,10 +1,11 @@
 import { Document, model, Schema } from 'mongoose';
-import { createdAtToDate } from '../../utils/utils';
+import { createdAtToDate, useId } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns } from '../types/entity-types';
 
 export interface MessageDocument extends Document, Lean.Message {
-  _id: string;
+  _id: string | never;
+  id: string;
   createdAt: never;
 }
 
@@ -34,4 +35,4 @@ export const Message = model<MessageDocument>('message', new Schema({
   },
   embed: Object, // TODO: make, and unit test embed schema
   updatedAt: Date,
-}, { toJSON: { getters: true } }));
+}, { toJSON: { getters: true } }).method('toClient', useId));

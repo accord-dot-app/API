@@ -40,8 +40,8 @@ describe('guild-member-remove', () => {
   it('leaves guild, removed from user guilds', async () => {
     await guildMemberRemove();
 
-    user = await User.findById(user._id);
-    expect(user.guilds).to.not.include(guild._id);
+    user = await User.findById(user.id);
+    expect(user.guilds).to.not.include(guild.id);
   });
 
   it('kick noob member, as noob member, missing permissions', async () => {
@@ -57,13 +57,13 @@ describe('guild-member-remove', () => {
     await guildMemberRemove();
 
     user = await User.findById(member.userId);
-    expect(user.guilds).to.not.include(guild._id);
+    expect(user.guilds).to.not.include(guild.id);
   });
 
   function guildMemberRemove() {
     return event.invoke(ws, client, {
-      guildId: guild._id,
-      memberId: member._id,
+      guildId: guild.id,
+      memberId: member.id,
     });
   }
     

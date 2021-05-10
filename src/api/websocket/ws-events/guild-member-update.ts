@@ -33,7 +33,7 @@ export default class implements WSEvent<'GUILD_MEMBER_UPDATE'> {
     const guild = await this.guilds.get(member.guildId);
     const selfIsHigher = await this.roles.isHigher(guild, selfMember, member.roleIds);
     
-    const isSelf = selfMember._id === memberId;
+    const isSelf = selfMember.id === memberId;
     if (!isSelf && !selfIsHigher)
       throw new TypeError('Member has higher roles'); 
     
@@ -42,7 +42,7 @@ export default class implements WSEvent<'GUILD_MEMBER_UPDATE'> {
       { _id: memberId },
       {
         ...partialMember,
-        roleIds: [everyoneRole._id].concat(partialMember.roleIds ?? []),
+        roleIds: [everyoneRole.id].concat(partialMember.roleIds ?? []),
       },
       { runValidators: true },
     );

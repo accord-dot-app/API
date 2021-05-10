@@ -25,7 +25,7 @@ describe('message-update', () => {
   beforeEach(async () => {
     ({ event, ws, guild, user, channel } = await Mock.defaultSetup(client, MessageUpdate));
 
-    message = await Mock.message(user, channel._id);
+    message = await Mock.message(user, channel.id);
   });
 
   afterEach(async () => await Mock.afterEach(ws));
@@ -38,14 +38,14 @@ describe('message-update', () => {
   });
 
   it('message does not exist, rejected', async () => {
-    message._id = generateSnowflake();
+    message.id = generateSnowflake();
 
     await expect(messageUpdate()).to.be.rejectedWith('Message Not Found');
   });
 
   function messageUpdate() {
     return event.invoke(ws, client, {
-      messageId: message._id,
+      messageId: message.id,
       partialMessage: {
         content: 'test',
       },

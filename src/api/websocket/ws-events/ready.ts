@@ -31,7 +31,7 @@ export default class implements WSEvent<'READY'> {
     user.status = 'ONLINE';
     await user.save();
      
-    const guildIds = user.guilds.map(g => g._id);
+    const guildIds = user.guilds.map(g => g.id);
 
     ws.io
       .to(guildIds.concat(user.friendIds))

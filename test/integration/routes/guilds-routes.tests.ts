@@ -85,7 +85,7 @@ describe('guilds-routes', () => {
   it('GET /:id/invites, is guild manager, returns all invites', async () => {
     authorization = `Bearer ${users.createToken(guild.members[1].userId)}`;   
 
-    const role = await Role.findById(guild.roles[0]._id);
+    const role = await Role.findById(guild.roles[0].id);
     await Mock.giveRolePerms(role, PermissionTypes.General.MANAGE_GUILD);
 
     await request(app)

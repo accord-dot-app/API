@@ -27,7 +27,7 @@ export default class GuildMembers extends DBWrapper<string, GuildMemberDocument>
       guildId: guild.id,
       userId: user.id,
       roleIds: (roles.length > 0)
-        ? roles.map(r => r._id) 
+        ? roles.map(r => r.id) 
         : [await this.getEveryoneRoleId(guild.id) as string], 
     });    
     await this.joinGuild(user, guild, member);
@@ -45,6 +45,6 @@ export default class GuildMembers extends DBWrapper<string, GuildMemberDocument>
 
   private async getEveryoneRoleId(guildId: string) {
     const role = await Role.findOne({ guildId, name: '@everyone' });        
-    return role?._id;
+    return role?.id;
   }
 }

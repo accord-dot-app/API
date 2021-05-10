@@ -164,7 +164,7 @@ describe('ws-guard', () => {
     const dm = await Mock.channel('DM');
 
     await expect(
-      guard.canAccessChannel(client, dm._id)
+      guard.canAccessChannel(client, dm.id)
     ).to.be.rejectedWith('Not DM Member');
   });
 
@@ -219,7 +219,7 @@ describe('ws-guard', () => {
   async function updateEveryoneRole(permissions: PermissionTypes.Permission) {
     const role = guild.roles[0];
     await Role.updateOne(
-      { _id: role._id },
+      { _id: role.id },
       { permissions },
     );
   }

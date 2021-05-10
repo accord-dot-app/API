@@ -56,7 +56,7 @@ describe('guild-member-update', () => {
     await makeAllManager();
     await guildMemberUpdate();
 
-    member = await GuildMember.findById(member._id);
+    member = await GuildMember.findById(member.id);
     role = await Role.findById(member.roleIds[0]);
 
     expect(role.name).to.equal('@everyone');
@@ -91,7 +91,7 @@ describe('guild-member-update', () => {
 
   function guildMemberUpdate() {
     return event.invoke(ws, client, {
-      memberId: member._id,
+      memberId: member.id,
       partialMember: {
         roleIds: []
       },

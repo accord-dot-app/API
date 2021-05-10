@@ -56,7 +56,7 @@ export class SystemBot {
 
   async message(channel: Lean.Channel, content: string) {
     this.ws.emit('MESSAGE_CREATE', {
-      channelId: channel._id,
+      channelId: channel.id,
       partialMessage: {
         content,
       }
@@ -64,11 +64,11 @@ export class SystemBot {
   }
 
   async getDMChannel(user: UserDocument) {
-    return await Channel.findOne({ memberIds: [user._id, this.self._id] })
+    return await Channel.findOne({ memberIds: [user.id, this.self.id] })
       ?? await Channel.create({
         _id: generateSnowflake(),
         type: 'DM',
-        memberIds: [user._id, this.self._id],
+        memberIds: [user.id, this.self.id],
       });
   }
 
@@ -76,7 +76,7 @@ export class SystemBot {
     const invite = await this.invites.create({
       guildId,
       options: { maxUses: 1 },
-    }, this.self._id);
+    }, this.self.id);
 
     this.ws.emit('GUILD_MEMBER_ADD', { inviteCode: invite.id });
 

@@ -26,13 +26,13 @@ export default class implements WSEvent<'disconnect'> {
   }
 
   public async setOfflineStatus(ws: WebSocket, client: Socket, user: UserDocument) {
-    const userConnected = ws.connectedUserIds.includes(user._id);    
+    const userConnected = ws.connectedUserIds.includes(user.id);    
     if (userConnected) return;
 
     user.status = 'OFFLINE';
     await user.save();
 
-    const guildIds = user.guilds.map(g => g._id);
+    const guildIds = user.guilds.map(g => g.id);
 
     ws.io
       .to(guildIds.concat(user.friendIds))

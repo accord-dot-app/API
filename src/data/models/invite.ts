@@ -1,10 +1,11 @@
 import { Document, model, Schema } from 'mongoose';
-import { createdAtToDate } from '../../utils/utils';
+import { createdAtToDate, useId } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, InviteTypes, patterns } from '../types/entity-types';
 
 export interface InviteDocument extends Document, Lean.Invite {
-  _id: string;
+  _id: string | never;
+  id: string;
   createdAt: never;
 }
 
@@ -47,4 +48,4 @@ export const Invite = model<InviteDocument>('invite', new Schema({
     validate: [patterns.snowflake, 'Invalid Snowflake ID'],
   },
   uses: Number,
-}, { toJSON: { getters: true } }));
+}, { toJSON: { getters: true } }).method('toClient', useId));

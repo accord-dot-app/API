@@ -16,13 +16,13 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
     const highestRole: Lean.Role = guild.roles[guild.roles.length - 1];
 
     return selfMember.userId === guild?.ownerId
-      || (selfMember.roleIds.includes(highestRole?._id)
-      && !roleIds.includes(highestRole._id));
+      || (selfMember.roleIds.includes(highestRole?.id)
+      && !roleIds.includes(highestRole.id));
   }
 
   public async hasPermission(guild: Lean.Guild, member: Lean.GuildMember, permission: PermissionTypes.PermissionString) {
     const totalPerms = guild.roles
-      .filter(r => member.roleIds.includes(r._id))
+      .filter(r => member.roleIds.includes(r.id))
       .reduce((acc, value) => value.permissions | acc, 0);    
 
     const permNumber = (typeof permission === 'string')

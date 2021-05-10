@@ -43,7 +43,7 @@ describe('ready', () => {
 
   it('joins self user room', async () => {
     await ready();    
-    expect(rooms()).to.include(user._id);
+    expect(rooms()).to.include(user.id);
   });
 
   it('joins system bot room', async () => {
@@ -52,7 +52,7 @@ describe('ready', () => {
 
     await ready();
     
-    expect(rooms()).to.include(systemBot.self._id);
+    expect(rooms()).to.include(systemBot.self.id);
   });
 
   it('joins dm channel room', async () => {
@@ -62,19 +62,19 @@ describe('ready', () => {
 
     await ready();    
 
-    expect(rooms()).to.include(dm._id);
+    expect(rooms()).to.include(dm.id);
   });
 
   it('joins self room', async () => {
     await ready();
-    expect(rooms()).to.include(user._id);
+    expect(rooms()).to.include(user.id);
   });
 
   it('joins guild room', async () => {
     await makeOwner();
     await ready();
 
-    expect(rooms()).to.include(guild._id);
+    expect(rooms()).to.include(guild.id);
   });
 
   it('joins guild channel rooms', async () => {
@@ -83,9 +83,9 @@ describe('ready', () => {
     await makeOwner();
     await ready();
 
-    expect(rooms()).to.contain(guild.channels[0]._id);
-    expect(rooms()).to.contain(guild.channels[1]._id);
-    expect(rooms()).to.contain(newChannel._id);
+    expect(rooms()).to.contain(guild.channels[0].id);
+    expect(rooms()).to.contain(guild.channels[1].id);
+    expect(rooms()).to.contain(newChannel.id);
   });
 
   it('ready, user is online', async () => {

@@ -1,5 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
-import { checkForDuplicates, createdAtToDate } from '../../utils/utils';
+import { checkForDuplicates, createdAtToDate, useId } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns, PermissionTypes } from '../types/entity-types';
 
@@ -11,7 +11,8 @@ export function hasPermission(current: number, required: number) {
 const everyoneColor = '#ffffff';
 
 export interface RoleDocument extends Document, Lean.Role {
-  _id: string;
+  _id: string | never;
+  id: string;
   createdAt: never;
 }
 
@@ -57,4 +58,5 @@ export const Role = model<RoleDocument>('role', new Schema({
       message: 'Invalid permissions integer',
     },
   }
-}, { toJSON: { getters: true } }));
+}, { toJSON: { getters: true } })
+.method('toClient', useId));

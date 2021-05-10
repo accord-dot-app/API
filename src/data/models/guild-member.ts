@@ -1,10 +1,11 @@
 import { Document, model, Schema } from 'mongoose';
-import { validators } from '../../utils/utils';
+import { useId, validators } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns } from '../types/entity-types';
 
 export interface GuildMemberDocument extends Document, Lean.GuildMember {
-  _id: string;
+  _id: string | never;
+  id: string;
   createdAt: never;
 }
 
@@ -32,4 +33,4 @@ export const GuildMember = model<GuildMemberDocument>('guildMember', new Schema(
       message: 'At least 1 role is required',
     }
   },
-}));
+}).method('toClient', useId));

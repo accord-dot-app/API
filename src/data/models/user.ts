@@ -1,16 +1,18 @@
 import { Document, model, Schema } from 'mongoose';
 import passportLocalMongoose from 'passport-local-mongoose';
-import { createdAtToDate, validators } from '../../utils/utils';
+import { createdAtToDate, useId, validators } from '../../utils/utils';
 import { Lean, patterns, UserTypes } from '../types/entity-types';
 import uniqueValidator from 'mongoose-unique-validator';
 import { generateSnowflake } from '../snowflake-entity';
 
 export interface UserDocument extends Document, Lean.User {
-  _id: string;
+  _id: string | never;
+  id: string;
   createdAt: never;
 }
 export interface SelfUserDocument extends Document, UserTypes.Self {
-  _id: string;
+  _id: string | never;
+  id: string;
   createdAt: never;
 
   changePassword: (...args) => Promise<any>;
@@ -75,7 +77,7 @@ export const User = model<UserDocument>('user', new Schema({
     default: new UserTypes.Ignored(),
     validate: {
       validator: function (this: UserDocument, val) {
-        return !val || !val.userIds?.includes(this._id);
+        return !val || !val.userIds?.includes(this.id);
       },
       message: 'Cannot block self',
     },
@@ -114,4 +116,5 @@ export const User = model<UserDocument>('user', new Schema({
   verified: Boolean,
 }, { toJSON: { getters: true } })
 .plugin(passportLocalMongoose)
-.plugin(uniqueValidator));
+.plugin(uniqueValidator)
+.method('toClient', useId));

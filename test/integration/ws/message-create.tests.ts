@@ -63,7 +63,7 @@ describe('message-create', () => {
 
   function messageCreate() {
     return event.invoke(ws, client, {
-      channelId: channel._id,
+      channelId: channel.id,
       partialMessage: {
         content: 'hi'
       },

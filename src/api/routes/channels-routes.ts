@@ -17,7 +17,7 @@ const pings = Deps.get<Pings>(Pings);
 const ws = Deps.get<WebSocket>(WebSocket);
 
 router.get('/', updateUser, validateUser, async (req, res) => {
-  const dms: Lean.Channel[] = await channels.getDMChannels(res.locals.user._id);
+  const dms: Lean.Channel[] = await channels.getDMChannels(res.locals.user.id);
   const guildsChannels = await channels.getGuildsChannels(res.locals.user);
   const all = dms.concat(guildsChannels);
 
@@ -30,7 +30,7 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
   const user: SelfUserDocument = res.locals.user;
   const channelMsgs = (await messages
     .getChannelMessages(channelId) ?? await messages
-    .getDMChannelMessages(channelId, res.locals.user._id));
+    .getDMChannelMessages(channelId, res.locals.user.id));
 
   // TODO: add lazy loading
   // const start = Math.max(channelMsgs.length - (req.query.start as any), 0);

@@ -30,7 +30,7 @@ export default class implements WSEvent<'REMOVE_FRIEND'> {
   }
 
   private async handle(sender: SelfUserDocument, friend: SelfUserDocument): Promise<Args.RemoveFriend> {
-    if (sender._id === friend._id)
+    if (sender.id === friend.id)
       throw new TypeError('You cannot remove yourself as a friend');
     
     await this.removeFriend(sender, friend);
@@ -40,10 +40,10 @@ export default class implements WSEvent<'REMOVE_FRIEND'> {
   }
 
   private async removeFriend(sender: SelfUserDocument, friend: SelfUserDocument) {
-    const friendIndex = sender.friendIds.indexOf(friend._id);
+    const friendIndex = sender.friendIds.indexOf(friend.id);
     sender.friendIds.splice(friendIndex, 1);
     
-    const requestIndex = sender.friendRequestIds.indexOf(friend._id);
+    const requestIndex = sender.friendRequestIds.indexOf(friend.id);
     sender.friendRequestIds.splice(requestIndex, 1);
     return sender.save(); 
   }

@@ -27,13 +27,13 @@ describe('remove-friend', () => {
   });
 
   it('user removes self as friend, rejected', async () => {
-    friend._id = sender._id;
+    friend.id = sender.id;
 
     await expect(removeFriend()).to.be.rejectedWith('You cannot remove yourself as a friend');
   });
 
   it('removes non existing friend, rejected', async () => {
-    friend._id = generateSnowflake();
+    friend.id = generateSnowflake();
 
     await expect(removeFriend()).to.be.rejectedWith('User Not Found');
   });
@@ -57,6 +57,6 @@ describe('remove-friend', () => {
   });
 
   async function removeFriend() {
-    return event.invoke(ws, client, { friendId: friend._id });
+    return event.invoke(ws, client, { friendId: friend.id });
   }
 });
