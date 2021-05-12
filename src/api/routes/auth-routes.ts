@@ -7,6 +7,7 @@ import { Verification } from '../modules/email/verification';
 import { fullyUpdateUser, updateUsername, validateUser } from '../modules/middleware';
 import { EmailFunctions } from '../modules/email/email-functions';
 import { APIError } from '../modules/api-error';
+import { generateInviteCode } from '../../data/models/invite';
 
 export const router = Router();
 
@@ -46,6 +47,10 @@ router.get('/send-verify-email', fullyUpdateUser, validateUser, async (req, res)
   if (!email)
     throw new APIError(400, 'Email not provided');
 
+  if (req.query.type === 'FORGOT_PASSWORD') {
+    await sendEmail.forgotPassword(email, res.locals.user);
+    return res.status(200).json({ verify: true });
+  }
   await sendEmail.verifyEmail(email, res.locals.user);
 
   await User.updateOne(
@@ -53,8 +58,7 @@ router.get('/send-verify-email', fullyUpdateUser, validateUser, async (req, res)
     { email },
     { runValidators: true, context: 'query' },
   );
-
-  return res.status(200).json({ verify: true })
+  return res.status(200).json({ verify: true });
 });
 
 router.get('/verify-email', async (req, res) => {
@@ -71,12 +75,22 @@ router.get('/verify-email', async (req, res) => {
   res.redirect(`${process.env.WEBSITE_URL}/channels/@me?success=Successfully verified your email.`);
 });
 
+// they either have to have a code, or use old password
 router.post('/change-password', async (req, res) => {
   const user = await User.findOne({ email: req.body.email, verified: true }) as any;
   if (!user)
     throw new APIError(400, 'User Not Found');
 
-  await user.changePassword(req.body.oldPassword, req.body.newPassword);    
+  const code = verification.get(req.query.code as string);
+  const canReset = code?.type === 'FORGOT_PASSWORD';
+
+  if (canReset) {
+    await user.setPassword(req.body.newPassword);  
+    await user.save();
+  } else {
+    await user.changePassword(req.body.oldPassword, req.body.newPassword);  
+    await user.save();
+  }
 
   return res.status(200).json(
     users.createToken(user.id)

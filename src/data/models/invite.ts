@@ -1,6 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
-import { createdAtToDate, useId } from '../../utils/utils';
-import { generateSnowflake } from '../snowflake-entity';
+import { useId } from '../../utils/utils';
 import { Lean, InviteTypes, patterns } from '../types/entity-types';
 
 export interface InviteDocument extends Document, Lean.Invite {
@@ -9,10 +8,9 @@ export interface InviteDocument extends Document, Lean.Invite {
   createdAt: never;
 }
 
-export function generateInviteCode() {
+export function generateInviteCode(codeLength = 7) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const charactersLength = characters.length;
-  const codeLength = 7;
   
   let result = '';
   for (let i = 0; i < codeLength; i++)

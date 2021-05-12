@@ -46,9 +46,11 @@ export interface EmailTemplate {
     code: string;
   };
   'verify-email': this['verify'];
+  'forgot-password': this['verify'];
 } 
 
 const subjects: { [k in keyof EmailTemplate]: string } = {
+  'forgot-password': 'Accord - Forgot Password',
   'verify': 'Accord - Login Verification Code',
   'verify-email': 'Accord - Verify Email',
 };

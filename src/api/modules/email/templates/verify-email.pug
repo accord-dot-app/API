@@ -3,10 +3,10 @@ head
 
   style
     include email.css
-body(style='background-color: #414244')
+body(style='background-color: #2E303E')
   header
     h1 #{greetings[i]}, #{user.username}!
-    p.lead Thank you for choosing accord.app. Hopefully not a Discord rip-off.
+    p.lead Thank you for choosing accord.app.
 
   - var link = process.env.API_URL + '/verify-email?code=' + code;
   section.body
