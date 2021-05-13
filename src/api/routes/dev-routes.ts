@@ -4,10 +4,12 @@ import { generateInviteCode } from '../../data/models/invite';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import { fullyUpdateUser, validateUser } from '../modules/middleware';
+import { WSGuard } from '../modules/ws-guard';
 
 export const router = Router();
 
 const users = Deps.get<Users>(Users);
+const guard = Deps.get<WSGuard>(WSGuard);
 
 router.get('/apps', async (req, res) => {
   const start = parseInt(req.query.start as string);
@@ -62,6 +64,7 @@ router.patch('/apps/:id', async (req, res) => {
   if (!app || app.owner !== res.locals.user.id)
     return res.status(403).json({ message: 'Forbidden' });
 
+  guard.validateKeys('app', req.body);
   await app.update(req.body, { runValidators: true });
   res.json(app);
 });

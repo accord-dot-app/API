@@ -384,7 +384,7 @@ export namespace Args {
  * 
  * **Tip**: Only provide what properties are being updated. */
 export namespace Partial {
-  export type Application = Partial<Lean.Application>;
+  export type Application = Partial<Lean.App>;
   export type Channel = Partial<Lean.Channel>;
   export type Guild = Partial<Lean.Guild>;
   export type GuildMember = Partial<Lean.GuildMember>;
@@ -396,7 +396,8 @@ export namespace Partial {
 /** Keys of objects that cannot be updated. */
 export namespace Prohibited {
   export const general: any = ['id', 'createdAt'];
-  export const application: (keyof Lean.Application)[] = [
+
+  export const app: (keyof Lean.App)[] = [
     ...general,
     'owner',
     'user',

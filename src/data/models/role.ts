@@ -1,5 +1,5 @@
 import { Document, model, Schema } from 'mongoose';
-import { checkForDuplicates, createdAtToDate, useId } from '../../utils/utils';
+import { createdAtToDate, useId } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns, PermissionTypes } from '../types/entity-types';
 
@@ -13,7 +13,6 @@ const everyoneColor = '#ffffff';
 export interface RoleDocument extends Document, Lean.Role {
   _id: string | never;
   id: string;
-  createdAt: never;
 }
 
 export const Role = model<RoleDocument>('role', new Schema({

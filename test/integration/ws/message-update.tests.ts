@@ -6,13 +6,12 @@ import io from 'socket.io-client';
 import { Mock } from '../../mock/mock';
 import { GuildDocument } from '../../../src/data/models/guild';
 import { User, UserDocument } from '../../../src/data/models/user';
-import { API } from '../../../src/api/server';
-import { Lean } from '../../../src/data/types/entity-types';
 import { ChannelDocument } from '../../../src/data/models/channel';
 import { MessageDocument } from '../../../src/data/models/message';
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
+import { Partial } from '../../../src/data/types/ws-types';
 
-describe('message-update', () => {
+describe.only('message-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   
   let channel: ChannelDocument;
@@ -43,10 +42,15 @@ describe('message-update', () => {
     await expect(messageUpdate()).to.be.rejectedWith('Message Not Found');
   });
 
-  function messageUpdate() {
+  it('update includes banned keys, rejected', async () => {
+    await expect(messageUpdate({ id: '123' })).to.be.rejectedWith('Contains readonly values');
+  });
+
+  function messageUpdate(options?: Partial.Message) {
     return event.invoke(ws, client, {
       messageId: message.id,
       partialMessage: {
+        ...options,
         content: 'test',
       },
       withEmbed: true

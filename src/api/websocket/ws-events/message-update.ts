@@ -26,6 +26,7 @@ export default class implements WSEvent<'MESSAGE_UPDATE'> {
   public async invoke(ws: WebSocket, client: Socket, { messageId, partialMessage, withEmbed }: Params.MessageUpdate) {
     let message = await this.messages.get(messageId);
     this.guard.validateIsUser(client, message.authorId);
+    this.guard.validateKeys('message', partialMessage);
     
     message = await message.update({
       content: partialMessage.content,

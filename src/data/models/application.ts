@@ -3,10 +3,9 @@ import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns } from '../types/entity-types';
 import { createdAtToDate, generateUsername, useId } from '../../utils/utils';
 
-export interface ApplicationDocument extends Document, Lean.Application {
+export interface ApplicationDocument extends Document, Lean.App {
   _id: string | never;
   id: string;
-  createdAt: never;
   token: string;
 }
 
