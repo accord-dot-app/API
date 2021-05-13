@@ -26,14 +26,14 @@ export default class Messages extends DBWrapper<string, MessageDocument> {
       _id: generateSnowflake(),
       authorId,
       channelId,
-      content: partialMessage.content,
+      content: partialMessage.content as string,
       embed: await this.getEmbed(partialMessage),
     });
   }
 
   public async getEmbed(message: Partial.Message): Promise<MessageTypes.Embed | undefined> {
     try {
-      const targetURL = /([https://].*)/.exec(message.content)?.[0];  
+      const targetURL = /([https://].*)/.exec(message.content as string)?.[0];  
       if (!targetURL) return;
   
       const { body: html, url } = await got(targetURL);

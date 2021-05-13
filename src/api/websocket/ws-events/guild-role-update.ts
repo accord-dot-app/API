@@ -19,7 +19,7 @@ export default class implements WSEvent<'GUILD_ROLE_UPDATE'> {
 
     await Role.updateOne(
       { _id: roleId },
-      partialRole, 
+      partialRole as any, 
       { runValidators: true },
     );
 

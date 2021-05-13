@@ -23,7 +23,7 @@ export default class implements WSEvent<'CHANNEL_CREATE'> {
       name: partialChannel.name,
       summary: partialChannel.summary,
       guildId,
-      type: partialChannel.type,
+      type: partialChannel.type as any,
       memberIds: []
     });
 

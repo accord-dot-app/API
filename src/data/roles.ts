@@ -1,8 +1,8 @@
 import DBWrapper from './db-wrapper';
 import { Lean, PermissionTypes } from './types/entity-types';
+import { Partial } from './types/ws-types';
 import { hasPermission, Role, RoleDocument } from './models/role';
 import { generateSnowflake } from './snowflake-entity';
-import { Guild } from './models/guild';
 
 export default class Roles extends DBWrapper<string, RoleDocument> {
   public async get(id: string | undefined) {
@@ -31,7 +31,7 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
     return hasPermission(totalPerms, permNumber as any);
   }
 
-  public create(guildId: string, options?: Partial<Lean.Role>) {
+  public create(guildId: string, options?: Partial.Role) {
     return Role.create({
       _id: generateSnowflake(),
       guildId,

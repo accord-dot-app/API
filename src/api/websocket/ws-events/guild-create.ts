@@ -20,7 +20,7 @@ export default class implements WSEvent<'GUILD_CREATE'> {
     const userId = ws.sessions.userId(client);
     
     const user = await this.users.getSelf(userId, true);
-    const guild = await this.guilds.create(partialGuild.name, user);
+    const guild = await this.guilds.create(partialGuild.name as any, user);
 
     await this.rooms.joinGuildRooms(user, client);
 

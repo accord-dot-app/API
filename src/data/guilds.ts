@@ -8,6 +8,7 @@ import Roles from './roles';
 import { UserDocument } from './models/user';
 import { Invite } from './models/invite';
 import { APIError } from '../api/modules/api-error';
+import { getNameAcronym } from '../utils/utils';
 
 export default class Guilds extends DBWrapper<string, GuildDocument> {
   constructor(
@@ -46,6 +47,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
       name,
       ownerId: owner.id,
       roles: [ everyoneRole ],
+      nameAcronym: getNameAcronym(name),
       members: [],
       channels: [
         await this.channels.createText(guildId),

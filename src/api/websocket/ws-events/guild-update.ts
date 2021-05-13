@@ -20,7 +20,7 @@ export default class implements WSEvent<'GUILD_UPDATE'> {
 
     await Guild.updateOne(
       { _id: guildId },
-      partialGuild,
+      partialGuild as any,
       { runValidators: true },
     );
 
