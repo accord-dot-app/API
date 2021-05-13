@@ -8,7 +8,7 @@ import Deps from '../../../src/utils/deps';
 import Users from '../../../src/data/users';
 import { Lean, UserTypes } from '../../../src/data/types/entity-types';
 
-describe('user-update', () => {
+describe.only('user-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: UserUpdate;
   let ws: WebSocket;
@@ -44,6 +44,10 @@ describe('user-update', () => {
     await regenToken();
 
     await expect(updateUser()).to.be.rejectedWith('User Not Found');
+  });
+
+  it('update contains banned keys, rejected', async () => {
+    await expect(updateUser({ id: '123' })).to.be.rejectedWith('Update contains readonly values');
   });
 
   async function updateUser(options?: Partial<UserTypes.Self>) {

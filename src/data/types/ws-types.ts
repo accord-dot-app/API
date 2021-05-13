@@ -393,6 +393,7 @@ export namespace Partial {
   export type User = Partial<UserTypes.Self>;
 }
 
+/** Keys of objects that cannot be updated. */
 export namespace Prohibited {
   export const general: any = ['id', 'createdAt'];
   export const application: (keyof Lean.Application)[] = [
@@ -411,7 +412,7 @@ export namespace Prohibited {
     ...general,
     'channels',
     'members',
-    'name',
+    'nameAcronym',
     'roles',
   ];
   export const guildMember: (keyof Lean.GuildMember)[] = [

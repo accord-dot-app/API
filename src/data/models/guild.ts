@@ -5,8 +5,6 @@ import { Lean, patterns } from '../types/entity-types';
 
 export interface GuildDocument extends Document, Lean.Guild {
   id: string;
-  createdAt: never;
-  nameAcronym: never;
 }
 
 export const Guild = model<GuildDocument>('guild', new Schema({
