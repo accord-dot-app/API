@@ -59,6 +59,7 @@ pre code {
 a {
   text-decoration: none;
   color: #B877DB;
+  cursor: pointer;
 }
 button {
   font-size: 24px;
@@ -66,7 +67,6 @@ button {
   border-radius: 10px;
   color: white !important;
   border: none;
-  cursor: pointer;
 }
 
 .summary {
