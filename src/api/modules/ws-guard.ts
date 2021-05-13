@@ -87,7 +87,7 @@ export class WSGuard {
   public validateKeys<K extends keyof typeof Prohibited>(type: K, partial: any) {
     const contains = this.includesProhibited<K>(partial, type);
     if (contains)
-      throw new TypeError('Update contains readonly values');
+      throw new TypeError('Contains readonly values');
   }
 
   private includesProhibited<K extends keyof typeof Prohibited>(partial: any, type: K) {

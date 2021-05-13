@@ -29,6 +29,7 @@ export default class implements WSEvent<'GUILD_MEMBER_UPDATE'> {
     const selfMember = await this.guildMembers.getInGuild(member.guildId, selfUserId);
 
     await this.guard.validateCan(client, selfMember.guildId, PermissionTypes.General.MANAGE_ROLES);
+    this.guard.validateKeys('guildMember', partialMember);
 
     const guild = await this.guilds.get(member.guildId);
     const selfIsHigher = await this.roles.isHigher(guild, selfMember, member.roleIds);
@@ -38,9 +39,7 @@ export default class implements WSEvent<'GUILD_MEMBER_UPDATE'> {
       throw new TypeError('Member has higher roles'); 
     
     const everyoneRole = guild.roles.find(r => r.name === '@everyone') as Lean.Role;
-    await GuildMember.updateOne(
-      { _id: memberId },
-      {
+    await member.updateOne({
         ...partialMember,
         roleIds: [everyoneRole.id].concat(partialMember.roleIds ?? []),
       },

@@ -47,7 +47,7 @@ describe.only('user-update', () => {
   });
 
   it('update contains banned keys, rejected', async () => {
-    await expect(updateUser({ id: '123' })).to.be.rejectedWith('Update contains readonly values');
+    await expect(updateUser({ id: '123' })).to.be.rejectedWith('Contains readonly values');
   });
 
   async function updateUser(options?: Partial<UserTypes.Self>) {

@@ -7,8 +7,9 @@ import { expect } from 'chai';
 import { GuildMember, GuildMemberDocument } from '../../../src/data/models/guild-member';
 import { Role, RoleDocument } from '../../../src/data/models/role';
 import { PermissionTypes } from '../../../src/data/types/entity-types';
+import { Partial } from '../../../src/data/types/ws-types';
 
-describe('guild-member-update', () => {
+describe.only('guild-member-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
 
   let event: GuildMemberUpdate;
@@ -74,6 +75,11 @@ describe('guild-member-update', () => {
     await expect(guildMemberUpdate()).to.be.fulfilled;
   });
 
+  it('includes banned keys, rejected', async () => {
+    await makeRoleManager();
+    await expect(guildMemberUpdate({ id: '123' })).to.be.rejectedWith('Contains readonly values');
+  });
+
   async function makeRoleManager() {
     const manager = await Mock.guildMember(await Mock.user(), guild);
     await Mock.givePerm(guild, manager, PermissionTypes.General.MANAGE_ROLES);
@@ -89,11 +95,12 @@ describe('guild-member-update', () => {
     return Mock.giveRolePerms(role, PermissionTypes.General.MANAGE_ROLES);
   }
 
-  function guildMemberUpdate() {
+  function guildMemberUpdate(partial?: Partial.GuildMember) {
     return event.invoke(ws, client, {
       memberId: member.id,
       partialMember: {
-        roleIds: []
+        ...partial,
+        roleIds: [],
       },
     });
   }

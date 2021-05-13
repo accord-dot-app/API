@@ -62,7 +62,7 @@ describe.only('guild-update', () => {
 
   it('contains banned keys, rejected', async () => {
     makeOwner();
-    await expect(guildUpdate({ id: '123' })).to.be.rejectedWith('Update contains readonly values');
+    await expect(guildUpdate({ id: '123' })).to.be.rejectedWith('Contains readonly values');
   });
 
   function guildUpdate(partialGuild: Partial.Guild) {
