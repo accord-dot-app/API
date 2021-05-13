@@ -8,7 +8,7 @@ import passport from 'passport';
 import { router as apiRoutes } from './routes/api-routes';
 import { router as authRoutes } from './routes/auth-routes';
 import { router as channelsRoutes } from './routes/channels-routes';
-import { router as developersRoutes } from './routes/developers-routes';
+import { router as developersRoutes } from './routes/dev-routes';
 import { router as guildsRoutes } from './routes/guilds-routes';
 import { router as usersRoutes } from './routes/users-routes';
 import { router as invitesRoutes } from './routes/invites-routes';
@@ -49,7 +49,7 @@ export class API {
     this.app.use(`${this.prefix}`, apiRoutes, authRoutes);
     
     this.app.use(`${this.prefix}/invites`, invitesRoutes);
-    // this.app.use(`${this.prefix}/developers`, developersRoutes);
+    // this.app.use(`${this.prefix}/devs`, devRoutes);
     this.app.use(`${this.prefix}/channels`, channelsRoutes);
     this.app.use(`${this.prefix}/guilds`, guildsRoutes);
     this.app.use(`${this.prefix}/users`, usersRoutes);

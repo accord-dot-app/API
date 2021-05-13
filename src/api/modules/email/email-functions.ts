@@ -22,7 +22,7 @@ export class EmailFunctions {
     await this.email.send('verify-email', {
       expiresIn,
       user,
-      code: this.verification.create(emailAddress, 'VERIFY_EMAIL'),
+      code: this.verification.create(emailAddress, 'VERIFY_EMAIL', expiresIn),
     }, emailAddress);
   }
   public async forgotPassword(emailAddress: string, user: UserTypes.Self) {
@@ -30,7 +30,7 @@ export class EmailFunctions {
     await this.email.send('forgot-password', {
       expiresIn,
       user,
-      code: this.verification.create(emailAddress, 'FORGOT_PASSWORD'),
+      code: this.verification.create(emailAddress, 'FORGOT_PASSWORD', expiresIn),
     }, emailAddress);
   }
 }

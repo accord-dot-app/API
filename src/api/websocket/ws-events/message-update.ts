@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { Message, MessageDocument } from '../../../data/models/message';
+import { MessageDocument } from '../../../data/models/message';
 import { WebSocket } from '../websocket';
 import { WSEvent, Args, Params, WSEventParams } from './ws-event';
 import got from 'got';
@@ -33,9 +33,8 @@ export default class implements WSEvent<'MESSAGE_UPDATE'> {
       updatedAt: new Date()
     }, { runValidators: true });
 
-    ws.io
-      .to(message.channelId)
-      .emit('MESSAGE_UPDATE', { message } as Args.MessageUpdate);
+    ws.to(message.channelId)
+      .emit('MESSAGE_UPDATE', { message });
   }
 
   public async getEmbed(message: MessageDocument): Promise<MessageTypes.Embed | undefined> {

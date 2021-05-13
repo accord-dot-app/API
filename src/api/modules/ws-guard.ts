@@ -10,6 +10,7 @@ import { Lean, PermissionTypes } from '../../data/types/entity-types';
 import Users from '../../data/users';
 import Guilds from '../../data/guilds';
 import GuildMembers from '../../data/guild-members';
+import { Prohibited } from '../../data/types/ws-types';
 
 export class WSGuard {
   constructor(
@@ -81,5 +82,16 @@ export class WSGuard {
   public async decodeKey(key: string) {
     const id = this.users.verifyToken(key);      
     return { id };
+  }
+
+  public validateKeys<K extends keyof typeof Prohibited>(type: K, partial: any) {
+    const contains = this.includesProhibited<K>(partial, type);
+    if (contains)
+      throw new TypeError('Update contains prohibited keys');
+  }
+
+  private includesProhibited<K extends keyof typeof Prohibited>(partial: any, type: K) {
+    const keys = Object.keys(partial);
+    return Prohibited[type].some(k => keys.includes(k));
   }
 }

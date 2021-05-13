@@ -4,8 +4,7 @@ import ChannelCreate from '../../../src/api/websocket/ws-events/channel-create';
 import { Mock } from '../../mock/mock';
 import { expect, spy } from 'chai';
 import { Guild, GuildDocument } from '../../../src/data/models/guild';
-import { Partial } from '../../../src/data/types/ws-types';
-import { PermissionTypes } from '../../../src/data/types/entity-types';
+import { Lean, PermissionTypes } from '../../../src/data/types/entity-types';
 import { RoleDocument } from '../../../src/data/models/role';
 
 describe('channel-create', () => {
@@ -51,7 +50,7 @@ describe('channel-create', () => {
     expect(join).to.be.called();
   });
 
-  async function createChannel(partialChannel?: Partial.Channel) {
+  async function createChannel(partialChannel?: Partial<Lean.Channel>) {
     return event.invoke(ws, client, {
       guildId: guild.id,
       partialChannel: partialChannel ?? {

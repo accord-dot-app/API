@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 import { User } from '../../../data/models/user';
+import { Prohibited } from '../../../data/types/ws-types';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
@@ -18,7 +19,8 @@ export default class implements WSEvent<'USER_UPDATE'> {
     const { id: userId } = await this.guard.decodeKey(key);
     const user = await this.users.get(userId);
 
-    // TODO: stop specific things from being updated (i.e. badges, email etc.) 
+    this.guard.validateKeys('user', partialUser);
+
     await user.updateOne(
       partialUser,
       { runValidators: true, context: 'query' },

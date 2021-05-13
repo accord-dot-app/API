@@ -5,7 +5,7 @@ import { User, UserDocument } from '../../../src/data/models/user';
 import { Mock } from '../../mock/mock';
 import { expect } from 'chai';
 import { GuildMemberDocument } from '../../../src/data/models/guild-member';
-import { Partial } from '../../../src/data/types/ws-types';
+import { Lean } from '../../../src/data/types/entity-types';
 
 describe('guild-create', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
@@ -34,7 +34,7 @@ describe('guild-create', () => {
     expect(user.guilds.length).to.be.greaterThan(oldCount);
   });
 
-  function guildCreate(partialGuild?: Partial.Guild) {
+  function guildCreate(partialGuild?: Partial<Lean.Guild>) {
     return event.invoke(ws, client, {
       partialGuild: {
         name: 'Mock Guild',

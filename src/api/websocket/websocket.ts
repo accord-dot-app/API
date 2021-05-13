@@ -7,6 +7,7 @@ import { readdirSync } from 'fs';
 import { WSCooldowns } from './modules/ws-cooldowns';
 import Deps from '../../utils/deps';
 import { SessionManager } from './modules/session-manager';
+import { WSEventAsyncArgs } from '../../data/types/ws-types';
 
 export class WebSocket {
   public events = new Map<keyof WSEventParams, WSEvent<keyof WSEventParams>>();
@@ -61,5 +62,11 @@ export class WebSocket {
     });
 
     Log.info('Started WebSocket', 'ws');
+  }
+
+  public to(...rooms: string[]) {
+    return this.io.to(rooms) as  {
+      emit: <K extends keyof WSEventAsyncArgs>(name: K, args: WSEventAsyncArgs[K]) => any,
+    };
   }
 }

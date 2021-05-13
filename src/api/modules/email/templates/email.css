@@ -66,6 +66,7 @@ body {
   color: #CACBCD;
   font-family: 'Inter';
   padding-top: 25px;
+  font-size: 16px;
 }
 header, section.body, footer {
   margin: 25px;
@@ -129,6 +130,7 @@ button {
   border-radius: 10px;
   color: white !important;
   border: none;
+  cursor: pointer;
 }
 
 .summary {
@@ -156,4 +158,8 @@ hr {
 
 .trivia {
   margin-top: 25px;
+}
+
+footer {
+  padding-bottom: 25px;
 }

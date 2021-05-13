@@ -7,9 +7,8 @@ import { Guild, GuildDocument } from '../../../src/data/models/guild';
 import { User, UserDocument } from '../../../src/data/models/user';
 import { Mock } from '../../mock/mock';
 import { expect } from 'chai';
-import { PermissionTypes } from '../../../src/data/types/entity-types';
+import { Lean, PermissionTypes } from '../../../src/data/types/entity-types';
 import { GuildMember, GuildMemberDocument } from '../../../src/data/models/guild-member';
-import { Partial } from '../../../src/data/types/ws-types';
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
 
 describe('guild-update', () => {
@@ -35,7 +34,7 @@ describe('guild-update', () => {
   });
 
   it('member has insufficient perms, rejected', async () => {
-    await Mock.clearRolePerms(guild.id);
+    await Mock.clearRolePerms(guild);
 
     await expect(guildUpdate(guild)).to.be.rejectedWith('Missing Permissions');
   });
@@ -62,7 +61,7 @@ describe('guild-update', () => {
     expect(guild.nameAcronym).to.equal('KEK');
   });
 
-  function guildUpdate(partialGuild: Partial.Guild) {
+  function guildUpdate(partialGuild: Partial<Lean.Guild>) {
     return event.invoke(ws, client, {
       guildId: guild.id,
       partialGuild,

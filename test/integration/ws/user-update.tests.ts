@@ -6,7 +6,7 @@ import { User, UserDocument } from '../../../src/data/models/user';
 import { expect } from 'chai';
 import Deps from '../../../src/utils/deps';
 import Users from '../../../src/data/users';
-import { Partial } from '../../../src/data/types/ws-types';
+import { Lean, UserTypes } from '../../../src/data/types/entity-types';
 
 describe('user-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
@@ -46,7 +46,7 @@ describe('user-update', () => {
     await expect(updateUser()).to.be.rejectedWith('User Not Found');
   });
 
-  async function updateUser(options?: Partial.User) {
+  async function updateUser(options?: Partial<UserTypes.Self>) {
     return event.invoke(ws, client, {
       key,
       partialUser: {

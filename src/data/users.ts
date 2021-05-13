@@ -68,6 +68,12 @@ export default class Users extends DBWrapper<string, UserDocument> {
       throw new APIError(404, 'User Not Found');
     return user;
   }
+  public async getByEmail(email: string): Promise<SelfUserDocument> {
+    const user = await User.findOne({ email }) as SelfUserDocument;
+    if (!user)
+      throw new APIError(404, 'User Not Found');
+    return user;
+  }
 
   public async getKnown(userId: string) {
     const user = await this.getSelf(userId);
@@ -142,12 +148,12 @@ export default class Users extends DBWrapper<string, UserDocument> {
     );
   }
 
-  public idFromAuth(auth: string): string {
+  public idFromAuth(auth: string | undefined): string {
     const token = auth?.slice('Bearer '.length);
     return this.verifyToken(token);
   }
-  public verifyToken(token: string): string {
-    const key = jwt.verify(token, 'secret') as UserToken;   
+  public verifyToken(token: string | undefined): string {
+    const key = jwt.verify(token as string, 'secret') as UserToken;   
     return key?._id;
   }
 
