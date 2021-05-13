@@ -1,4 +1,4 @@
-import { WSEventArgs, WSEventParams } from '../data/types/ws-types';
+import { WSEventArgs, WSEventAsyncArgs, WSEventParams } from '../data/types/ws-types';
 import io from 'socket.io-client';
 
 export class WSService {
@@ -12,5 +12,18 @@ export class WSService {
 
   public emit<K extends keyof WSEventParams>(name: K, params: WSEventParams[K]) {
     this.socket.emit(name, params);
+  }
+
+  public emitAsync<P extends keyof WSEventParams, A extends keyof WSEventAsyncArgs>(name: P, params: WSEventParams[P]): Promise<WSEventAsyncArgs[A & P]> {
+    return new Promise((resolve, reject) => {
+      this.on('message', (message: string) => {
+        if (!message.includes('Server error')) return;
+
+        return reject(message);
+      });
+
+      this.on(name as keyof WSEventArgs, (args) => resolve(args));
+      this.emit(name, params);
+    });
   }
 }

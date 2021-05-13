@@ -11,7 +11,7 @@ import { MessageDocument } from '../../../src/data/models/message';
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { Partial } from '../../../src/data/types/ws-types';
 
-describe.only('message-update', () => {
+describe('message-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   
   let channel: ChannelDocument;

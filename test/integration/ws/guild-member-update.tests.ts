@@ -9,7 +9,7 @@ import { Role, RoleDocument } from '../../../src/data/models/role';
 import { PermissionTypes } from '../../../src/data/types/entity-types';
 import { Partial } from '../../../src/data/types/ws-types';
 
-describe.only('guild-member-update', () => {
+describe('guild-member-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
 
   let event: GuildMemberUpdate;
