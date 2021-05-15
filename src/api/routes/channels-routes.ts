@@ -32,18 +32,17 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
     .getChannelMessages(channelId) ?? await messages
     .getDMChannelMessages(channelId, res.locals.user.id));
 
-  // TODO: add lazy loading
-  // const start = Math.max(channelMsgs.length - (req.query.start as any), 0);
-  // const end = Math.max(channelMsgs.length - (req.query.end as any) as any, 25);
+  const start = Math.max(channelMsgs.length - (req.query.start as any), 0);
+  const end = Math.max(channelMsgs.length - (req.query.end as any), 25);
   
   const slicedMsgs = channelMsgs
-    // .slice(start, end)
+    .slice(start, end)
     .map(m => {
       const isIgnored = user.ignored.userIds.includes(m.authorId);
       if (isIgnored)
-        m.content = 'This user is blocked, and the message content has been hidden.';
+        m.content = 'This user is blocked, and this message content has been hidden.';
       return m;
-    });
+    });    
 
   const index = slicedMsgs.length - 1;
   const lastMessage = slicedMsgs[index];

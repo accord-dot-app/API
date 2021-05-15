@@ -17,6 +17,8 @@ export default class implements WSEvent<'USER_UPDATE'> {
 
   public async invoke(ws: WebSocket, client: Socket, { key, partialUser }: Params.UserUpdate) {
     const { id: userId } = await this.guard.decodeKey(key);
+    console.log(userId);
+    
     const user = await this.users.get(userId);
 
     this.guard.validateKeys('user', partialUser);

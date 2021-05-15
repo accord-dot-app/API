@@ -45,3 +45,8 @@ export function checkForDuplicates(array: any[]) {
 export const array = {
   ascending: (a, b) => (a > b) ? 1 : -1,
 };
+
+export function randomFrom(...arr: any[]) {
+  const index = Math.floor(Math.random() * arr.length);
+  return arr[index];
+}

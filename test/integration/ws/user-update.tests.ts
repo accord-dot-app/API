@@ -40,8 +40,7 @@ describe('user-update', () => {
   });
 
   it('client is impostor, rejected', async () => {
-    user.id = '23u8123u12hg31873g183y21ufg321yt3';
-    await regenToken();
+    await regenToken('23u8123u12hg31873g183y21ufg321yt3');
 
     await expect(updateUser()).to.be.rejectedWith('User Not Found');
   });
@@ -61,9 +60,9 @@ describe('user-update', () => {
     });
   }
 
-  async function regenToken() {
+  async function regenToken(id = user.id) {
     key = Deps
       .get<Users>(Users)
-      .createToken(user.id, false);
+      .createToken(id, false);
   }
 });
