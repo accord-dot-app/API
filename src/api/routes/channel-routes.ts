@@ -32,14 +32,12 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
     .getChannelMessages(channelId) ?? await messages
     .getDMChannelMessages(channelId, res.locals.user.id));  
 
-  const start = Math.max(channelMsgs.length - (req.query.start as any), 0);
-  const end = Math.max(channelMsgs.length - (req.query.end as any), 25);
-
-  console.log(start);
-  console.log(end);  
+  const batchSize = 25;
+  const back = Math.max(channelMsgs.length - parseInt(req.query.back as string), 0)
+    || Math.max(channelMsgs.length - batchSize, 0);
   
   const slicedMsgs = channelMsgs
-    .slice(start, end)
+    .slice(back)
     .map(m => {
       const isIgnored = user.ignored.userIds.includes(m.authorId);
       if (isIgnored)

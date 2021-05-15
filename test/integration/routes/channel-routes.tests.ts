@@ -9,6 +9,8 @@ import { InviteDocument } from '../../../src/data/models/invite';
 import { GuildDocument } from '../../../src/data/models/guild';
 import { assert } from 'console';
 import { Channel } from '../../../src/data/models/channel';
+import { generateSnowflake } from '../../../src/data/snowflake-entity';
+import { Lean } from '../../../src/data/types/entity-types';
 
 describe.only('channel-routes', () => {
   const endpoint = `/api/v1/channels`;
@@ -17,6 +19,7 @@ describe.only('channel-routes', () => {
   let authorization: string;
   let users: Users;
   let user: UserDocument;
+  let channel: Lean.Channel;
   let guild: GuildDocument;
 
   beforeEach(async () => {
@@ -24,6 +27,7 @@ describe.only('channel-routes', () => {
     users = Deps.get<Users>(Users);
 
     guild = await Mock.guild();
+    channel = guild.channels[0];
     user = await users.get(guild.ownerId);
 
     authorization = `Bearer ${users.createToken(user.id)}`;
@@ -31,17 +35,48 @@ describe.only('channel-routes', () => {
 
   afterEach(async () => await Mock.cleanDB());
   
-  it('GET /, returns guild and dm channels', async () => {
-    const dm = await Mock.channel({ type: 'DM' });
-    const guildChannels = guild.toJSON().channels;
+  it('GET /, returns text and dm channels', async () => {
+    await Mock.channel({
+      memberIds: [user.id, guild.ownerId],
+      type: 'DM',
+    });
     
     await request(app)
       .get(endpoint)
       .set('Authorization', authorization)
       .expect(200)
-      .expect(res => expect(res.body).to.deep.equal([
-        ...guildChannels,
-        dm.toJSON(),
-      ]));
+      .expect(res => expect(res.body.length).to.equal(2));
+  });
+  
+  it('GET /:channelId/messages, returns messages', async () => {
+    const channel = guild.channels[0];
+    
+    await request(app)
+      .get(`${endpoint}/${channel.id}/messages`)
+      .set('Authorization', authorization)
+      .expect(200)
+      .expect(res => expect(res.body.length).to.equal(2));
+  });
+  
+  it('GET /:channelId/messages, returns batch size of most recent messages', async () => {
+    const messages = [];
+    for (let i = 0; i < 50; i++)
+      messages.push(await Mock.message(user, channel.id));
+    
+    await request(app)
+      .get(`${endpoint}/${channel.id}/messages`)
+      .set('Authorization', authorization)
+      .expect(200)
+      .expect(res => expect(res.body[0].id).to.equal(messages[25].id));
+  });
+  
+  it('GET /:channelId/messages, batch size 1, returns last message', async () => {
+    const message = await Mock.message(user, channel.id)
+    
+    await request(app)
+      .get(`${endpoint}/${channel.id}/messages?back=1`)
+      .set('Authorization', authorization)
+      .expect(200)
+      .expect(res => expect(res.body[0].id).to.equal(message.id));
   });
 });
