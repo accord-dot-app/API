@@ -13,8 +13,11 @@ import { WebSocket } from '../../src/api/websocket/websocket';
 import Deps from '../../src/utils/deps';
 import Guilds from '../../src/data/guilds';
 import GuildMembers from '../../src/data/guild-members';
+import Channels from '../../src/data/channels';
 
+// mostly replace will data wrappers
 export class Mock {
+  private static channels = Deps.get<Channels>(Channels);
   private static guilds = Deps.get<Guilds>(Guilds);
   private static guildMembers = Deps.get<GuildMembers>(GuildMembers);
 
@@ -117,18 +120,11 @@ export class Mock {
     return await this.guildMembers.create(guild, user);
   }
 
-  public static async channel(type: ChannelTypes.Type, guildId?: string): Promise<ChannelDocument> {
-    const channel = await Channel.create({
-      _id: generateSnowflake(),
-      guildId,
-      memberIds: [],
-      name: `mock-channel`,
-      summary: '',
-      type,
-    });
+  public static async channel(options?: Partial<Lean.Channel>): Promise<ChannelDocument> {
+    const channel = await this.channels.create(options);
     
-    if (guildId) {
-      const guild = await Guild.findById(guildId);
+    if (options?.guildId) {
+      const guild = await Guild.findById(options.guildId);
       guild.channels.push(channel);
       await guild.save();
     }

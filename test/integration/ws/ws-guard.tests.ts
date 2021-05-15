@@ -161,7 +161,7 @@ describe('ws-guard', () => {
   });
 
   it('can access channel, dm, not a member, rejected', async () => {
-    const dm = await Mock.channel('DM');
+    const dm = await Mock.channel({ type: 'DM' });
 
     await expect(
       guard.canAccessChannel(client, dm.id)
@@ -169,7 +169,7 @@ describe('ws-guard', () => {
   });
 
   it('can access channel, dm, is member, fulfilled', async () => {
-    const dm = await Mock.channel('DM');
+    const dm = await Mock.channel({ type: 'DM' });
     dm.memberIds.push(user.id);
     await dm.updateOne(dm);
 

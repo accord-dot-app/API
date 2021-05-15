@@ -38,14 +38,14 @@ describe('message-delete', () => {
   });
 
   it('not in guild channel but message author, fulfilled', async () => {
-    const channel = await Mock.channel('DM');
+    const channel = await Mock.channel({ type: 'DM' });
     message = await Mock.message(user, channel.id);
 
     await expect(deleteMessage()).to.be.fulfilled;
   });
 
   it('not in guild channel and not message author, fulfilled', async () => {
-    const channel = await Mock.channel('DM');
+    const channel = await Mock.channel({ type: 'DM' });
     message = await Mock.message(await Mock.user(), channel.id);
 
     await expect(deleteMessage()).to.be.rejectedWith('Only message author can do this');

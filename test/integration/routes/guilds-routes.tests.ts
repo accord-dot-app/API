@@ -93,7 +93,7 @@ describe('guilds-routes', () => {
       .set('Authorization', authorization)
       .expect(200)
       .expect(res => 
-        expect(res.body).to.deep.equal([invite.toJSON()])
+        expect(JSON.stringify(res.body)).to.deep.equal([invite.toJSON()])
       );
   });
 });

@@ -56,7 +56,7 @@ describe('ready', () => {
   });
 
   it('joins dm channel room', async () => {
-    const dm = await Mock.channel('DM');
+    const dm = await Mock.channel({ type: 'DM' });
     dm.memberIds.push(user.id);
     await dm.update(dm);
 
@@ -78,7 +78,7 @@ describe('ready', () => {
   });
 
   it('joins guild channel rooms', async () => {
-    const newChannel = await Mock.channel('TEXT', guild.id);
+    const newChannel = await Mock.channel({ type: 'TEXT', guild.id });
 
     await makeOwner();
     await ready();

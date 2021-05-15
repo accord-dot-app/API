@@ -2,6 +2,7 @@ import DBWrapper from './db-wrapper';
 import { Channel, ChannelDocument, DMChannelDocument, TextChannelDocument, VoiceChannelDocument } from './models/channel';
 import { SelfUserDocument } from './models/user';
 import { generateSnowflake } from './snowflake-entity';
+import { Lean } from './types/entity-types';
 
 export default class Channels extends DBWrapper<string, ChannelDocument> {
   public async get(id: string | undefined) {
@@ -35,31 +36,32 @@ export default class Channels extends DBWrapper<string, ChannelDocument> {
     }) as ChannelDocument[];
   }
 
-  public createDM(senderId: string, friendId: string) {
-    return Channel.create({
-      _id: generateSnowflake(),
-      memberIds: [senderId, friendId],
-      name: 'DM Channel',
-      type: 'DM',
-    }) as Promise<DMChannelDocument>;
-  }
-  public async createText(guildId: string) {
+  public create(options?: Partial<Lean.Channel>): Promise<ChannelDocument> {
     return Channel.create({
       _id: generateSnowflake(),
       name: 'chat',
-      summary: '',
-      guildId,
+      memberIds: [],
       type: 'TEXT',
-    }) as Promise<TextChannelDocument>;
+      ...options as any,
+    });
+  }
+
+  public createDM(senderId: string, friendId: string) {
+    return this.create({
+      memberIds: [senderId, friendId],
+      name: 'DM Channel',
+      type: 'DM',
+    }) as any as DMChannelDocument;
+  }
+  public async createText(guildId: string) {
+    return this.create({ guildId }) as any as TextChannelDocument;
   }
   public createVoice(guildId: string) {
-    return Channel.create({
-      _id: generateSnowflake(),
+    return this.create({
       name: 'Talk',
       guildId,
       type: 'VOICE',
-      memberIds: []
-    }) as Promise<VoiceChannelDocument>;
+    });
   }
 
   public async getSystem(guildId: string) {

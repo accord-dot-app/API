@@ -28,8 +28,9 @@ use(should);
   } catch {}
 
   // await import('./integration/routes/auth-routes.tests');
-  // await import('./integration/routes/invites-routes.tests');
-  // await import('./integration/routes/guilds-routes.tests');
+  await import('./integration/routes/invites-routes.tests');
+  await import('./integration/routes/guilds-routes.tests');
+  await import('./integration/routes/channel-routes.tests');
 
   await import('./integration/ws/add-friend.tests');
   await import('./integration/ws/channel-create.tests');

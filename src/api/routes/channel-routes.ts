@@ -6,7 +6,7 @@ import Pings from '../../data/pings';
 import { Lean } from '../../data/types/entity-types';
 import Deps from '../../utils/deps';
 import { updateUser, validateUser } from '../modules/middleware';
-import { WebSocket } from '../../api/websocket/websocket';
+import { WebSocket } from '../websocket/websocket';
 import { Args } from '../websocket/ws-events/ws-event';
 
 export const router = Router();
@@ -30,10 +30,13 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
   const user: SelfUserDocument = res.locals.user;
   const channelMsgs = (await messages
     .getChannelMessages(channelId) ?? await messages
-    .getDMChannelMessages(channelId, res.locals.user.id));
+    .getDMChannelMessages(channelId, res.locals.user.id));  
 
   const start = Math.max(channelMsgs.length - (req.query.start as any), 0);
   const end = Math.max(channelMsgs.length - (req.query.end as any), 25);
+
+  console.log(start);
+  console.log(end);  
   
   const slicedMsgs = channelMsgs
     .slice(start, end)
@@ -42,7 +45,7 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
       if (isIgnored)
         m.content = 'This user is blocked, and this message content has been hidden.';
       return m;
-    });    
+    });  
 
   const index = slicedMsgs.length - 1;
   const lastMessage = slicedMsgs[index];
