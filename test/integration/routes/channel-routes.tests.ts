@@ -12,7 +12,7 @@ import { Channel } from '../../../src/data/models/channel';
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { Lean } from '../../../src/data/types/entity-types';
 
-describe.only('channel-routes', () => {
+describe('channel-routes', () => {
   const endpoint = `/api/v1/channels`;
 
   let app: Express.Application;
