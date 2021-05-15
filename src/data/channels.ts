@@ -51,17 +51,17 @@ export default class Channels extends DBWrapper<string, ChannelDocument> {
       memberIds: [senderId, friendId],
       name: 'DM Channel',
       type: 'DM',
-    }) as any as DMChannelDocument;
+    }) as Promise<DMChannelDocument>;
   }
   public async createText(guildId: string) {
-    return this.create({ guildId }) as any as TextChannelDocument;
+    return this.create({ guildId }) as Promise<TextChannelDocument>;
   }
   public createVoice(guildId: string) {
     return this.create({
       name: 'Talk',
       guildId,
       type: 'VOICE',
-    });
+    }) as Promise<VoiceChannelDocument>;
   }
 
   public async getSystem(guildId: string) {
