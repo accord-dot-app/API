@@ -33,8 +33,8 @@ router.get('/:channelId/messages', updateUser, validateUser, async (req, res) =>
     .getDMChannelMessages(channelId, res.locals.user.id));  
 
   const batchSize = 25;
-  const back = Math.max(channelMsgs.length - parseInt(req.query.back as string), 0)
-    || Math.max(channelMsgs.length - batchSize, 0);
+  const back = Math.max(channelMsgs.length - parseInt(req.query.back as string)
+    || batchSize, 0);
   
   const slicedMsgs = channelMsgs
     .slice(back)
