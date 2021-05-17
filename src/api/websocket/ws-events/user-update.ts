@@ -20,6 +20,8 @@ export default class implements WSEvent<'USER_UPDATE'> {
     console.log(userId);
     
     const user = await this.users.get(userId);
+    if (partialUser?.guilds?.length !== user.guilds.length)
+      throw new TypeError('You cannot edit this');
 
     this.guard.validateKeys('user', partialUser);
 
