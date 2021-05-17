@@ -33,4 +33,5 @@ export const GuildMember = model<GuildMemberDocument>('guildMember', new Schema(
       message: 'At least 1 role is required',
     }
   },
-}).method('toClient', useId));
+}, { toJSON: { getters: true } })
+.method('toClient', useId));
