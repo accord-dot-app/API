@@ -59,14 +59,14 @@ describe.only('guild-update', () => {
     await expect(guildUpdate({ id: '123' })).to.be.rejectedWith('Contains readonly values');
   });
 
-  it('sorted roles, did not add roles, fulfilled', async () => {
+  it('reordered roles correctly, fulfilled', async () => {
     makeOwner();
 
     const roleIds = guild.roles.map(r => r.id);
     await expect(guildUpdate({ roles: roleIds as any })).to.be.fulfilled;
   });
 
-  it('sorted roles, added a role, rejected', async () => {
+  it('reordered roles, added a role, rejected', async () => {
     makeOwner();
     const newRole = await Mock.role(guild);
     const roleIds = guild.roles.concat(newRole).map(r => r.id);
@@ -74,19 +74,42 @@ describe.only('guild-update', () => {
     await expect(guildUpdate({ roles: roleIds as any })).to.be.rejectedWith('Cannot add or remove roles this way');
   });
 
-  it('sorted roles, removed a role, rejected', async () => {
+  it('reordered roles, removed a role, rejected', async () => {
     makeOwner();
     await Mock.role(guild);
-    const roleIds = guild.roles.slice(0);
+    const roleIds = guild.roles.slice(0, 1);
 
     await expect(guildUpdate({ roles: roleIds as any })).to.be.rejectedWith('Cannot add or remove roles this way');
   });
 
-  it('sorted roles, moved everyone role, rejected', async () => {
+  it('reordered roles, moved everyone role, rejected', async () => {
     makeOwner();
     const roleIds = [generateSnowflake(), ...guild.roles];
 
     await expect(guildUpdate({ roles: roleIds as any })).to.be.rejectedWith('Cannot reorder the @everyone role');
+  });
+
+  it('sorted channels, did not add channels, fulfilled', async () => {
+    makeOwner();
+
+    const roleIds = guild.channels.map(r => r.id);
+    await expect(guildUpdate({ channels: roleIds as any })).to.be.fulfilled;
+  });
+
+  it('sorted channels, added a channel, rejected', async () => {
+    makeOwner();
+    const channel = await Mock.channel(guild);
+    const channelIds = guild.channels.concat(channel).map(r => r.id);
+
+    await expect(guildUpdate({ channels: channelIds as any })).to.be.rejectedWith('Cannot add or remove channels this way');
+  });
+
+  it('sorted channels, removed a channel, rejected', async () => {
+    makeOwner();
+    await Mock.channel(guild);
+    const channelIds = guild.channels.slice(0, 1);
+
+    await expect(guildUpdate({ channels: channelIds as any })).to.be.rejectedWith('Cannot add or remove channels this way');
   });
 
   function guildUpdate(partialGuild: Partial.Guild) {

@@ -21,7 +21,8 @@ export default class implements WSEvent<'GUILD_UPDATE'> {
 
     this.guard.validateKeys('guild', partialGuild);
 
-    const guild = await this.guilds.get(guildId); 
+    const guild = await this.guilds.get(guildId);
+    this.validateChannels(guild, partialGuild);
     this.validateRoles(guild, partialGuild);
 
     await Guild.updateOne(
@@ -33,6 +34,12 @@ export default class implements WSEvent<'GUILD_UPDATE'> {
     ws.io
       .to(guildId)
       .emit('GUILD_UPDATE', { guildId, partialGuild } as Args.GuildUpdate);
+  }
+
+  private validateChannels(guild: Lean.Guild, partialGuild: Partial.Guild) {
+    if (!partialGuild.channels) return;
+    if (guild.channels.length !== partialGuild.channels.length)
+      throw new TypeError('Cannot add or remove channels this way');
   }
 
   private validateRoles(guild: Lean.Guild, partialGuild: Partial.Guild) {
