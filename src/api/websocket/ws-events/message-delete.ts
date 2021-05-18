@@ -33,7 +33,7 @@ export default class implements WSEvent<'MESSAGE_DELETE'> {
     if (message.id === channel.lastMessageId) {
       const previousMessage = await Message.findOne({ channelId: channel.id });
       channel.lastMessageId = previousMessage?.id;
-      await channel.save();
+      await (channel as any).save();
     }
 
     ws.io

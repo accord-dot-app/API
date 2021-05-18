@@ -8,10 +8,12 @@ Tested code that brings Accord to life.
 ## `.env`
 ```.env
 API_URL="http://localhost:3000/api"
-EMAIL_ADDRESS=""
-EMAIL_PASSWORD=""
-MONGO_URI="mongodb://localhost/DClone"
+EMAIL_ADDRESS="example@gmail.com"
+EMAIL_PASSWORD="google_account_password"
+MONGO_URI="mongodb://localhost/accord"
 PORT=3000
 ROOT_ENDPOINT="http://localhost:3000"
 WEBSITE_URL="http://localhost:4200"
 ```
+
+> For help on setting up gmail mailing, go here - https://nodemailer.com/usage/using-gmail.
