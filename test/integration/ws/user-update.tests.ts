@@ -45,8 +45,24 @@ describe.only('user-update', () => {
     await expect(updateUser()).to.be.rejectedWith('User Not Found');
   });
 
-  it('update contains banned keys, rejected', async () => {
+  it('contains banned keys, rejected', async () => {
     await expect(updateUser({ id: '123' })).to.be.rejectedWith('Contains readonly values');
+  });
+
+  it('reorders guilds correctly, fulfilled', async () => {
+    const guildIds = user.guilds.map(g => g.id);
+    await expect(updateUser({ guilds: guildIds as any })).to.be.fulfilled;
+  });
+
+  it('reorders guilds but adds, rejected', async () => {
+    const newGuild = await Mock.guild();
+    const guildIds = (user.guilds as any).concat(newGuild).map(g => g.id);
+
+    await expect(updateUser({ guilds: guildIds as any })).to.be('Cannot add/remove guilds this way');
+  });
+
+  it('reorders guilds but removes, rejected', async () => {
+    await expect(updateUser({ guilds: [] })).to.be('Cannot add/remove guilds this way');
   });
 
   async function updateUser(options?: Partial<UserTypes.Self>) {
