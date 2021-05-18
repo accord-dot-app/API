@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
-import { PermissionTypes } from '../../../data/types/entity-types';
+import { Lean, PermissionTypes } from '../../../data/types/entity-types';
+import { Partial } from '../../../data/types/ws-types';
 import { Guild } from '../../../data/models/guild';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';
@@ -21,11 +22,7 @@ export default class implements WSEvent<'GUILD_UPDATE'> {
     this.guard.validateKeys('guild', partialGuild);
 
     const guild = await this.guilds.get(guildId); 
-    const oldEveryoneRoleId = guild.roles[0].id;
-    const newEveryoneRoleId = partialGuild.roles?.[0] as any as string;
-
-    if (oldEveryoneRoleId !== newEveryoneRoleId)
-      throw new TypeError('You cannot reorder this role');
+    this.validateRoles(guild, partialGuild);
 
     await Guild.updateOne(
       { _id: guildId },
@@ -36,5 +33,17 @@ export default class implements WSEvent<'GUILD_UPDATE'> {
     ws.io
       .to(guildId)
       .emit('GUILD_UPDATE', { guildId, partialGuild } as Args.GuildUpdate);
+  }
+
+  private validateRoles(guild: Lean.Guild, partialGuild: Partial.Guild) {
+    if (!partialGuild.roles) return;
+    if (guild.roles.length !== partialGuild.roles.length)
+      throw new TypeError('Cannot add or remove roles this way');
+
+    const oldEveryoneRoleId = guild.roles[0].id;
+    const newEveryoneRoleId: string = partialGuild?.roles?.[0] as any;
+
+    if (oldEveryoneRoleId !== newEveryoneRoleId)
+      throw new TypeError('You cannot reorder the @everyone role');
   }
 }

@@ -8,7 +8,7 @@ import Deps from '../../../src/utils/deps';
 import Users from '../../../src/data/users';
 import { Lean, UserTypes } from '../../../src/data/types/entity-types';
 
-describe('user-update', () => {
+describe.only('user-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let event: UserUpdate;
   let ws: WebSocket;

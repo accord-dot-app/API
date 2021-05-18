@@ -10,7 +10,7 @@ import { GuildMemberDocument } from '../../../src/data/models/guild-member';
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { Partial } from '../../../src/data/types/ws-types';
 
-describe('guild-update', () => {
+describe.only('guild-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let ws: WebSocket;
   let event: GuildUpdate;
@@ -28,41 +28,65 @@ describe('guild-update', () => {
 
   it('spoofed user, rejected', async () => {
     ws.sessions.set(client.id, generateSnowflake());
-
     await expect(guildUpdate(guild)).to.be.rejectedWith('Member Not Found');
   });
 
   it('member has insufficient perms, rejected', async () => {
     await Mock.clearRolePerms(guild);
-
     await expect(guildUpdate({})).to.be.rejectedWith('Missing Permissions');
   });
 
   it('user has MANAGE_GUILD perms, fulfilled', async () => {
     await Mock.givePerm(guild, member, PermissionTypes.All.MANAGE_GUILD);
-
     await expect(guildUpdate({})).to.be.fulfilled;
   });
 
   it('user is owner, fulfilled', async () => {
     makeOwner();
-
     await expect(guildUpdate({})).to.be.fulfilled;
   });
 
   it('name acronym updated', async () => {
     makeOwner();
-
     await guildUpdate({ name: 'K E K K' });
 
     guild = await Guild.findById(guild.id);
-
     expect(guild.nameAcronym).to.equal('KEK');
   });
 
   it('contains banned keys, rejected', async () => {
     makeOwner();
     await expect(guildUpdate({ id: '123' })).to.be.rejectedWith('Contains readonly values');
+  });
+
+  it('sorted roles, did not add roles, fulfilled', async () => {
+    makeOwner();
+
+    const roleIds = guild.roles.map(r => r.id);
+    await expect(guildUpdate({ roles: roleIds as any })).to.be.fulfilled;
+  });
+
+  it('sorted roles, added a role, rejected', async () => {
+    makeOwner();
+    const newRole = await Mock.role(guild);
+    const roleIds = guild.roles.concat(newRole).map(r => r.id);
+
+    await expect(guildUpdate({ roles: roleIds as any })).to.be.rejectedWith('Cannot add or remove roles this way');
+  });
+
+  it('sorted roles, removed a role, rejected', async () => {
+    makeOwner();
+    await Mock.role(guild);
+    const roleIds = guild.roles.slice(0);
+
+    await expect(guildUpdate({ roles: roleIds as any })).to.be.rejectedWith('Cannot add or remove roles this way');
+  });
+
+  it('sorted roles, moved everyone role, rejected', async () => {
+    makeOwner();
+    const roleIds = [generateSnowflake(), ...guild.roles];
+
+    await expect(guildUpdate({ roles: roleIds as any })).to.be.rejectedWith('Cannot reorder the @everyone role');
   });
 
   function guildUpdate(partialGuild: Partial.Guild) {
