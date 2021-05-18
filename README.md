@@ -1,5 +1,5 @@
-# DClone - API
-Tested code that brings DClone to life.
+# Accord - API
+Tested code that brings Accord to life.
 
 ![Lines of Code](https://img.shields.io/tokei/lines/github/d-clone/API?color=46828d&style=for-the-badge)
 
