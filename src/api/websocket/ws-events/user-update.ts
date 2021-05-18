@@ -1,6 +1,4 @@
 import { Socket } from 'socket.io';
-import { User } from '../../../data/models/user';
-import { Prohibited } from '../../../data/types/ws-types';
 import Users from '../../../data/users';
 import Deps from '../../../utils/deps';
 import { WSGuard } from '../../modules/ws-guard';

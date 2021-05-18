@@ -1,15 +1,13 @@
 import MessageDelete from '../../../src/api/websocket/ws-events/message-delete';
 import { WebSocket } from '../../../src/api/websocket/websocket';
-import Deps from '../../../src/utils/deps';
 import { expect } from 'chai';
 import io from 'socket.io-client';
 import { Mock } from '../../mock/mock';
 import { GuildDocument } from '../../../src/data/models/guild';
-import { User, UserDocument } from '../../../src/data/models/user';
-import { API } from '../../../src/api/server';
-import { Lean } from '../../../src/data/types/entity-types';
+import { UserDocument } from '../../../src/data/models/user';
 import { Message, MessageDocument } from '../../../src/data/models/message';
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
+import { Channel } from '../../../src/data/models/channel';
 
 describe('message-delete', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
@@ -59,13 +57,30 @@ describe('message-delete', () => {
     await deleteMessage();
     message = await Message.findById(message.id);
 
-    await expect(message).to.be.null;
+    expect(message).to.be.null;
   });
 
   it('message does not exist, rejected', async () => {
     await message.deleteOne();
 
     await expect(deleteMessage()).to.be.rejectedWith('Message Not Found');
+  });
+
+  it('message is last channel message, channel last message updated to previous', async () => {
+    const previousMessage = message;
+    message = await Mock.message(user, channelId);
+    
+    await deleteMessage();
+
+    const channel = await Channel.findById(channelId);
+    expect(channel.lastMessageId).to.equal(previousMessage.id);
+  });
+
+  it('message is only channel message, channel last message updated to null', async () => {
+    await deleteMessage();
+
+    const channel = await Channel.findById(channelId);
+    expect(channel.lastMessageId).to.be.null;
   });
 
   async function deleteMessage() {
