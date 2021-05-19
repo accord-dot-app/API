@@ -2,9 +2,10 @@ import { Router } from 'express';
 import { User } from '../../data/models/user';
 import Users from '../../data/users';
 import Deps from '../../utils/deps';
-import { fullyUpdateUser, validateUser } from '../modules/middleware';
+import { fullyUpdateUser, updateUser, validateUser } from '../modules/middleware';
 import Channels from '../../data/channels';
 import { SystemBot } from '../../system/bot';
+import { generateInviteCode } from '../../data/models/invite';
 
 export const router = Router();
 
@@ -12,9 +13,17 @@ const bot = Deps.get<SystemBot>(SystemBot);
 const channels = Deps.get<Channels>(Channels);
 const users = Deps.get<Users>(Users);
 
-router.get('/', fullyUpdateUser, validateUser, async (req, res) => {
+router.get('/', updateUser, validateUser, async (req, res) => {
   const knownUsers = await users.getKnown(res.locals.user.id);  
   res.json(knownUsers);  
+});
+
+router.delete('/:id', updateUser, validateUser, async (req, res) => {
+  const user = res.locals.user;
+  user.username = `deleted-user-${generateInviteCode(6)}`;
+  await user.save();
+
+  res.status(201).json({ message: 'Modified' });
 });
 
 router.get('/check-username', async (req, res) => {
