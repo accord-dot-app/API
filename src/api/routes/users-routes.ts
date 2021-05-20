@@ -21,6 +21,8 @@ router.get('/', updateUser, validateUser, async (req, res) => {
 router.delete('/:id', updateUser, validateUser, async (req, res) => {
   const user = res.locals.user;
   user.username = `deleted-user-${generateInviteCode(6)}`;
+  delete user.salt;
+  delete user.hash;
   await user.save();
 
   res.status(201).json({ message: 'Modified' });
