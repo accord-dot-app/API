@@ -15,7 +15,7 @@ export default class Roles extends DBWrapper<string, RoleDocument> {
   public async isHigher(guild: Lean.Guild, selfMember: Lean.GuildMember, roleIds: string[]) {
     const highestRole: Lean.Role = guild.roles[guild.roles.length - 1];
 
-    return selfMember.userId === guild?.ownerId
+    return guild?.ownerIds.includes(selfMember.userId)
       || (selfMember.roleIds.includes(highestRole?.id)
       && !roleIds.includes(highestRole.id));
   }

@@ -22,7 +22,7 @@ import rateLimiter from './modules/rate-limiter';
 
 export class API {
   public app = express();
-  private prefix = `/api/v1`;
+  private prefix = `/api/v2`;
 
   constructor(private ws = Deps.get<WebSocket>(WebSocket)) {
     this.setupMiddleware();

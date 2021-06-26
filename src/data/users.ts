@@ -9,11 +9,9 @@ import { Guild } from './models/guild';
 import { APIError } from '../api/modules/api-error';
 import Deps from '../utils/deps';
 import Guilds from './guilds';
-import { Channel } from './models/channel';
 
 export default class Users extends DBWrapper<string, UserDocument> {
   private avatarNames: string[] = [];
-  private systemUser: UserDocument;
 
   constructor(private guilds = Deps.get<Guilds>(Guilds)) {
     super();
@@ -83,61 +81,14 @@ export default class Users extends DBWrapper<string, UserDocument> {
     }) as UserDocument[];
   }
 
-  public async getRoomIds(user: UserTypes.Self) {
-    const dmUsers = await Channel.find({ memberIds: user.id });
-    const dmUserIds = dmUsers.flatMap(u => u.memberIds);
-
-    return Array.from(new Set([
-      user.id,
-      this.systemUser?.id,
-      ...dmUserIds,
-      ...user.friendRequestIds,
-      ...user.friendIds,
-    ]));
-  }
-
   public async getKnownIds(user: UserTypes.Self) {
-    const incomingUsers = await User.find({
-      friendIds: user.id,
-      friendRequestIds: user.id,
-    });
-    const incomingUserIds = incomingUsers.map(u => u.id);
-
     const guildUserIds = user.guilds
       .flatMap(g => g.members.map(g => g.userId));
 
-    const dmUsers = await Channel.find({ memberIds: user.id });
-    const dmUserIds = dmUsers.flatMap(u => u.memberIds);
-
     return Array.from(new Set([
       user.id,
-      this.systemUser?.id,
-      ...dmUserIds,
       ...guildUserIds,
-      ...incomingUserIds,
-      ...user.friendRequestIds,
-      ...user.friendIds,
     ]));
-  }
-
-  public async getDMChannels(userId: string) {
-    return await Channel.find({ memberIds: userId });
-  }
-
-  public async updateSystemUser() {
-    const username = '2PG';
-    return this.systemUser = await User.findOne({ username })
-      ?? await User.create({
-        _id: generateSnowflake(),
-        avatarURL: `${process.env.API_URL ?? 'http://localhost:3000'}/avatars/bot.png`,
-        friendRequestIds: [],
-        badges: [],
-        bot: true,
-        status: 'ONLINE',
-        username,
-        friendIds: [],
-        guilds: [],
-      });
   }
 
   public createToken(userId: string, expire = true) {

@@ -34,7 +34,7 @@ export class WSGuard {
   public async validateIsOwner(client: Socket, guildId: string) {    
     const isOwner = await Guild.exists({
       _id: guildId,
-      ownerId: this.userId(client)
+      ownerIds: this.userId(client)
     });    
     if (!isOwner)
       throw new TypeError('Only the guild owner can do this');
@@ -71,7 +71,7 @@ export class WSGuard {
     const guild = await this.guilds.get(guildId);
 
     const can = await this.roles.hasPermission(guild, member, permission)
-      || guild.ownerId === userId;    
+      || guild.ownerIds.includes(userId);    
     this.validate(can, permission);
   }  
   private validate(can: boolean, permission: PermissionTypes.PermissionString) {

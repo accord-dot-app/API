@@ -3,11 +3,6 @@ import { createdAtToDate, useId, validators } from '../../utils/utils';
 import { generateSnowflake } from '../snowflake-entity';
 import { ChannelTypes } from '../types/entity-types';
 
-export interface DMChannelDocument extends Document, ChannelTypes.DM {
-  _id: string | never;
-  id: string;
-  createdAt: never;
-}
 export interface TextChannelDocument extends Document, ChannelTypes.Text {
   _id: string | never;
   id: string;
@@ -20,7 +15,7 @@ export interface VoiceChannelDocument extends Document, ChannelTypes.Voice {
   createdAt: never;
   guildId: string;
 }
-export type ChannelDocument = DMChannelDocument | TextChannelDocument | VoiceChannelDocument;
+export type ChannelDocument = TextChannelDocument | VoiceChannelDocument;
 
 export const Channel = model<ChannelDocument>('channel', new Schema({
   _id: {

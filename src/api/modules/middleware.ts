@@ -33,14 +33,6 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
   }
 }
 
-export async function updateUsername(req: Request, res: Response, next: NextFunction) {
-  if (!req.body.username) {
-    const user = await User.findOne({ email: req.body.email });
-    req.body.username = user?.username;    
-  }  
-  return next();
-}
-
 export function validateUser(req: Request, res: Response, next: NextFunction) {  
   if (res.locals.user)
     return next();
@@ -60,7 +52,7 @@ export async function validateGuildExists(req: Request, res: Response, next: Nex
 }
  
 export async function validateGuildOwner(req: Request, res: Response, next: NextFunction) {
-  const userOwnsGuild = res.locals.guild.ownerId === res.locals.user.id;
+  const userOwnsGuild = res.locals.guild.ownerIds.includes(res.locals.user.id);
   if (userOwnsGuild)
     return next();
   throw new APIError(401, 'You do not own this guild!');
@@ -73,7 +65,7 @@ export function validateHasPermission(permission: PermissionTypes.Permission) {
     if (!member)
       throw new APIError(401, 'You are not a guild member');
 
-    const isOwner = guild.ownerId === res.locals.user.id;
+    const isOwner = guild.ownerIds.includes(res.locals.user.id);
     const hasPerm = await roles.hasPermission(guild, member, permission);
     if (hasPerm || isOwner) return next();
 

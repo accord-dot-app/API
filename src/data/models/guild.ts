@@ -29,8 +29,8 @@ export const Guild = model<GuildDocument>('guild', new Schema({
     }
   },
   iconURL: String,
-  ownerId: {
-    type: String,
+  ownerIds: {
+    type: [String],
     required: true,
     validate: [patterns.snowflake, 'Invalid Snowflake ID'],
   },

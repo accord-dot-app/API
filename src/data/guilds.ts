@@ -45,7 +45,7 @@ export default class Guilds extends DBWrapper<string, GuildDocument> {
     const guild = await Guild.create({
       _id: guildId,
       name,
-      ownerId: owner.id,
+      ownerIds: [owner.id],
       roles: [ everyoneRole ],
       nameAcronym: getNameAcronym(name),
       members: [],

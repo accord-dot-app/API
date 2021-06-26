@@ -15,6 +15,7 @@ export const validators = {
   minLength: (min: number) => (val: string | any[]) => val.length >= min,
   maxLength: (max: number) => (val: string | any[]) => val.length <= max,
   optionalSnowflake: (val: string) => !val || patterns.snowflake.test(val),
+  snowflakeArray: (val: string[]) => val.every(v => patterns.snowflake.test(v)),
 };
 
 export function createdAtToDate(this: Document) {  

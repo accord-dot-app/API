@@ -1,15 +1,12 @@
 import { Router } from 'express';
-import { SelfUserDocument, User } from '../../data/models/user';
+import { User } from '../../data/models/user';
 import passport from 'passport';
 import Deps from '../../utils/deps';
 import Users from '../../data/users';
 import { Verification } from '../modules/email/verification';
-import { fullyUpdateUser, updateUsername, validateUser } from '../modules/middleware';
 import { EmailFunctions } from '../modules/email/email-functions';
 import { APIError } from '../modules/api-error';
-import { generateInviteCode } from '../../data/models/invite';
 import { WebSocket } from '../websocket/websocket';
-import { Args } from '../websocket/ws-events/ws-event';
 
 export const router = Router();
 
@@ -19,10 +16,9 @@ const verification = Deps.get<Verification>(Verification);
 const ws = Deps.get<WebSocket>(WebSocket);
 
 router.post('/login',
-  updateUsername,
   passport.authenticate('local', { failWithError: true }),
   async (req, res) => {
-  const user = await users.getByUsername(req.body.username);
+  const user = await users.getByEmail(req.body.email);
   if (!user)
     throw new APIError(400, 'Invalid credentials');  
 

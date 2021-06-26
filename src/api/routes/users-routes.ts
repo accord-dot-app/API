@@ -4,12 +4,10 @@ import Users from '../../data/users';
 import Deps from '../../utils/deps';
 import { fullyUpdateUser, updateUser, validateUser } from '../modules/middleware';
 import Channels from '../../data/channels';
-import { SystemBot } from '../../system/bot';
 import { generateInviteCode } from '../../data/models/invite';
 
 export const router = Router();
 
-const bot = Deps.get<SystemBot>(SystemBot);
 const channels = Deps.get<Channels>(Channels);
 const users = Deps.get<Users>(Users);
 
@@ -53,22 +51,12 @@ router.get('/check-email', async (req, res) => {
 
 router.post('/', async (req, res) => {
   const userCount = await User.countDocuments();
-  if (userCount >= 75)
+  if (userCount >= 100)
     throw new TypeError('Max alpha tester limit reached');
 
-  const user = await users.create(req.body.username, req.body.password); 
-  const dm = await channels.createDM(bot.self.id, user.id);
-  await bot.message(dm,
-    'Hello there new user :smile:!\n' +
-    '**Alpha Testing Info** - https://docs.accord.app/legal/alpha'
-  );
+  const user = await users.create(req.body.username, req.body.password);
   
   res.status(201).json(users.createToken(user.id));
-});
-
-router.get('/dm-channels', fullyUpdateUser, async (req, res) => {
-  const dmChannels = await channels.getDMChannels(res.locals.user.id);
-  res.json(dmChannels);
 });
 
 router.get('/bots', async (req, res) => {

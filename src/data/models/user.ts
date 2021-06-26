@@ -46,24 +46,6 @@ export const User = model<UserDocument>('user', new Schema({
       message: 'Invalid email address'
     },
   },
-  friendIds: {
-    type: Array,
-    ref: 'user',
-    default: [],
-    validate: {
-      validator: validators.maxLength(100),
-      message: 'Clout limit reached',
-    },
-  },
-  friendRequestIds: {
-    type: Array,
-    ref: 'user',
-    default: [],
-    validate: {
-      validator: validators.maxLength(100),
-      message: 'Max friend requests reached',
-    },
-  },
   guilds: {
     type: Array,
     ref: 'guild',

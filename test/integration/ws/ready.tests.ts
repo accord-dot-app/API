@@ -8,7 +8,6 @@ import Users from '../../../src/data/users';
 import { Mock } from '../../mock/mock';
 import { WebSocket } from '../../../src/api/websocket/websocket';
 import io from 'socket.io-client';
-import { SystemBot } from '../../../src/system/bot';
 import { GuildDocument } from '../../../src/data/models/guild';
 
 describe('ready', () => {
@@ -47,9 +46,6 @@ describe('ready', () => {
   });
 
   it('joins system bot room', async () => {
-    const systemBot = Deps.get<SystemBot>(SystemBot);
-    await systemBot.init();
-
     await ready();
     
     expect(rooms()).to.include(systemBot.self.id);

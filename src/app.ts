@@ -4,7 +4,6 @@ config();
 
 import { connect } from 'mongoose';
 import { API } from './api/server';
-import { SystemBot } from './system/bot';
 import Deps from './utils/deps';
 import Log from './utils/log';
 
@@ -19,5 +18,4 @@ connect(process.env.MONGO_URI, {
     : Log.info('Connected to database.')
 );
 
-Deps.get<SystemBot>(SystemBot).init();
 Deps.get<API>(API);
