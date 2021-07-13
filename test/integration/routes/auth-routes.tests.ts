@@ -11,7 +11,7 @@ import { generateInviteCode } from '../../../src/data/models/invite';
 import { Email } from '../../../src/api/modules/email/email';
 
 describe.skip('auth-routes', () => {
-  const endpoint = `/api/v1`;
+  const endpoint = `/api/v2`;
 
   let app: Express.Application;
   let users: Users;

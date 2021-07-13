@@ -24,11 +24,13 @@ test(createUser, () => {
   given({ email: 'a' }).expect('Invalid email address');
   given({ email: 'a@a' }).expect('Invalid email address');
   given({ email: 'adam@d-cl.one' }).expect(true);
+  given({ guilds: longArray(101) }).expect('Guild limit reached');
   given({ ignored: null }).expect(true);
   given({ ignored: { channelIds: [] } }).expect(true);
   given({ ignored: { guildIds: [] } }).expect(true);
   given({ ignored: { userIds: [] } }).expect(true);
   given({ _id: '123', ignored: { userIds: ['123'] } }).expect('Cannot block self');
+  given({ themes: longArray(33) }).expect('Guild limit reached');
   given({ username: '' }).expect('Username is required');
   given({ username: 'ADAMJR' }).expect(true);
   given({ username: 'ADAM JR' }).expect('Invalid username');

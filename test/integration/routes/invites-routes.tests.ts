@@ -9,7 +9,7 @@ import { InviteDocument } from '../../../src/data/models/invite';
 import { GuildDocument } from '../../../src/data/models/guild';
 
 describe('invite-routes', () => {
-  const endpoint = `/api/v1/invites`;
+  const endpoint = `/api/v2/invites`;
 
   let app: Express.Application;
   let users: Users;
@@ -23,7 +23,7 @@ describe('invite-routes', () => {
     users = Deps.get<Users>(Users);
 
     guild = await Mock.guild();
-    user = await users.get(guild.ownerId);
+    user = await users.get(guild.ownerIds[0]);
     invite = await Mock.invite(guild.id);
 
     authorization = `Bearer ${users.createToken(user.id)}`;

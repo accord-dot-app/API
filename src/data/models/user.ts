@@ -54,6 +54,14 @@ export const User = model<UserDocument>('user', new Schema({
       message: 'Guild limit reached',
     },
   },
+  themes: {
+    type: Array,
+    ref: 'guild',
+    validate: {
+      validator: validators.maxLength(32),
+      message: 'Theme limit reached',
+    },
+  },
   ignored: {
     type: Object,
     default: new UserTypes.Ignored(),

@@ -55,6 +55,7 @@ use(should);
   await import('./unit/models/guild.tests');
   await import('./unit/models/guild-member.tests');
   await import('./unit/models/invite.tests');
+  await import('./unit/models/theme.tests');
   await import('./unit/models/message.tests');
   await import('./unit/models/role.tests');
   await import('./unit/models/user.tests');

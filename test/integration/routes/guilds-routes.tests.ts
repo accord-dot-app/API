@@ -11,7 +11,7 @@ import { Role } from '../../../src/data/models/role';
 import { Lean, PermissionTypes } from '../../../src/data/types/entity-types';
 
 describe('guilds-routes', () => {
-  const endpoint = `/api/v1/guilds`;
+  const endpoint = `/api/v2/guilds`;
 
   let app: Express.Application;
   let users: Users;

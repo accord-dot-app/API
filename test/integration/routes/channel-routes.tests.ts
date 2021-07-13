@@ -13,7 +13,7 @@ import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { Lean } from '../../../src/data/types/entity-types';
 
 describe('channel-routes', () => {
-  const endpoint = `/api/v1/channels`;
+  const endpoint = `/api/v2/channels`;
 
   let app: Express.Application;
   let authorization: string;
