@@ -6,6 +6,7 @@ import { createdAtToDate, generateUsername, useId } from '../../utils/utils';
 export interface ThemeDocument extends Document, Lean.Theme {
   _id: string | never;
   id: string;
+  createdAt: never;
 }
 
 export const Theme = model<ThemeDocument>('application', new Schema({
@@ -24,7 +25,6 @@ export const Theme = model<ThemeDocument>('application', new Schema({
     type: String,
     required: [true, 'Name is required'],
     maxlength: [32, 'Name is too long'],
-    validate: [patterns.username, 'Name contains invalid characters'],
   },
   styles: {
     type: String,

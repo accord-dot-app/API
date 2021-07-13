@@ -14,6 +14,7 @@ import Deps from '../../src/utils/deps';
 import Guilds from '../../src/data/guilds';
 import GuildMembers from '../../src/data/guild-members';
 import Channels from '../../src/data/channels';
+import { Theme } from '../../src/data/models/theme';
 
 // mostly replace will data wrappers
 export class Mock {
@@ -57,6 +58,15 @@ export class Mock {
       for (const arg of args)
         client.rooms.delete(arg);
     };
+  }
+
+  public static async theme() {
+    return await Theme.create({
+      _id: generateSnowflake(),
+      author: await Mock.user(),
+      name: 'Cool Theme',
+      styles: 'body { background-color: black; }',
+    });
   }
 
   public static async message(author: Lean.User, channelId: string) {
