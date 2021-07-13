@@ -11,13 +11,13 @@ import { router as channelsRoutes } from './routes/channel-routes';
 import { router as guildsRoutes } from './routes/guilds-routes';
 import { router as usersRoutes } from './routes/users-routes';
 import { router as invitesRoutes } from './routes/invites-routes';
+import { router as themesRoutes } from './routes/themes-routes';
 import { User } from '../data/models/user';
 import cors from 'cors';
 import { resolve } from 'path';
 import Deps from '../utils/deps';
 import { WebSocket } from './websocket/websocket';
 import { APIError } from './modules/api-error';
-import helmet from 'helmet';
 import rateLimiter from './modules/rate-limiter';
 
 export class API {
@@ -47,6 +47,7 @@ export class API {
     this.app.use(`${this.prefix}`, express.static(resolve('./assets')));
     this.app.use(`${this.prefix}`, apiRoutes, authRoutes);
     
+    this.app.use(`${this.prefix}/themes`, themesRoutes);
     this.app.use(`${this.prefix}/invites`, invitesRoutes);
     // this.app.use(`${this.prefix}/devs`, devRoutes);
     this.app.use(`${this.prefix}/channels`, channelsRoutes);

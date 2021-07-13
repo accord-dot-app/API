@@ -2,6 +2,7 @@ import { Document, model, Schema } from 'mongoose';
 import { generateSnowflake } from '../snowflake-entity';
 import { Lean, patterns } from '../types/entity-types';
 import { createdAtToDate, generateUsername, useId } from '../../utils/utils';
+import { generateInviteCode } from './invite';
 
 export interface ThemeDocument extends Document, Lean.Theme {
   _id: string | never;
@@ -12,7 +13,7 @@ export interface ThemeDocument extends Document, Lean.Theme {
 export const Theme = model<ThemeDocument>('application', new Schema({
   _id: {
     type: String,
-    default: generateSnowflake,
+    default: generateInviteCode,
   },
   author: {
     type: String,
