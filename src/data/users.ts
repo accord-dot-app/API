@@ -34,6 +34,7 @@ export default class Users extends DBWrapper<string, UserDocument> {
     delete user['verified'];
     delete user['ignored'];
     delete user['lastReadMessages'];
+    delete user['themes'];
     return user;
   }
 
