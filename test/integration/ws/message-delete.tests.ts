@@ -35,20 +35,6 @@ describe('message-delete', () => {
     await expect(deleteMessage()).to.be.rejectedWith('Missing Permissions');
   });
 
-  it('not in guild channel but message author, fulfilled', async () => {
-    const channel = await Mock.channel({ type: 'DM' });
-    message = await Mock.message(user, channel.id);
-
-    await expect(deleteMessage()).to.be.fulfilled;
-  });
-
-  it('not in guild channel and not message author, fulfilled', async () => {
-    const channel = await Mock.channel({ type: 'DM' });
-    message = await Mock.message(await Mock.user(), channel.id);
-
-    await expect(deleteMessage()).to.be.rejectedWith('Only message author can do this');
-  });
-
   it('user is author, fulfilled', async () => {
     await expect(deleteMessage()).to.be.fulfilled;
   });
@@ -85,9 +71,5 @@ describe('message-delete', () => {
 
   async function deleteMessage() {
     return event.invoke(ws, client, { messageId: message.id });
-  }
-  async function makeGuildOwner() {
-    ws.sessions.set(client.id, guild.ownerId);
-    await Mock.clearRolePerms(guild);
   }
 });

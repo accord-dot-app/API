@@ -120,6 +120,6 @@ describe.only('guild-update', () => {
   }
 
   function makeOwner() {
-    ws.sessions.set(client.id, guild.ownerId);
+    ws.sessions.set(client.id, guild.ownerIds[0]);
   }  
 });

@@ -45,22 +45,6 @@ describe('ready', () => {
     expect(rooms()).to.include(user.id);
   });
 
-  it('joins system bot room', async () => {
-    await ready();
-    
-    expect(rooms()).to.include(systemBot.self.id);
-  });
-
-  it('joins dm channel room', async () => {
-    const dm = await Mock.channel({ type: 'DM' });
-    dm.memberIds.push(user.id);
-    await dm.update(dm);
-
-    await ready();    
-
-    expect(rooms()).to.include(dm.id);
-  });
-
   it('joins self room', async () => {
     await ready();
     expect(rooms()).to.include(user.id);
@@ -74,7 +58,10 @@ describe('ready', () => {
   });
 
   it('joins guild channel rooms', async () => {
-    const newChannel = await Mock.channel({ type: 'TEXT', guild.id });
+    const newChannel = await Mock.channel({
+      type: 'TEXT',
+      guildId: guild.id,
+    });
 
     await makeOwner();
     await ready();
@@ -114,7 +101,7 @@ describe('ready', () => {
       .flat();
   }
   async function makeOwner() {
-    ws.sessions.set(client.id, guild.ownerId);
+    ws.sessions.set(client.id, guild.ownerIds[0]);
     key = users.createToken(user.id);
   }
 });

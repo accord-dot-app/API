@@ -32,7 +32,7 @@ describe('invite-delete', () => {
 
   it('guild owner deletes invite, fulfilled', async () => {
     await Mock.clearRolePerms(guild);
-    ws.sessions.set(client.id, guild.ownerId);
+    ws.sessions.set(client.id, guild.ownerIds[0]);
 
     await expect(inviteDelete()).to.be.fulfilled;
   });

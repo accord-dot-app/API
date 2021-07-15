@@ -25,7 +25,7 @@ describe('guilds-routes', () => {
     users = Deps.get<Users>(Users);
 
     guild = await Mock.guild();
-    user = await users.get(guild.ownerId);
+    user = await users.get(guild.ownerIds[0]);
     invite = await Mock.invite(guild.id);
 
     authorization = `Bearer ${users.createToken(user.id)}`;

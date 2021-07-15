@@ -17,10 +17,7 @@ const pings = Deps.get<Pings>(Pings);
 const ws = Deps.get<WebSocket>(WebSocket);
 
 router.get('/', updateUser, validateUser, async (req, res) => {
-  const dms: Lean.Channel[] = await channels.getDMChannels(res.locals.user.id);
-  const guildsChannels = await channels.getGuildsChannels(res.locals.user);
-  const all = dms.concat(guildsChannels);
-
+  const all = await channels.getGuildsChannels(res.locals.user);
   res.json(all);
 });
 

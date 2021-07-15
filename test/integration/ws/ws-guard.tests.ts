@@ -40,7 +40,7 @@ describe('ws-guard', () => {
   });
 
   it('validateIsOwner, is owner, fulfilled', async () => {
-    ws.sessions.set(client.id, guild.ownerId);
+    ws.sessions.set(client.id, guild.ownerIds[0]);
 
     await expect(
       guard.validateIsOwner(client, guild.id)
@@ -48,7 +48,7 @@ describe('ws-guard', () => {
   });
 
   it('validateIsUser, is impostor, throws error', async () => {
-    const result = () => guard.validateIsUser(client, guild.ownerId);
+    const result = () => guard.validateIsUser(client, guild.ownerIds[0]);
     expect(result).to.throw('Unauthorized');
   });
 
@@ -160,24 +160,6 @@ describe('ws-guard', () => {
     ).to.be.fulfilled;
   });
 
-  it('can access channel, dm, not a member, rejected', async () => {
-    const dm = await Mock.channel({ type: 'DM' });
-
-    await expect(
-      guard.canAccessChannel(client, dm.id)
-    ).to.be.rejectedWith('Not DM Member');
-  });
-
-  it('can access channel, dm, is member, fulfilled', async () => {
-    const dm = await Mock.channel({ type: 'DM' });
-    dm.memberIds.push(user.id);
-    await dm.updateOne(dm);
-
-    await expect(
-      guard.canAccessChannel(client, dm.id)
-    ).to.be.fulfilled;
-  });
-
   it('can, not a guild member, rejected', async () => {
     await GuildMember.deleteOne({ userId: user.id });
 
@@ -225,7 +207,7 @@ describe('ws-guard', () => {
   }
 
   async function makeGuildOwner() {
-    ws.sessions.set(client.id, guild.ownerId);
+    ws.sessions.set(client.id, guild.ownerIds[0]);
     await Mock.clearRolePerms(guild);
   }
 });

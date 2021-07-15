@@ -41,7 +41,7 @@ describe('message-create', () => {
   });
   
   it('user is guild owner, fulfilled', async () => {
-    ws.sessions.set(client.id, guild.ownerId);
+    ws.sessions.set(client.id, guild.ownerIds[0]);
 
     await expect(messageCreate()).to.be.fulfilled;
   });

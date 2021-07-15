@@ -86,8 +86,8 @@ describe('guild-delete', () => {
   }
 
   async function makeOwner() {
-    ws.sessions.set(client.id, guild.ownerId);
-    user = await User.findById(guild.ownerId);
+    ws.sessions.set(client.id, guild.ownerIds[0]);
+    user = await User.findById(guild.ownerIds[0]);
   }
   async function makeNoob() {
     user = await User.findById(guild.members[1].userId);

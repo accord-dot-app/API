@@ -69,7 +69,7 @@ describe('guild-member-remove', () => {
     
   function makeGuildOwner() {
     member = guild.members[0] as GuildMemberDocument;
-    ws.sessions.set(client.id, guild.ownerId);
+    ws.sessions.set(client.id, guild.ownerIds[0]);
   }
     
   async function makeAnotherNoob() {

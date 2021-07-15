@@ -58,7 +58,7 @@ describe('message-update', () => {
   }
 
   async function makeGuildOwner() {
-    ws.sessions.set(client.id, guild.ownerId);
+    ws.sessions.set(client.id, guild.ownerIds[0]);
     await Mock.clearRolePerms(guild);
   }
 });

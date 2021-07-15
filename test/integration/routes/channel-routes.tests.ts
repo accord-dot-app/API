@@ -5,11 +5,7 @@ import request from 'supertest';
 import Users from '../../../src/data/users';
 import { UserDocument } from '../../../src/data/models/user';
 import { expect } from 'chai';
-import { InviteDocument } from '../../../src/data/models/invite';
 import { GuildDocument } from '../../../src/data/models/guild';
-import { assert } from 'console';
-import { Channel } from '../../../src/data/models/channel';
-import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { Lean } from '../../../src/data/types/entity-types';
 
 describe('channel-routes', () => {
@@ -28,25 +24,12 @@ describe('channel-routes', () => {
 
     guild = await Mock.guild();
     channel = guild.channels[0];
-    user = await users.get(guild.ownerId);
+    user = await users.get(guild.ownerIds[0]);
 
     authorization = `Bearer ${users.createToken(user.id)}`;
   });
 
   afterEach(async () => await Mock.cleanDB());
-  
-  it('GET /, returns text and dm channels', async () => {
-    await Mock.channel({
-      memberIds: [user.id, guild.ownerId],
-      type: 'DM',
-    });
-    
-    await request(app)
-      .get(endpoint)
-      .set('Authorization', authorization)
-      .expect(200)
-      .expect(res => expect(res.body.length).to.equal(2));
-  });
   
   it('GET /:channelId/messages, returns messages', async () => {
     const channel = guild.channels[0];
