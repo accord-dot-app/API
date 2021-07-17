@@ -40,7 +40,7 @@ export default class implements WSEvent<'GUILD_MEMBER_UPDATE'> {
     
     const everyoneRole = guild.roles.find(r => r.name === '@everyone') as Lean.Role;
     await member.updateOne({
-        ...partialMember,
+        ...partialMember as any,
         roleIds: [everyoneRole.id].concat(partialMember.roleIds ?? []),
       },
       { runValidators: true },

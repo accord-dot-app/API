@@ -32,7 +32,6 @@ use(should);
   await import('./integration/routes/guilds-routes.tests');
   await import('./integration/routes/channel-routes.tests');
 
-  await import('./integration/ws/add-friend.tests');
   await import('./integration/ws/channel-create.tests');
   await import('./integration/ws/guild-member-add.tests');
   await import('./integration/ws/guild-member-remove.tests');
@@ -46,7 +45,6 @@ use(should);
   await import('./integration/ws/message-update.tests');
   await import('./integration/ws/message-delete.tests');
   await import('./integration/ws/ready.tests');
-  await import('./integration/ws/remove-friend.tests');
   await import('./integration/ws/user-update.tests');
   await import('./integration/ws/ws-guard.tests');
 

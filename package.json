@@ -24,7 +24,7 @@
     "got": "^11.7.0",
     "helmet": "^4.4.1",
     "jsonwebtoken": "^8.5.1",
-    "metascraper": "^5.14.14",
+    "metascraper": "^5.22.10",
     "metascraper-description": "^5.14.14",
     "metascraper-image": "^5.14.14",
     "metascraper-title": "^5.14.14",

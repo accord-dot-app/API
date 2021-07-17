@@ -10,7 +10,7 @@ import { GuildMemberDocument } from '../../../src/data/models/guild-member';
 import { generateSnowflake } from '../../../src/data/snowflake-entity';
 import { Partial } from '../../../src/data/types/ws-types';
 
-describe.only('guild-update', () => {
+describe('guild-update', () => {
   const client = io(`http://localhost:${process.env.PORT}`) as any;
   let ws: WebSocket;
   let event: GuildUpdate;

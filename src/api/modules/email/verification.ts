@@ -15,7 +15,7 @@ export class Verification {
     const value = generateInviteCode(options.codeLength);
     this.codes.set(email, { type, value });
 
-    setTimeout(() => this.codes.delete(email), options.expiresIn);
+    setTimeout(() => this.codes.delete(email), options.expiresIn ?? 0);
 
     return value;
   }

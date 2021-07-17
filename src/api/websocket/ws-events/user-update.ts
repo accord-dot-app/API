@@ -23,7 +23,7 @@ export default class implements WSEvent<'USER_UPDATE'> {
     this.guard.validateKeys('user', partialUser);
 
     await user.updateOne(
-      partialUser,
+      partialUser as any,
       { runValidators: true, context: 'query' },
     );
 
