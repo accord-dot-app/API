@@ -3,7 +3,8 @@ Tested code that brings Accord to life.
 
 ![Lines of Code](https://img.shields.io/tokei/lines/github/d-clone/API?color=46828d&style=for-the-badge)
 
-> This repo is from an older version of Accord (v1). [View the updated repo.](https://github.com/accord-dot-app/app)
+> This repo is from an older version of Accord (v1). [View the updated repo.](https://github.com/accord-dot-app/app.
+
 > © All rights reserved. This repo is not (yet) open source, and is awaiting completion.
 
 ## `.env`
